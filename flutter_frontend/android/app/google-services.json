@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "760425569432",
+    "project_id": "memorra-8636f",
+    "storage_bucket": "memorra-8636f.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:760425569432:android:39089501f8f019b35b44ed",
+        "android_client_info": {
+          "package_name": "com.example.flutter_frontend"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBeIqxOB96IVuLIrprZL1nX3833NzpSYUQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
