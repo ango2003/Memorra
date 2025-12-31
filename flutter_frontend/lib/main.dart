@@ -12,7 +12,7 @@ void main() async {
   runApp(const MainApp());
 }
 
-// test comment
+// this is a test comment to see if it works
 class MainApp extends StatelessWidget {
   const MainApp({super.key});
 
