@@ -10,11 +10,9 @@ dependencies:
   flutter:
     sdk: flutter
   firebase_core: ^4.2.1
+  firebase_auth: 6.1.4
   cloud_firestore: ^6.1.1
-<<<<<<< HEAD
-=======
-  firebase_auth: ^6.1.4
->>>>>>> origin/main
+
 
 dev_dependencies:
   flutter_test:
