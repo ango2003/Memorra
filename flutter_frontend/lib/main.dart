@@ -5,6 +5,8 @@ import 'firebase_options.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
+import 'package:flutter_frontend/screens/start_screen.dart';
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   
@@ -26,17 +28,16 @@ void main() async {
     }
   });
 
-  runApp(const MainApp());
+  runApp(
+    MaterialApp(
+      home: StartScreen(),
+    ),
+  );
 }
 
-class MainApp extends StatelessWidget {
-  const MainApp({super.key});
 
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-    // title: 'Memorra Test Page',
-    //   // The StreamBuilder goes here as the "home" of your app
+    // Authentication for User Login
+    // The StreamBuilder goes here as the "home" of your app
     //   home: StreamBuilder<User?>(
     //     stream: FirebaseAuth.instance.authStateChanges(),
     //     builder: (BuildContext context, AsyncSnapshot<User?> snapshot) {
@@ -60,6 +61,3 @@ class MainApp extends StatelessWidget {
     //       //return HomeScreen(userId: user.uid);
     //     },
     //   )
-    );
-  }
-}
