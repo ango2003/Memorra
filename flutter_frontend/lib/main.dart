@@ -3,6 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'screens/home_page.dart';
+import 'screens/login_page.dart';
+import 'screens/profile_page.dart';
+import 'screens/sign_up_page.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -59,7 +63,13 @@ class MainApp extends StatelessWidget {
           //No screens yet
           //return HomeScreen(userId: user.uid);
         },
-      )
+      ),
+      routes: {
+        '/homepage': (context) => const home_page(),
+        '/profilepage': (context) => const profile_page(),
+        '/loginpage': (context) => const login_page(),
+        '/signuppage': (context) => const sign_up_page()
+      },
     );
   }
 }
