@@ -65,10 +65,10 @@ class MainApp extends StatelessWidget {
         },
       ),
       routes: {
-        '/homepage': (context) => const home_page(),
-        '/profilepage': (context) => const profile_page(),
-        '/loginpage': (context) => const login_page(),
-        '/signuppage': (context) => const sign_up_page()
+        '/homepage': (context) => const HomePage(),
+        '/profilepage': (context) => const ProfilePage(),
+        '/loginpage': (context) => const LoginPage(),
+        '/signuppage': (context) => const SignUpPage(),
       },
     );
   }
