@@ -1,8 +1,11 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
+
+import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+
+import 'package:flutter_frontend/screens/start_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -25,41 +28,36 @@ void main() async {
     }
   });
 
-  runApp(const MainApp());
+  runApp(
+    MaterialApp(
+      home: StartScreen(),
+    ),
+  );
 }
 
-class MainApp extends StatelessWidget {
-  const MainApp({super.key});
-  
 
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-    title: 'Memorra Test Page',
-      // The StreamBuilder goes here as the "home" of your app
-      home: StreamBuilder<User?>(
-        stream: FirebaseAuth.instance.authStateChanges(),
-        builder: (BuildContext context, AsyncSnapshot<User?> snapshot) {
-          if (snapshot.hasError) {
-            return const Scaffold(body: Center(child: Text('Something went wrong')));
-          }
+    // Authentication for User Login
+    // The StreamBuilder goes here as the "home" of your app
+    //   home: StreamBuilder<User?>(
+    //     stream: FirebaseAuth.instance.authStateChanges(),
+    //     builder: (BuildContext context, AsyncSnapshot<User?> snapshot) {
+    //       if (snapshot.hasError) {
+    //         return const Scaffold(body: Center(child: Text('Something went wrong')));
+    //       }
 
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Scaffold(body: Center(child: Text("Loading...")));
-          }
+    //       if (snapshot.connectionState == ConnectionState.waiting) {
+    //         return const Scaffold(body: Center(child: Text("Loading...")));
+    //       }
 
-          // If there is no user data, show the Sign In screen
-          if (!snapshot.hasData) {
-            //No screens yet
-            //return const SignInScreen();
-          }
+    //       // If there is no user data, show the Sign In screen
+    //       if (!snapshot.hasData) {
+    //         //No screens yet
+    //         //return const SignInScreen();
+    //       }
 
-          // If there is a user, show the Home screen
-          final user = snapshot.data!;
-          //No screens yet
-          //return HomeScreen(userId: user.uid);
-        },
-      )
-    );
-  }
-}
+    //       // If there is a user, show the Home screen
+    //       final user = snapshot.data!;
+    //       //No screens yet
+    //       //return HomeScreen(userId: user.uid);
+    //     },
+    //   )
