@@ -1,20 +1,20 @@
 import 'package:flutter/material.dart';
 
-class LogInScreen extends StatelessWidget {
-  const LogInScreen({super.key});
+class SignUpPage extends StatelessWidget {
+  const SignUpPage({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Log In Screen"),
+        title: Text("Sign Up Page"),
       ),
       body: Center(
         child: ElevatedButton(
           onPressed: () {
-            Navigator.pop(context);
+            Navigator.pushNamed(context, '/homepage');
           },
-          child: Text('Return to the beginning!')
+          child: Text('Go to Home Page')
         ),
       ),
     );
