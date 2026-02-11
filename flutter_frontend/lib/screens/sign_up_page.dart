@@ -6,13 +6,15 @@ class SignUpPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text("SignUp Page")),
+      appBar: AppBar(
+        title: Text("Sign Up Page"),
+      ),
       body: Center(
         child: ElevatedButton(
           onPressed: () {
             Navigator.pushNamed(context, '/homepage');
           },
-          child: Text("Go To Home"),
+          child: Text('Go to Home Page')
         ),
       ),
     );
