@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
+// Need to learn more about
 ValueNotifier<AuthService> authService = ValueNotifier(AuthService());
 
 class AuthService {
@@ -24,7 +25,8 @@ class AuthService {
     required String password,
   }) async {
     return await firebaseAuth.createUserWithEmailAndPassword(
-      email: email, password: password
+      email: email, 
+      password: password,
     );
   }
 

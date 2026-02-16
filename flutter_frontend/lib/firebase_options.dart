@@ -64,6 +64,7 @@ class DefaultFirebaseOptions {
     messagingSenderId: '760425569432',
     projectId: 'memorra-8636f',
     storageBucket: 'memorra-8636f.firebasestorage.app',
+    iosClientId: '760425569432-71b7rbhtlusb8gjmroki1mtvuvvmdju9.apps.googleusercontent.com',
     iosBundleId: 'com.example.flutterFrontend',
   );
 
@@ -85,4 +86,5 @@ class DefaultFirebaseOptions {
     storageBucket: 'memorra-8636f.firebasestorage.app',
     measurementId: 'G-CEKX5GEGW3',
   );
+
 }
