@@ -11,9 +11,8 @@ class StartPage extends StatelessWidget {
       ),
       body: Center(
         child: Column(
-          mainAxisSize: MainAxisSize.min, // shrink to fit content
+          mainAxisSize: MainAxisSize.min,
           children: [
-            // First button: navigate to Sign Up
             ElevatedButton(
               onPressed: () {
                 Navigator.pushNamed(context, '/signuppage');
@@ -21,7 +20,7 @@ class StartPage extends StatelessWidget {
               child: const Text('Sign Up'),
             ),
             
-            const SizedBox(height: 16), // spacing between buttons
+            const SizedBox(height: 16),
              ElevatedButton(
               onPressed: () {
                 Navigator.pushNamed(context, '/loginpage');

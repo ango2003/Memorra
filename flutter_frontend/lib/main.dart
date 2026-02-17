@@ -6,11 +6,11 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 import 'screens/start_page.dart';
-import 'screens/home_page.dart';
-import 'screens/profile_page.dart';
 import 'screens/login_page.dart';
 import 'screens/sign_up_page.dart';
-
+import 'screens/home_page.dart';
+import 'screens/profile_page.dart';
+import 'screens/list_page.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -39,10 +39,11 @@ void main() async {
 
       routes: 
       {
-        '/homepage': (context) => const HomePage(),
-        '/profilepage': (context) => const ProfilePage(),
         '/loginpage': (context) => const LoginPage(),
         '/signuppage': (context) => const SignUpPage(),
+        '/homepage': (context) => const HomePage(),
+        '/profilepage': (context) => const ProfilePage(),
+        '/listpage': (context) => const ListPage(),
       }
     ),
   );
