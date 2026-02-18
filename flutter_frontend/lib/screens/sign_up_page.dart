@@ -95,37 +95,33 @@ class _SignUpPageState extends State<SignUpPage> {
     return Scaffold(
       appBar: AppBar(title: const Text('Sign Up')),
       body: Center(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.all(24.0),
+        child: Padding(
+          padding: EdgeInsets.all(24),
           child: Column(
-            mainAxisSize: MainAxisSize.min,
             children: [
-              const Text(
-                'Create an Account',
-                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-              ),
-              const SizedBox(height: 16),
+
               TextField(
-                controller: _emailController,
                 keyboardType: TextInputType.emailAddress,
-                decoration: const InputDecoration(labelText: 'Email Address'),
+                decoration: InputDecoration(
+                  label: Text("Email Address")
+                ),
               ),
-              const SizedBox(height: 12),
+              SizedBox(height: 16),
               TextField(
-                controller: _passwordController,
                 keyboardType: TextInputType.visiblePassword,
-                decoration: const InputDecoration(labelText: 'Password'),
-                obscureText: true,
+                decoration: InputDecoration(
+                  label: Text("Password")
+                ),
               ),
-              const SizedBox(height: 24),
-              _isLoading
-                  ? const CircularProgressIndicator()
-                  : ElevatedButton(
-                      onPressed: createAccount,
-                      child: const Text('Sign Up'),
-                    ),
+              SizedBox(height: 24),
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.pushNamed(context, '/homepage');
+                }, 
+                child: Text("Sign Up")
+              )
             ],
-          ),
+          )
         ),
       ),
     );

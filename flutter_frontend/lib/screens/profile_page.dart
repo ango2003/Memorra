@@ -8,11 +8,26 @@ class ProfilePage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(title: Text("Profile Page")),
       body: Center(
-        child: ElevatedButton(
-          onPressed: () {
-            Navigator.pushNamed(context, '/homepage');
-          },
-          child: Text("Go To Home"),
+        child: Padding(
+          padding: EdgeInsets.all(24),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children:[
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.pushNamed(context, '/homepage');
+                },
+                child: Text("Go To Home"),
+              ),
+              SizedBox(height: 20),
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.pushNamed(context, '/listpage');
+                },
+                child: Text("Friend's Like and Dislike List"),
+              ),
+            ]
+          ),
         ),
       ),
     );
