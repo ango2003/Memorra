@@ -1,8 +1,13 @@
 import 'package:flutter/material.dart';
 
-class LoginPage extends StatelessWidget {
+class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
 
+  @override
+  State<LoginPage> createState() => _LogInState();
+}
+
+class _LogInState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -10,11 +15,33 @@ class LoginPage extends StatelessWidget {
         title: Text("Login Page"),
       ),
       body: Center(
-        child: ElevatedButton(
-          onPressed: () {
-            Navigator.pushNamed(context, '/homepage');
-          },
-          child: Text('Go to Home Page.')
+        child: Padding(
+          padding: EdgeInsets.all(24),
+          child: Column(
+            children: [
+
+              TextField(
+                keyboardType: TextInputType.emailAddress,
+                decoration: InputDecoration(
+                  label: Text("Email Address")
+                ),
+              ),
+              SizedBox(height: 16),
+              TextField(
+                keyboardType: TextInputType.visiblePassword,
+                decoration: InputDecoration(
+                  label: Text("Password")
+                ),
+              ),
+              SizedBox(height: 24),
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.pushNamed(context, '/homepage');
+                }, 
+                child: Text("Login")
+              )
+            ],
+          )
         ),
       ),
     );
