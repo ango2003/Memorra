@@ -15,8 +15,8 @@ class StartPage extends StatelessWidget {
                 Color(0xFF071F4A),
               ]
             : [
-              Color(0xFF3F6BB5),
-              Color(0xFF0A8C7A),
+                Color(0xFF3F6BB5),
+                Color(0xFF0A8C7A),
               ],
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
