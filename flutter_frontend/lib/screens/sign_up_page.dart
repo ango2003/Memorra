@@ -93,35 +93,69 @@ class _SignUpPageState extends State<SignUpPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Sign Up')),
-      body: Center(
-        child: Padding(
-          padding: EdgeInsets.all(24),
-          child: Column(
-            children: [
-
-              TextField(
-                keyboardType: TextInputType.emailAddress,
-                decoration: InputDecoration(
-                  label: Text("Email Address")
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: Theme.of(context).brightness == Brightness.dark
+          ? [Color(0xFF0A6F85), Color(0xFF071F4A)]
+          : [Color(0xFF5A86C4), Color(0xFF8AD7C9)],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
+        ),
+        child: Center(
+          child: Padding(
+            padding: EdgeInsets.all(24),
+            child: Column(
+              children: [
+                Text("Create Your Account",
+                  style: TextStyle(
+                    fontSize: 32,
+                    fontWeight: FontWeight.bold,
+                    color: Theme.of(context).brightness == Brightness.dark
+                    ? Colors.white
+                    : Color(0xFF071F4A),
+                  )
                 ),
-              ),
-              SizedBox(height: 16),
-              TextField(
-                keyboardType: TextInputType.visiblePassword,
-                decoration: InputDecoration(
-                  label: Text("Password")
+                SizedBox(height: 16),
+                TextField(
+                  keyboardType: TextInputType.emailAddress,
+                  decoration: InputDecoration(
+                    label: Text("Email Address")
+                  ),
                 ),
-              ),
-              SizedBox(height: 24),
-              ElevatedButton(
+                SizedBox(height: 16),
+                TextField(
+                  keyboardType: TextInputType.visiblePassword,
+                  decoration: InputDecoration(
+                    label: Text("Password")
+                  ),
+                ),
+                SizedBox(height: 24),
+                ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  minimumSize: Size (200, 60),
+                  padding: EdgeInsets.symmetric(
+                    horizontal: 40,
+                    vertical: 20,
+                  ),
+                  foregroundColor: Theme.of(context).brightness == Brightness.dark
+                  ? Colors.white
+                  : Colors.black,
+                ),
                 onPressed: () {
-                  Navigator.pushNamed(context, '/homepage');
-                }, 
-                child: Text("Sign Up")
-              )
-            ],
-          )
+                  Navigator.pushNamed(context, '/signuppage');
+                },
+                child: Text('Sign Up',
+                  style: TextStyle(
+                    fontSize: 20,
+                  )
+                ),
+              ),
+
+              ],
+            )
+          ),
         ),
       ),
     );
