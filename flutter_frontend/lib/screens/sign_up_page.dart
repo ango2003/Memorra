@@ -13,7 +13,11 @@ class SignUpPage extends StatefulWidget {
 class _SignUpPageState extends State<SignUpPage> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
+  final _confirmPasswordController = TextEditingController();
+  final _formKey = GlobalKey<FormState>();
   bool _isLoading = false;
+  bool _obscurePassword = true;
+  bool _obscureConfirmPassword = true;
 
   final AuthService _authService = AuthService();
 
@@ -31,6 +35,8 @@ class _SignUpPageState extends State<SignUpPage> {
 
   // Signup function
   Future<void> createAccount() async {
+    if (!_formKey.currentState!.validate()) return;
+    
     final email = _emailController.text.trim();
     final password = _passwordController.text.trim();
 
@@ -87,74 +93,121 @@ class _SignUpPageState extends State<SignUpPage> {
   void dispose() {
     _emailController.dispose();
     _passwordController.dispose();
+    _confirmPasswordController.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            colors: Theme.of(context).brightness == Brightness.dark
-          ? [Color(0xFF0A6F85), Color(0xFF071F4A)]
-          : [Color(0xFF5A86C4), Color(0xFF8AD7C9)],
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-          ),
-        ),
-        child: Center(
-          child: Padding(
-            padding: EdgeInsets.all(24),
+      appBar: AppBar(title: const Text('Sign Up')),
+      body: Center(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(24),
+          child: Form(
+            key: _formKey,
             child: Column(
+              mainAxisSize: MainAxisSize.min,
               children: [
-                Text("Create Your Account",
-                  style: TextStyle(
-                    fontSize: 32,
-                    fontWeight: FontWeight.bold,
-                    color: Theme.of(context).brightness == Brightness.dark
-                    ? Colors.white
-                    : Color(0xFF071F4A),
-                  )
-                ),
-                SizedBox(height: 16),
-                TextField(
+                // EMAIL ADDRESS FIELD
+                TextFormField(
+                  controller: _emailController,
                   keyboardType: TextInputType.emailAddress,
-                  decoration: InputDecoration(
-                    label: Text("Email Address")
+                  decoration: const InputDecoration(
+                    labelText: "Email Address",
+                    border: OutlineInputBorder(),
                   ),
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return "Email is required";
+                    }
+                    if (!value.contains('@')) {
+                      return "Enter a valid email";
+                    }
+                    return null;
+                  },
                 ),
-                SizedBox(height: 16),
-                TextField(
-                  keyboardType: TextInputType.visiblePassword,
-                  decoration: InputDecoration(
-                    label: Text("Password")
-                  ),
-                ),
-                SizedBox(height: 24),
-                ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  minimumSize: Size (200, 60),
-                  padding: EdgeInsets.symmetric(
-                    horizontal: 40,
-                    vertical: 20,
-                  ),
-                  foregroundColor: Theme.of(context).brightness == Brightness.dark
-                  ? Colors.white
-                  : Colors.black,
-                ),
-                onPressed: () {
-                  Navigator.pushNamed(context, '/signuppage');
-                },
-                child: Text('Sign Up',
-                  style: TextStyle(
-                    fontSize: 20,
-                  )
-                ),
-              ),
 
+                const SizedBox(height: 16),
+
+                /// PASSWORD
+                TextFormField(
+                  controller: _passwordController,
+                  obscureText: _obscurePassword,
+                  decoration: InputDecoration(
+                    labelText: "Password",
+                    border: const OutlineInputBorder(),
+                    suffixIcon: IconButton(
+                      icon: Icon(
+                        _obscurePassword
+                            ? Icons.visibility
+                            : Icons.visibility_off,
+                      ),
+                      onPressed: () {
+                        setState(() {
+                          _obscurePassword = !_obscurePassword;
+                        });
+                      },
+                    ),
+                  ),
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return "Password is required";
+                    }
+                    if (!isValidPassword(value)) {
+                      return "Min 8 chars, 1 uppercase, 1 number, 1 special char";
+                    }
+                    return null;
+                  },
+                ),
+
+                const SizedBox(height: 16),
+
+                /// CONFIRM PASSWORD
+                TextFormField(
+                  controller: _confirmPasswordController,
+                  obscureText: _obscureConfirmPassword,
+                  decoration: InputDecoration(
+                    labelText: "Confirm Password",
+                    border: const OutlineInputBorder(),
+                    suffixIcon: IconButton(
+                      icon: Icon(
+                        _obscureConfirmPassword
+                            ? Icons.visibility
+                           : Icons.visibility_off,
+                      ),
+                      onPressed: () {
+                        setState(() {
+                          _obscureConfirmPassword =
+                              !_obscureConfirmPassword;
+                        });
+                      },
+                    ),
+                  ),
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return "Please confirm password";
+                    }
+                    if (value != _passwordController.text) {
+                      return "Passwords do not match";
+                    }
+                    return null;
+                  },
+                ),
+
+                const SizedBox(height: 24),
+
+                _isLoading
+                    ? const CircularProgressIndicator()
+                    : SizedBox(
+                        width: double.infinity,
+                        child: ElevatedButton(
+                         onPressed: createAccount,
+                         child: const Text("Sign Up"),
+                        ),
+                     ),
               ],
-            )
+           ),
           ),
         ),
       ),
