@@ -22,9 +22,9 @@ class ProfilePage extends StatelessWidget {
               SizedBox(height: 20),
               ElevatedButton(
                 onPressed: () {
-                  Navigator.pushNamed(context, '/listpage');
+                  Navigator.pushNamed(context, '/listcollection');
                 },
-                child: Text("Friend's Like and Dislike List"),
+                child: Text("Gift lists"),
               ),
             ]
           ),
