@@ -36,6 +36,9 @@ class MyApp extends StatelessWidget {
         '/signuppage': (context) => const SignUpPage(),
         '/listpage': (context) => const ListPage(),
       },
+      theme: ThemeData.light(),
+      darkTheme: ThemeData.dark(),
+      themeMode: ThemeMode.system,
       //Authentication for User Login
       //The StreamBuilder goes here as the "home" of your app
       home: StreamBuilder<User?>(

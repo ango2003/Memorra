@@ -24,7 +24,7 @@ class ProfilePage extends StatelessWidget {
                 onPressed: () {
                   Navigator.pushNamed(context, '/listpage');
                 },
-                child: Text("Friend's Like and Dislike List"),
+                child: Text("Gift List"),
               ),
             ]
           ),
