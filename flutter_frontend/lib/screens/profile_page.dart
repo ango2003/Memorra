@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_frontend/auth_service.dart';
 
 class ProfilePage extends StatelessWidget {
   const ProfilePage({super.key});
@@ -22,10 +23,18 @@ class ProfilePage extends StatelessWidget {
               SizedBox(height: 20),
               ElevatedButton(
                 onPressed: () {
-                  Navigator.pushNamed(context, '/listpage');
+                  Navigator.pushNamed(context, '/listcollection');
                 },
-                child: Text("Gift List"),
+                child: Text("Gift Lists"),
               ),
+              SizedBox(height: 20),
+              ElevatedButton(
+                onPressed: ()async {
+                  await authService.value.signOut();
+                  Navigator.pushReplacementNamed(context, '/loginpage');
+                },
+                child: Text("Sign Out"),
+              )
             ]
           ),
         ),
