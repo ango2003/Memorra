@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_frontend/auth_service.dart';
 
 class ProfilePage extends StatelessWidget {
   const ProfilePage({super.key});
@@ -26,6 +27,14 @@ class ProfilePage extends StatelessWidget {
                 },
                 child: Text("Gift Lists"),
               ),
+              SizedBox(height: 20),
+              ElevatedButton(
+                onPressed: ()async {
+                  await authService.value.signOut();
+                  Navigator.pushReplacementNamed(context, '/loginpage');
+                },
+                child: Text("Sign Out"),
+              )
             ]
           ),
         ),
