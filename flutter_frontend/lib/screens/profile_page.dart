@@ -24,7 +24,7 @@ class ProfilePage extends StatelessWidget {
                 onPressed: () {
                   Navigator.pushNamed(context, '/listcollection');
                 },
-                child: Text("Gift lists"),
+                child: Text("Gift Lists"),
               ),
             ]
           ),
