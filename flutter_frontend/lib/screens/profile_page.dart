@@ -1,8 +1,47 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_frontend/auth_service.dart';
+import 'package:flutter_frontend/screens/start_page.dart';
 
-class ProfilePage extends StatelessWidget {
+class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
+
+  @override
+  State<ProfilePage> createState() => _ProfilePageState();
+}
+
+// Class need Auth refinement
+class _ProfilePageState extends State<ProfilePage> {
+  final AuthService _authService = AuthService();
+  bool _isLoading = false;
+  
+  // Sign Out Function
+  Future<void> signOut() async {
+    
+    setState(() => _isLoading = true);
+
+    try {
+    
+      if (!mounted) return;
+
+      await _authService.signOut();
+
+      if (!mounted) return;
+
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute(builder: (_) => StartPage()),
+      );
+    } on FirebaseAuthException catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Sign out failed: ${e.message}')),
+      );
+    } finally {
+      if (mounted) {
+        setState(() => _isLoading = false);
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -31,7 +70,10 @@ class ProfilePage extends StatelessWidget {
               ElevatedButton(
                 onPressed: ()async {
                   await authService.value.signOut();
-                  Navigator.pushReplacementNamed(context, '/loginpage');
+                  Navigator.of(context).pushAndRemoveUntil(
+                  MaterialPageRoute(builder: (context) => StartPage()),
+                  (Route<dynamic> route) => false,
+                );
                 },
                 child: Text("Sign Out"),
               )
