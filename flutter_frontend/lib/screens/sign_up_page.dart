@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_frontend/auth_service.dart';
+import 'package:flutter_frontend/google_service.dart';
 
 class SignUpPage extends StatefulWidget {
   const SignUpPage({super.key});
@@ -14,6 +15,7 @@ class _SignUpPageState extends State<SignUpPage> {
   final _confirmPasswordController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
   final AuthService _authService = AuthService();
+  final GoogleService _googleService = GoogleService();
   bool _isLoading = false;
   bool _obscurePassword = true;
   bool _obscureConfirmPassword = true;
@@ -47,7 +49,7 @@ class _SignUpPageState extends State<SignUpPage> {
       );
       return;
     }
-
+  
     setState(() => _isLoading = true);
 
     try {
@@ -64,6 +66,23 @@ class _SignUpPageState extends State<SignUpPage> {
       if(!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(e.toString())),
+      );
+    } finally {
+      setState(() => _isLoading = false);
+    }
+  }
+
+  Future<void> signUpWithGoogle() async {
+    try {
+      await _googleService.signInWithGoogle();
+      
+      if (!mounted) return;
+      
+      Navigator.pushReplacementNamed(context, '/homepage');
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Google sign-up failed: ${e.toString()}')),
       );
     } finally {
       setState(() => _isLoading = false);
@@ -296,9 +315,30 @@ class _SignUpPageState extends State<SignUpPage> {
                         ),
                       ),
                   ),
-              ],
+                
+                SizedBox(height: 20),
+
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    minimumSize: Size (200, 60),
+                    padding: EdgeInsets.symmetric(
+                      horizontal: 40,
+                      vertical: 20,
+                    ),
+                    foregroundColor: Theme.of(context).brightness == Brightness.dark
+                    ? Colors.white
+                    : Color(0xFF3A3A3A),
+                  ),
+                  onPressed: _googleService.signInWithGoogle,
+                  child: Text('Sign Up with Google',
+                    style: TextStyle(
+                      fontSize: 20,
+                    )
+                  ),
+                )
+              ],      
             ),
-          ),
+          ), 
         ),
       ),
     );
