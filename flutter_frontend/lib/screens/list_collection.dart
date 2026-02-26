@@ -5,7 +5,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 class ListCollection extends StatelessWidget {
   const ListCollection({super.key});
 
-<<<<<<< HEAD
   void createNewList(BuildContext context) {
     final controller = TextEditingController();
     showDialog(
@@ -73,13 +72,10 @@ class ListCollection extends StatelessWidget {
       )
     );
   }
-=======
->>>>>>> origin/main
 
   @override
   Widget build(BuildContext context) {
     
-<<<<<<< HEAD
     final userID = FirebaseAuth.instance.currentUser!.uid; // Get current user's UID
 
     return Scaffold(
@@ -90,20 +86,11 @@ class ListCollection extends StatelessWidget {
       ),
       body: StreamBuilder<QuerySnapshot>(
         stream: FirebaseFirestore.instance // Access Firestore instance
-=======
-    final userID = FirebaseAuth.instance.currentUser!.uid;
-
-    return Scaffold(
-      appBar: AppBar(title: Text("My lists")),
-      body: StreamBuilder<QuerySnapshot>(
-        stream: FirebaseFirestore.instance
->>>>>>> origin/main
             .collection('accounts')
             .doc(userID)
             .collection('gift_lists')
             .snapshots(),
         builder: (context, snapshot) {
-<<<<<<< HEAD
           if (!snapshot.hasData) return const Center(child: CircularProgressIndicator()); // Show loading indicator while fetching data
 
           final docs = snapshot.data!.docs; // Get list of documents in the 'gift_lists' collection
@@ -130,16 +117,6 @@ class ListCollection extends StatelessWidget {
                 }
               );
             },
-=======
-          if (!snapshot.hasData) return const Center(child: CircularProgressIndicator());
-
-          final docs = snapshot.data!.docs;
-          
-          return ListView(
-            children: docs.map((doc) {
-              return ListTile(title: Text(doc['gift_recipient: ']));
-            }).toList(),
->>>>>>> origin/main
           );
         },
       ),

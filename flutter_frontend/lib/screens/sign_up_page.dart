@@ -56,25 +56,7 @@ class _SignUpPageState extends State<SignUpPage> {
         email: email,
         password: password,
       );
-<<<<<<< HEAD
-      final user = userCredential.user;
-
-      if (user != null) {
-        // Save user in Firestore
-        await FirebaseFirestore.instance.collection('accounts').doc(user.uid).set({
-          'email': user.email,
-          'createdAt': Timestamp.now(),
-          'provider': 'email',
-        });
-
-        if(!mounted) return;
-        Navigator.pushReplacementNamed(context, '/homepage');
-      }
-    } on FirebaseAuthException catch (e) {
-      // Handle Firebase Auth errors (password rules, email taken, etc.)
-=======
         
->>>>>>> origin/main
       if(!mounted) return;
       Navigator.pushReplacementNamed(context, '/homepage');
   

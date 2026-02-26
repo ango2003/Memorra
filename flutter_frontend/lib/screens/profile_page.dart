@@ -1,10 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_frontend/auth_service.dart';
-<<<<<<< HEAD
-=======
 import 'package:flutter_frontend/screens/start_page.dart';
->>>>>>> origin/main
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
@@ -73,14 +70,10 @@ class _ProfilePageState extends State<ProfilePage> {
               ElevatedButton(
                 onPressed: ()async {
                   await authService.value.signOut();
-<<<<<<< HEAD
-                  Navigator.pushReplacementNamed(context, '/loginpage');
-=======
                   Navigator.of(context).pushAndRemoveUntil(
                   MaterialPageRoute(builder: (context) => StartPage()),
                   (Route<dynamic> route) => false,
                 );
->>>>>>> origin/main
                 },
                 child: Text("Sign Out"),
               )
