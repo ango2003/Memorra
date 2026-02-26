@@ -1,6 +1,4 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_frontend/auth_service.dart';
 
 class SignUpPage extends StatefulWidget {
@@ -15,11 +13,10 @@ class _SignUpPageState extends State<SignUpPage> {
   final _passwordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
+  final AuthService _authService = AuthService();
   bool _isLoading = false;
   bool _obscurePassword = true;
   bool _obscureConfirmPassword = true;
-
-  final AuthService _authService = AuthService();
 
   // Password validation: uppercase, number, special character
   bool isValidPassword(String password) {
@@ -55,10 +52,11 @@ class _SignUpPageState extends State<SignUpPage> {
 
     try {
       // Create Auth user
-      final userCredential = await _authService.createAccount(
+      await _authService.createAccount(
         email: email,
         password: password,
       );
+<<<<<<< HEAD
       final user = userCredential.user;
 
       if (user != null) {
@@ -74,15 +72,16 @@ class _SignUpPageState extends State<SignUpPage> {
       }
     } on FirebaseAuthException catch (e) {
       // Handle Firebase Auth errors (password rules, email taken, etc.)
+=======
+        
+>>>>>>> origin/main
       if(!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(e.message ?? 'Error creating account')),
-      );
+      Navigator.pushReplacementNamed(context, '/homepage');
+  
     } catch (e) {
-      // Handle any other errors
       if(!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Unexpected error: $e')),
+        SnackBar(content: Text(e.toString())),
       );
     } finally {
       setState(() => _isLoading = false);
