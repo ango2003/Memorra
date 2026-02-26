@@ -63,7 +63,7 @@ class _SignUpPageState extends State<SignUpPage> {
 
       if (user != null) {
         // Save user in Firestore
-        await FirebaseFirestore.instance.collection('users').doc(user.uid).set({
+        await FirebaseFirestore.instance.collection('accounts').doc(user.uid).set({
           'email': user.email,
           'createdAt': Timestamp.now(),
           'provider': 'email',
