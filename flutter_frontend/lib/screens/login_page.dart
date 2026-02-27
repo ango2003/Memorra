@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_frontend/auth_service.dart';
 import 'package:flutter_frontend/screens/home_page.dart';
+import 'package:flutter_frontend/google_service.dart';
 
 class LogInPage extends StatefulWidget {
   const LogInPage({super.key});
@@ -43,6 +44,30 @@ class _LogInPageState extends State<LogInPage> {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(e.toString())),
+      );
+    } finally {
+      if (mounted) {
+        setState(() => _isLoading = false);
+      }
+    }
+  }
+
+  Future<void> signInWithGoogle() async {
+    setState(() => _isLoading = true);
+
+    try {
+      final user = await GoogleService().signInWithGoogle();
+
+      if (!mounted || user == null) {
+        return;
+      }
+      Navigator.pushReplacement(
+        context, MaterialPageRoute(builder: (_) => HomePage(userId: user.uid))
+      );
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Google Sign-In failed: ${e.toString()}')),
       );
     } finally {
       if (mounted) {
@@ -202,6 +227,32 @@ class _LogInPageState extends State<LogInPage> {
                          child: const Text("Log In"),
                        ),
                      ),
+
+                const SizedBox(height: 24),
+
+                _isLoading
+                  ? const CircularProgressIndicator()
+                  : SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        minimumSize: Size (200, 60),
+                        padding: EdgeInsets.symmetric(
+                          horizontal: 40,
+                          vertical: 20,
+                        ),
+                        foregroundColor: Theme.of(context).brightness == Brightness.dark
+                        ? Colors.white
+                        : Color(0xFF3A3A3A),
+                      ),
+                      onPressed: signInWithGoogle,
+                      child: Text('Sign Up with Google',
+                        style: TextStyle(
+                          fontSize: 20,
+                        )
+                      ),
+                    )
+                  ),
               ],
             ),
           ),

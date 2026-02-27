@@ -72,20 +72,24 @@ class _SignUpPageState extends State<SignUpPage> {
     }
   }
 
-  Future<void> signUpWithGoogle() async {
+  Future<void> signInWithGoogle() async {
+    setState(() => _isLoading = true);
+    
     try {
-      await _googleService.signInWithGoogle();
+      final user = await _googleService.signInWithGoogle();
       
-      if (!mounted) return;
+      if (!mounted || user == null) return;
       
       Navigator.pushReplacementNamed(context, '/homepage');
     } catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Google sign-up failed: ${e.toString()}')),
+        SnackBar(content: Text('Google sign-in failed: ${e.toString()}')),
       );
     } finally {
-      setState(() => _isLoading = false);
+      if (mounted) {
+        setState(() => _isLoading = false);
+      }
     }
   }
 
@@ -316,26 +320,26 @@ class _SignUpPageState extends State<SignUpPage> {
                       ),
                   ),
                 
-                SizedBox(height: 20),
+                  const SizedBox(height: 24),
 
-                ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    minimumSize: Size (200, 60),
-                    padding: EdgeInsets.symmetric(
-                      horizontal: 40,
-                      vertical: 20,
+                _isLoading
+                  ? const CircularProgressIndicator()
+                  : SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        minimumSize: Size(200, 60),
+                        padding: EdgeInsets.symmetric(horizontal: 40, vertical: 20),
+                        foregroundColor: Theme.of(context).brightness == Brightness.dark
+                          ? Colors.white
+                          : Color(0xFF3A3A3A),
+                      ),
+                      onPressed: signInWithGoogle, // shared function
+                      child: Text('Continue with Google',
+                        style: TextStyle(fontSize: 20),
+                      ),
                     ),
-                    foregroundColor: Theme.of(context).brightness == Brightness.dark
-                    ? Colors.white
-                    : Color(0xFF3A3A3A),
                   ),
-                  onPressed: _googleService.signInWithGoogle,
-                  child: Text('Sign Up with Google',
-                    style: TextStyle(
-                      fontSize: 20,
-                    )
-                  ),
-                )
               ],      
             ),
           ), 
