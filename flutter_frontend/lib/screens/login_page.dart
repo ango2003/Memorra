@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_frontend/auth_service.dart';
+import 'package:flutter_frontend/screens/home_page.dart';
 
 class LogInPage extends StatefulWidget {
   const LogInPage({super.key});
@@ -13,10 +14,9 @@ class _LogInPageState extends State<LogInPage> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
+  final AuthService _authService = AuthService();
   bool _isLoading = false;
   bool _obscurePassword = true;
-
-  final AuthService _authService = AuthService();
 
   // Login Function
   Future<void> logIn() async {
@@ -25,21 +25,24 @@ class _LogInPageState extends State<LogInPage> {
     setState(() => _isLoading = true);
 
     try {
-      await _authService.logIn(
-        email: _emailController.text.trim(),
+      
+      if (!mounted) return;
+
+      UserCredential userCredential = await _authService.logIn(
+        email: _emailController.text.trim(), 
         password: _passwordController.text.trim(),
       );
-    } on FirebaseAuthException catch (e) {
-      String message = 'Login failed';
 
-      if (e.code == 'user-not-found') {
-        message = 'No user found with that email.';
-      } else if (e.code == 'wrong-password') {
-        message = 'Incorrect password.';
-      }
+      if (!mounted) return;
+
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute(builder: (_) => HomePage(userId: userCredential.user!.uid),
+        ),
+      );
+    } catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(message)),
+        SnackBar(content: Text(e.toString())),
       );
     } finally {
       if (mounted) {

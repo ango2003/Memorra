@@ -9,6 +9,7 @@ import 'screens/sign_up_page.dart';
 import 'screens/home_page.dart';
 import 'screens/profile_page.dart';
 import 'screens/list_page.dart';
+import 'screens/list_collection.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -30,18 +31,18 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       routes: 
       {
-        '/homepage': (context) => const HomePage(userId: '',),
+        '/homepage': (context) => const HomePage(userId: ' ',),
         '/profilepage': (context) => const ProfilePage(),
         '/loginpage': (context) => const LogInPage(),
         '/signuppage': (context) => const SignUpPage(),
         '/listpage': (context) => const ListPage(),
+        '/listcollection': (context) => const ListCollection(),
       },
       theme: ThemeData.light(),
       darkTheme: ThemeData.dark(),
       themeMode: ThemeMode.dark,
       //themeMode: ThemeMode.system,
       //Authentication for User Login
-      //The StreamBuilder goes here as the "home" of your app
       home: StreamBuilder<User?>(
         stream: FirebaseAuth.instance.authStateChanges(),
         builder: (BuildContext context, AsyncSnapshot<User?> snapshot) {
@@ -65,6 +66,3 @@ class MyApp extends StatelessWidget {
     );
   }
 }
-
-
-    
