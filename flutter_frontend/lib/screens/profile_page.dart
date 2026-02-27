@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'widgets/nav_bar.dart';
 
 class ProfilePage extends StatelessWidget {
   const ProfilePage({super.key});
@@ -29,6 +30,17 @@ class ProfilePage extends StatelessWidget {
             ]
           ),
         ),
+      ),
+      bottomNavigationBar: NavBar(
+        currentIndex: 1,
+        onTap: (index) {
+          if (index == 0) {
+            Navigator.pushNamed(context, '/homepage');
+          }
+          else if (index == 2) {
+            Navigator.pushNamed(context, '/listpage');
+          }
+        },
       ),
     );
   }

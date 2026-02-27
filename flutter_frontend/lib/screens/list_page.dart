@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'widgets/nav_bar.dart';
 
 class ListPage extends StatefulWidget {
   const ListPage({super.key});
@@ -67,6 +68,17 @@ class _ListPageState extends State<ListPage> {
             ),
           ),
         ],
+      ),
+      bottomNavigationBar: NavBar(
+        currentIndex: 2,
+        onTap: (index) {
+          if (index == 0) {
+            Navigator.pushNamed(context, '/homepage');
+          }
+          else if (index == 1) {
+            Navigator.pushNamed(context, '/profilepage');
+          }
+        },
       ),
     );
   }
