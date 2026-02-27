@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_frontend/auth_service.dart';
+import 'package:flutter_frontend/google_service.dart';
 
 class SignUpPage extends StatefulWidget {
   const SignUpPage({super.key});
@@ -14,6 +15,7 @@ class _SignUpPageState extends State<SignUpPage> {
   final _confirmPasswordController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
   final AuthService _authService = AuthService();
+  final GoogleService _googleService = GoogleService();
   bool _isLoading = false;
   bool _obscurePassword = true;
   bool _obscureConfirmPassword = true;
@@ -47,7 +49,7 @@ class _SignUpPageState extends State<SignUpPage> {
       );
       return;
     }
-
+  
     setState(() => _isLoading = true);
 
     try {
@@ -67,6 +69,27 @@ class _SignUpPageState extends State<SignUpPage> {
       );
     } finally {
       setState(() => _isLoading = false);
+    }
+  }
+
+  Future<void> signInWithGoogle() async {
+    setState(() => _isLoading = true);
+    
+    try {
+      final user = await _googleService.signInWithGoogle();
+      
+      if (!mounted || user == null) return;
+      
+      Navigator.pushReplacementNamed(context, '/homepage');
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Google sign-in failed: ${e.toString()}')),
+      );
+    } finally {
+      if (mounted) {
+        setState(() => _isLoading = false);
+      }
     }
   }
 
@@ -296,9 +319,30 @@ class _SignUpPageState extends State<SignUpPage> {
                         ),
                       ),
                   ),
-              ],
+                
+                  const SizedBox(height: 24),
+
+                _isLoading
+                  ? const CircularProgressIndicator()
+                  : SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        minimumSize: Size(200, 60),
+                        padding: EdgeInsets.symmetric(horizontal: 40, vertical: 20),
+                        foregroundColor: Theme.of(context).brightness == Brightness.dark
+                          ? Colors.white
+                          : Color(0xFF3A3A3A),
+                      ),
+                      onPressed: signInWithGoogle, // shared function
+                      child: Text('Continue with Google',
+                        style: TextStyle(fontSize: 20),
+                      ),
+                    ),
+                  ),
+              ],      
             ),
-          ),
+          ), 
         ),
       ),
     );

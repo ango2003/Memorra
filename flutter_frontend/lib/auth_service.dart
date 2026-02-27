@@ -2,7 +2,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
-// Need to learn more about
 ValueNotifier<AuthService> authService = ValueNotifier(AuthService());
 
 class AuthService {
