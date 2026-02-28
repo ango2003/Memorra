@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter_frontend/screens/list_page.dart';
 
 class ListCollection extends StatelessWidget {
   const ListCollection({super.key});
@@ -107,12 +108,7 @@ class ListCollection extends StatelessWidget {
                   onPressed: () => deleteList(context, listID), // Call deleteList when delete button is pressed
                 ),
                 onTap: () {
-                  Navigator.pushReplacementNamed(context, '/listpage', // Navigate to ListPage when a list is tapped
-                    arguments: {
-                      'userID': userID,
-                      'listID': listID,
-                      'giftRecipient': data['gift_recipient'],
-                    }
+                  Navigator.push(context, MaterialPageRoute(builder: (context) => ListPage(listID: listID)), // Navigate to ListPage when a list is tapped
                   );
                 }
               );
