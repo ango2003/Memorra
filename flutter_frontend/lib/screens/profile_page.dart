@@ -2,7 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_frontend/auth_service.dart';
 import 'package:flutter_frontend/screens/start_page.dart';
-import 'package: flutter_frontend/screens/widgets/nav_bar.dart';
+import 'package:flutter_frontend/screens/widgets/nav_bar.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
@@ -83,15 +83,7 @@ class _ProfilePageState extends State<ProfilePage> {
         ),
       ),
       bottomNavigationBar: NavBar(
-        currentIndex: 1,
-        onTap: (index) {
-          if (index == 0) {
-            Navigator.pushNamed(context, '/homepage');
-          }
-          else if (index == 2) {
-            Navigator.pushNamed(context, '/listpage');
-          }
-        },
+        currentIndex: 4,
       ),
     );
   }

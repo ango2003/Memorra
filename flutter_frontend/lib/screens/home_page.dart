@@ -25,15 +25,7 @@ class HomePage extends StatelessWidget {
         ),
       ),
       bottomNavigationBar: NavBar(
-        currentIndex: 0,
-        onTap: (index) {
-          if (index == 1) {
-            Navigator.pushNamed(context, '/profilepage');
-          }
-          else if (index == 2) {
-            Navigator.pushNamed(context, '/listpage');
-          }
-        },
+        currentIndex: 2
       ),
     );
   }

@@ -131,6 +131,10 @@ class _SignUpPageState extends State<SignUpPage> {
                 TextFormField(
                   controller: _emailController,
                   keyboardType: TextInputType.emailAddress,
+                  cursorColor: Color(0xFF3A3A3A),
+                  style: TextStyle(
+                    color: Color(0xFF3A3A3A),
+                  ),
                   decoration: InputDecoration(
                     labelText: "example@email.com",
                     labelStyle: TextStyle(
@@ -174,6 +178,10 @@ class _SignUpPageState extends State<SignUpPage> {
                 TextFormField(
                   controller: _passwordController,
                   obscureText: _obscurePassword,
+                  cursorColor: Color(0xFF3A3A3A),
+                  style: TextStyle(
+                    color: Color(0xFF3A3A3A),
+                  ),
                   decoration: InputDecoration(
                     labelText: "Example1!",
                     labelStyle: TextStyle(
@@ -230,6 +238,10 @@ class _SignUpPageState extends State<SignUpPage> {
                 TextFormField(
                   controller: _confirmPasswordController,
                   obscureText: _obscureConfirmPassword,
+                  cursorColor: Color(0xFF3A3A3A),
+                  style: TextStyle(
+                    color: Color(0xFF3A3A3A),
+                  ),
                   decoration: InputDecoration(
                     labelText: "Example1!",
                    labelStyle: TextStyle(
@@ -276,7 +288,6 @@ class _SignUpPageState extends State<SignUpPage> {
                 _isLoading
                   ? const CircularProgressIndicator()
                   : SizedBox(
-                      width: double.infinity,
                       child: ElevatedButton(
                         style: ElevatedButton.styleFrom(
                           minimumSize: Size (200, 60),
@@ -296,6 +307,29 @@ class _SignUpPageState extends State<SignUpPage> {
                         ),
                       ),
                   ),
+        
+                const SizedBox(height: 24),
+
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                  minimumSize: Size (200, 60),
+                  padding: EdgeInsets.symmetric(
+                    horizontal: 40,
+                    vertical: 20,
+                  ),
+                  foregroundColor: Theme.of(context).brightness == Brightness.dark
+                    ? Colors.white
+                    : Color(0xFF3A3A3A),
+                  ),
+                  onPressed: () {
+                    Navigator.pushNamed(context, '/startpage');
+                  },
+                  child: Text('Return to Starting Page',
+                    style: TextStyle(
+                      fontSize: 20,
+                    )
+                  ),
+                ),
               ],
             ),
           ),

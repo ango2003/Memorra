@@ -70,15 +70,7 @@ class _ListPageState extends State<ListPage> {
         ],
       ),
       bottomNavigationBar: NavBar(
-        currentIndex: 2,
-        onTap: (index) {
-          if (index == 0) {
-            Navigator.pushNamed(context, '/homepage');
-          }
-          else if (index == 1) {
-            Navigator.pushNamed(context, '/profilepage');
-          }
-        },
+        currentIndex: 3,
       ),
     );
   }

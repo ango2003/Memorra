@@ -186,7 +186,6 @@ class _LogInPageState extends State<LogInPage> {
                 _isLoading
                    ? const CircularProgressIndicator()
                    : SizedBox(
-                       width: double.infinity,
                        child: ElevatedButton(
                         style: ElevatedButton.styleFrom(
                           minimumSize: Size (200, 60),
@@ -199,9 +198,36 @@ class _LogInPageState extends State<LogInPage> {
                           : Color(0xFF3A3A3A),
                         ),
                          onPressed: _isLoading ? null : logIn,
-                         child: const Text("Log In"),
+                         child: const Text("Log In",
+                          style: TextStyle(
+                            fontSize: 20,
+                          )
+                         ),
                        ),
                      ),
+
+                const SizedBox(height: 24),
+
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                  minimumSize: Size (200, 60),
+                  padding: EdgeInsets.symmetric(
+                    horizontal: 40,
+                    vertical: 20,
+                  ),
+                  foregroundColor: Theme.of(context).brightness == Brightness.dark
+                    ? Colors.white
+                    : Color(0xFF3A3A3A),
+                  ),
+                  onPressed: () {
+                    Navigator.pushNamed(context, '/startpage');
+                  },
+                  child: Text('Return to Starting Page',
+                    style: TextStyle(
+                      fontSize: 20,
+                    )
+                  ),
+                ),
               ],
             ),
           ),
