@@ -325,6 +325,27 @@ class _SignUpPageState extends State<SignUpPage> {
 
                   SizedBox(height: 24),
 
+                  // GOOGLE SIGN-IN BUTTON
+                  _isLoading
+                  ? const CircularProgressIndicator()
+                  : ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      minimumSize: Size(200, 60),
+                      padding: EdgeInsets.symmetric(
+                        horizontal: 40, vertical: 20),
+                      foregroundColor:Theme.of(context).brightness == Brightness.dark
+                      ? Colors.white
+                      : Color(0xFF3A3A3A),
+                    ),
+                      onPressed: signInWithGoogle,
+                      child: Text(
+                        'Continue with Google',
+                        style: TextStyle(fontSize: 20),
+                      ),
+                    ),
+
+                  const SizedBox(height: 24),
+
                   // RETURN BUTTON
                   ElevatedButton(
                     style: ElevatedButton.styleFrom(
@@ -344,32 +365,6 @@ class _SignUpPageState extends State<SignUpPage> {
                       style: TextStyle(fontSize: 20),
                     ),
                   ),
-
-                  SizedBox(height: 24),
-
-                  // GOOGLE SIGN-IN BUTTON
-                  _isLoading
-                      ? const CircularProgressIndicator()
-                      : SizedBox(
-                          width: double.infinity,
-                          child: ElevatedButton(
-                            style: ElevatedButton.styleFrom(
-                              minimumSize: Size(200, 60),
-                              padding: EdgeInsets.symmetric(
-                                  horizontal: 40, vertical: 20),
-                              foregroundColor:
-                                  Theme.of(context).brightness ==
-                                          Brightness.dark
-                                      ? Colors.white
-                                      : Color(0xFF3A3A3A),
-                            ),
-                            onPressed: signInWithGoogle,
-                            child: Text(
-                              'Continue with Google',
-                              style: TextStyle(fontSize: 20),
-                            ),
-                          ),
-                        ),
                 ],
               ),
             ),
