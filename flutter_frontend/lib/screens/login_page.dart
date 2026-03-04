@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_frontend/auth_service.dart';
 import 'package:flutter_frontend/screens/home_page.dart';
+import 'package:flutter_frontend/google_service.dart';
 
 class LogInPage extends StatefulWidget {
   const LogInPage({super.key});
@@ -43,6 +44,30 @@ class _LogInPageState extends State<LogInPage> {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(e.toString())),
+      );
+    } finally {
+      if (mounted) {
+        setState(() => _isLoading = false);
+      }
+    }
+  }
+
+  Future<void> signInWithGoogle() async {
+    setState(() => _isLoading = true);
+
+    try {
+      final user = await GoogleService().signInWithGoogle();
+
+      if (!mounted || user == null) {
+        return;
+      }
+      Navigator.pushReplacement(
+        context, MaterialPageRoute(builder: (_) => HomePage(userId: user.uid))
+      );
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Google Sign-In failed: ${e.toString()}')),
       );
     } finally {
       if (mounted) {
@@ -104,8 +129,12 @@ class _LogInPageState extends State<LogInPage> {
                 // EMAIL
                 TextFormField(
                   controller: _emailController,
-                 keyboardType: TextInputType.emailAddress,
-                 decoration: InputDecoration(
+                  keyboardType: TextInputType.emailAddress,
+                  style: TextStyle(
+                    color: Color(0xFF3A3A3A),
+                  ),
+                  cursorColor: Color(0xFF3A3A3A),
+                  decoration: InputDecoration(
                     labelText: "example@email.com",
                     labelStyle: TextStyle(
                       color:  Color(0xFF3A3A3A),
@@ -145,6 +174,10 @@ class _LogInPageState extends State<LogInPage> {
                TextFormField(
                  controller: _passwordController,
                  obscureText: _obscurePassword,
+                 style: TextStyle(
+                    color: Color(0xFF3A3A3A),
+                  ),
+                  cursorColor: Color(0xFF3A3A3A),
                  decoration: InputDecoration(
                     labelText: "Example1!",
                     labelStyle: TextStyle(
@@ -186,7 +219,6 @@ class _LogInPageState extends State<LogInPage> {
                 _isLoading
                    ? const CircularProgressIndicator()
                    : SizedBox(
-                       width: double.infinity,
                        child: ElevatedButton(
                         style: ElevatedButton.styleFrom(
                           minimumSize: Size (200, 60),
@@ -199,9 +231,60 @@ class _LogInPageState extends State<LogInPage> {
                           : Color(0xFF3A3A3A),
                         ),
                          onPressed: _isLoading ? null : logIn,
-                         child: const Text("Log In"),
+                         child: const Text("Log In",
+                          style: TextStyle(
+                            fontSize: 20,
+                          )
+                         ),
                        ),
                      ),
+
+                const SizedBox(height: 24),
+
+                _isLoading
+                  ? const CircularProgressIndicator()
+                  : ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      minimumSize: Size (200, 60),
+                      padding: EdgeInsets.symmetric(
+                        horizontal: 40,
+                        vertical: 20,
+                      ),
+                      foregroundColor: Theme.of(context).brightness == Brightness.dark
+                      ? Colors.white
+                      : Color(0xFF3A3A3A),
+                    ),
+                    onPressed: signInWithGoogle,
+                    child: Text('Sign Up with Google',
+                      style: TextStyle(
+                        fontSize: 20,
+                      )
+                    ),
+                  ),
+
+                const SizedBox(height: 24),
+
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                  minimumSize: Size (200, 60),
+                  padding: EdgeInsets.symmetric(
+                    horizontal: 40,
+                    vertical: 20,
+                  ),
+                  foregroundColor: Theme.of(context).brightness == Brightness.dark
+                    ? Colors.white
+                    : Color(0xFF3A3A3A),
+                  ),
+                  onPressed: () {
+                    Navigator.pushNamed(context, '/startpage');
+                  },
+                  child: Text('Return to Starting Page',
+                    style: TextStyle(
+                      fontSize: 20,
+                    )
+                  ),
+                ),
+
               ],
             ),
           ),

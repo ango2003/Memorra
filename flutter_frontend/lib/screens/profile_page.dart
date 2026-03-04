@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_frontend/auth_service.dart';
 import 'package:flutter_frontend/screens/start_page.dart';
+import 'package:flutter_frontend/screens/widgets/nav_bar.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
@@ -80,6 +81,9 @@ class _ProfilePageState extends State<ProfilePage> {
             ]
           ),
         ),
+      ),
+      bottomNavigationBar: NavBar(
+        currentIndex: 4,
       ),
     );
   }

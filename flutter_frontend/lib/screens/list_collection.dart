@@ -1,10 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+<<<<<<< HEAD
 import 'package:flutter_frontend/screens/list_page.dart';
+=======
+import 'package:flutter_frontend/screens/widgets/nav_bar.dart';
+>>>>>>> origin/main
 
-class ListCollection extends StatelessWidget {
-  const ListCollection({super.key});
+class ListCollectionPage extends StatelessWidget {
+  const ListCollectionPage({super.key});
 
   void createNewList(BuildContext context) {
     final controller = TextEditingController();
@@ -108,13 +112,25 @@ class ListCollection extends StatelessWidget {
                   onPressed: () => deleteList(context, listID), // Call deleteList when delete button is pressed
                 ),
                 onTap: () {
+<<<<<<< HEAD
                   Navigator.push(context, MaterialPageRoute(builder: (context) => ListPage(listID: listID)), // Navigate to ListPage when a list is tapped
+=======
+                  Navigator.pushReplacementNamed(context, '/listpage', // Navigate to ListPage when a list is tapped
+                    arguments: {
+                      'userID': userID,
+                      'listID': listID,
+                      'giftRecipient': data['gift_recipient'],
+                    }
+>>>>>>> origin/main
                   );
                 }
               );
             },
           );
         },
+      ),
+      bottomNavigationBar: NavBar(
+        currentIndex: 3,
       ),
     );
   }
