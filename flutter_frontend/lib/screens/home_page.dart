@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'widgets/nav_bar.dart';
 
 class HomePage extends StatelessWidget {
   final String userId;
@@ -20,9 +21,11 @@ class HomePage extends StatelessWidget {
               },
               child: Text("Go To Profile"),
             ),
-          ],)
-        
-       
+          ],
+        ),
+      ),
+      bottomNavigationBar: NavBar(
+        currentIndex: 2
       ),
     );
   }

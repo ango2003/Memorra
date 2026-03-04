@@ -10,6 +10,7 @@ import 'screens/home_page.dart';
 import 'screens/profile_page.dart';
 import 'screens/list_page.dart';
 import 'screens/list_collection.dart';
+import 'screens/filler_page.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -31,17 +32,42 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       routes: 
       {
+        '/startpage': (context) => const StartPage(),
         '/homepage': (context) => const HomePage(userId: ' ',),
         '/profilepage': (context) => const ProfilePage(),
         '/loginpage': (context) => const LogInPage(),
         '/signuppage': (context) => const SignUpPage(),
         '/listpage': (context) => const ListPage(),
-        '/listcollection': (context) => const ListCollection(),
+        '/listcollection': (context) => const ListCollectionPage(),
+        '/wip': (context) => const FillerPage(userId: ' ',),
+      },
+      onGenerateRoute: (settings) {
+        return PageRouteBuilder(
+          settings: settings,
+          pageBuilder: (_, __, ___) {
+            switch (settings.name) {
+              case '/homepage':
+                final userId = settings.arguments as String;
+                return HomePage(userId: userId);
+              case '/profilepage':
+                return const ProfilePage();
+              case '/listcollection':
+                return const ListCollectionPage();
+              case '/wip':
+                final userId = settings.arguments as String;
+                return FillerPage(userId: userId);
+              default:
+                return const StartPage();
+            }
+          },
+          transitionDuration: Duration.zero,
+          reverseTransitionDuration: Duration.zero,
+        );
       },
       theme: ThemeData.light(),
       darkTheme: ThemeData.dark(),
-      themeMode: ThemeMode.system,
-      
+      themeMode: ThemeMode.dark,
+      //themeMode: ThemeMode.system,
       //Authentication for User Login
       home: StreamBuilder<User?>(
         stream: FirebaseAuth.instance.authStateChanges(),
@@ -66,6 +92,3 @@ class MyApp extends StatelessWidget {
     );
   }
 }
-
-
-    

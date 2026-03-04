@@ -129,8 +129,12 @@ class _LogInPageState extends State<LogInPage> {
                 // EMAIL
                 TextFormField(
                   controller: _emailController,
-                 keyboardType: TextInputType.emailAddress,
-                 decoration: InputDecoration(
+                  keyboardType: TextInputType.emailAddress,
+                  style: TextStyle(
+                    color: Color(0xFF3A3A3A),
+                  ),
+                  cursorColor: Color(0xFF3A3A3A),
+                  decoration: InputDecoration(
                     labelText: "example@email.com",
                     labelStyle: TextStyle(
                       color:  Color(0xFF3A3A3A),
@@ -170,6 +174,10 @@ class _LogInPageState extends State<LogInPage> {
                TextFormField(
                  controller: _passwordController,
                  obscureText: _obscurePassword,
+                 style: TextStyle(
+                    color: Color(0xFF3A3A3A),
+                  ),
+                  cursorColor: Color(0xFF3A3A3A),
                  decoration: InputDecoration(
                     labelText: "Example1!",
                     labelStyle: TextStyle(
@@ -211,7 +219,6 @@ class _LogInPageState extends State<LogInPage> {
                 _isLoading
                    ? const CircularProgressIndicator()
                    : SizedBox(
-                       width: double.infinity,
                        child: ElevatedButton(
                         style: ElevatedButton.styleFrom(
                           minimumSize: Size (200, 60),
@@ -224,7 +231,11 @@ class _LogInPageState extends State<LogInPage> {
                           : Color(0xFF3A3A3A),
                         ),
                          onPressed: _isLoading ? null : logIn,
-                         child: const Text("Log In"),
+                         child: const Text("Log In",
+                          style: TextStyle(
+                            fontSize: 20,
+                          )
+                         ),
                        ),
                      ),
 
@@ -232,27 +243,48 @@ class _LogInPageState extends State<LogInPage> {
 
                 _isLoading
                   ? const CircularProgressIndicator()
-                  : SizedBox(
-                    width: double.infinity,
-                    child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        minimumSize: Size (200, 60),
-                        padding: EdgeInsets.symmetric(
-                          horizontal: 40,
-                          vertical: 20,
-                        ),
-                        foregroundColor: Theme.of(context).brightness == Brightness.dark
-                        ? Colors.white
-                        : Color(0xFF3A3A3A),
+                  : ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      minimumSize: Size (200, 60),
+                      padding: EdgeInsets.symmetric(
+                        horizontal: 40,
+                        vertical: 20,
                       ),
-                      onPressed: signInWithGoogle,
-                      child: Text('Sign Up with Google',
-                        style: TextStyle(
-                          fontSize: 20,
-                        )
-                      ),
+                      foregroundColor: Theme.of(context).brightness == Brightness.dark
+                      ? Colors.white
+                      : Color(0xFF3A3A3A),
+                    ),
+                    onPressed: signInWithGoogle,
+                    child: Text('Sign Up with Google',
+                      style: TextStyle(
+                        fontSize: 20,
+                      )
+                    ),
+                  ),
+
+                const SizedBox(height: 24),
+
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                  minimumSize: Size (200, 60),
+                  padding: EdgeInsets.symmetric(
+                    horizontal: 40,
+                    vertical: 20,
+                  ),
+                  foregroundColor: Theme.of(context).brightness == Brightness.dark
+                    ? Colors.white
+                    : Color(0xFF3A3A3A),
+                  ),
+                  onPressed: () {
+                    Navigator.pushNamed(context, '/startpage');
+                  },
+                  child: Text('Return to Starting Page',
+                    style: TextStyle(
+                      fontSize: 20,
                     )
                   ),
+                ),
+
               ],
             ),
           ),
