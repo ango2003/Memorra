@@ -37,7 +37,6 @@ class MyApp extends StatelessWidget {
         '/profilepage': (context) => const ProfilePage(),
         '/loginpage': (context) => const LogInPage(),
         '/signuppage': (context) => const SignUpPage(),
-        '/listpage': (context) => const ListPage(),
         '/listcollection': (context) => const ListCollectionPage(),
         '/wip': (context) => const FillerPage(userId: ' ',),
       },
