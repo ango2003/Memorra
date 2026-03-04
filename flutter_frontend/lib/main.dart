@@ -37,10 +37,6 @@ class MyApp extends StatelessWidget {
         '/profilepage': (context) => const ProfilePage(),
         '/loginpage': (context) => const LogInPage(),
         '/signuppage': (context) => const SignUpPage(),
-<<<<<<< HEAD
-        '/listcollection': (context) => const ListCollection(),
-=======
-        '/listpage': (context) => const ListPage(),
         '/listcollection': (context) => const ListCollectionPage(),
         '/wip': (context) => const FillerPage(userId: ' ',),
       },
@@ -66,7 +62,6 @@ class MyApp extends StatelessWidget {
           transitionDuration: Duration.zero,
           reverseTransitionDuration: Duration.zero,
         );
->>>>>>> origin/main
       },
       theme: ThemeData.light(),
       darkTheme: ThemeData.dark(),

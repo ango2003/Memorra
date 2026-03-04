@@ -1,10 +1,7 @@
 import 'package:flutter/material.dart';
-<<<<<<< HEAD
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-=======
 import 'widgets/nav_bar.dart';
->>>>>>> origin/main
 
 class ListPage extends StatefulWidget {
   final String listID;
