@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter_frontend/screens/widgets/nav_bar.dart';
 
-class ListCollection extends StatelessWidget {
-  const ListCollection({super.key});
+class ListCollectionPage extends StatelessWidget {
+  const ListCollectionPage({super.key});
 
   void createNewList(BuildContext context) {
     final controller = TextEditingController();
@@ -119,6 +120,9 @@ class ListCollection extends StatelessWidget {
             },
           );
         },
+      ),
+      bottomNavigationBar: NavBar(
+        currentIndex: 3,
       ),
     );
   }
