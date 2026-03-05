@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'widgets/nav_bar.dart';
+import 'widgets/nav_bar.dart';
 
 class HomePage extends StatelessWidget {
   final String userId;
@@ -8,25 +9,22 @@ class HomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            colors: Theme.of(context).brightness == Brightness.dark 
-            ? [
-                Color(0xFF0A6F85),
-                Color(0xFF071F4A),
-              ]
-            : [
-                Color(0xFF3F6BB5),
-                Color(0xFF0A8C7A),
-              ],
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-          ),
-        ),
-      ),
-      bottomNavigationBar: NavBar(
-        currentIndex: 2
+      appBar: AppBar(title: Text("Home Page")),
+      body: Center(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text('Welcome! Your UID is: $userId'),
+            SizedBox(height: 8),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.pushNamed(context, '/profilepage');
+              },
+              child: Text("Go To Profile"),
+            ),
+          ],)
+        
+       
       ),
     );
   }
