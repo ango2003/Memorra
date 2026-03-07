@@ -141,10 +141,7 @@ class _ListPageState extends State<ListPage> {
         },
       ),
       bottomNavigationBar: NavBar(
-        currentIndex: 3,
-      ),
-      bottomNavigationBar: NavBar(
-        currentIndex: 3,
+        currentIndex: -1,
       ),
     );
   }

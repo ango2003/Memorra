@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'firebase_options.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-
 import 'screens/start_page.dart';
 import 'screens/login_page.dart';
 import 'screens/sign_up_page.dart';
@@ -18,6 +18,11 @@ void main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+
+  await SystemChrome.setPreferredOrientations([
+    DeviceOrientation.portraitUp,
+    DeviceOrientation.portraitDown
+  ]);
 
   runApp(const MyApp());
 }
@@ -38,6 +43,7 @@ class MyApp extends StatelessWidget {
         '/loginpage': (context) => const LogInPage(),
         '/signuppage': (context) => const SignUpPage(),
         '/listcollection': (context) => const ListCollectionPage(),
+        '/listpage': (context) => const ListPage(listID: ' ',),
         '/wip': (context) => const FillerPage(userId: ' ',),
       },
       onGenerateRoute: (settings) {
@@ -65,8 +71,7 @@ class MyApp extends StatelessWidget {
       },
       theme: ThemeData.light(),
       darkTheme: ThemeData.dark(),
-      themeMode: ThemeMode.dark,
-      //themeMode: ThemeMode.system,
+      themeMode: ThemeMode.system,
       //Authentication for User Login
       home: StreamBuilder<User?>(
         stream: FirebaseAuth.instance.authStateChanges(),
