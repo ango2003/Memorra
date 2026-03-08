@@ -15,7 +15,7 @@ class ListCollectionPage extends StatelessWidget {
         title: Text("Create New List"),
         content: TextField(
           controller: controller,
-          decoration: InputDecoration(hintText: "Gift Recipient"),
+          decoration: InputDecoration(hintText: "Reminder Recipient"),
         ),
         actions: [
           TextButton(
@@ -27,13 +27,13 @@ class ListCollectionPage extends StatelessWidget {
           ElevatedButton(
             onPressed: () async {
               final userID = FirebaseAuth.instance.currentUser!.uid;
-              final giftRecipient = controller.text.trim();
-              if (giftRecipient.isNotEmpty) {
+              final reminderRecipient = controller.text.trim();
+              if (reminderRecipient.isNotEmpty) {
                 await FirebaseFirestore.instance
                     .collection('accounts')
                     .doc(userID)
-                    .collection('gift_lists')
-                    .add({'gift_recipient': giftRecipient});
+                    .collection('reminder_lists')
+                    .add({'reminder_recipient': reminderRecipient});
                 Navigator.pop(context);
               }
             },
@@ -63,7 +63,7 @@ class ListCollectionPage extends StatelessWidget {
               await FirebaseFirestore.instance
                   .collection('accounts')
                   .doc(userID)
-                  .collection('gift_lists')
+                  .collection('reminder_lists')
                   .doc(listID)
                   .delete();
               Navigator.pop(context);
@@ -90,12 +90,12 @@ class ListCollectionPage extends StatelessWidget {
         stream: FirebaseFirestore.instance // Access Firestore instance
             .collection('accounts')
             .doc(userID)
-            .collection('gift_lists')
+            .collection('reminder_lists')
             .snapshots(),
         builder: (context, snapshot) {
           if (!snapshot.hasData) return const Center(child: CircularProgressIndicator()); // Show loading indicator while fetching data
 
-          final docs = snapshot.data!.docs; // Get list of documents in the 'gift_lists' collection
+          final docs = snapshot.data!.docs; // Get list of documents in the 'reminder_lists' collection
           
           return ListView.builder(
             itemCount: docs.length,
