@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'widgets/home_tile.dart';
-import 'widgets/nav_bar.dart';
+import '../widgets/home_tile.dart';
+import '../widgets/nav_bar.dart';
 
 class HomePage extends StatelessWidget {
   final String userId;

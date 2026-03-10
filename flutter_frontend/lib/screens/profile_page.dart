@@ -1,8 +1,7 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_frontend/auth_service.dart';
+import 'package:flutter_frontend/services/auth_service.dart';
 import 'package:flutter_frontend/screens/start_page.dart';
-import 'package:flutter_frontend/screens/widgets/nav_bar.dart';
+import 'package:flutter_frontend/widgets/nav_bar.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
@@ -11,9 +10,7 @@ class ProfilePage extends StatefulWidget {
   State<ProfilePage> createState() => _ProfilePageState();
 }
 
-// Class need Auth refinement
 class _ProfilePageState extends State<ProfilePage> {
-  final AuthService _authService = AuthService();
   bool _isLoading = false;
   
   // Sign Out Function
@@ -22,20 +19,18 @@ class _ProfilePageState extends State<ProfilePage> {
     setState(() => _isLoading = true);
 
     try {
-    
+      await authService.value.signOut();
+      
       if (!mounted) return;
-
-      await _authService.signOut();
-
-      if (!mounted) return;
-
-      Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: (_) => StartPage()),
+      
+      Navigator.of(context).pushAndRemoveUntil(
+        MaterialPageRoute(builder: (_) => const StartPage()),
+        (route) => false,
       );
-    } on FirebaseAuthException catch (e) {
+    } catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Sign out failed: ${e.message}')),
+        SnackBar(content: Text('Sign out failed')),
       );
     } finally {
       if (mounted) {
@@ -53,35 +48,17 @@ class _ProfilePageState extends State<ProfilePage> {
           padding: EdgeInsets.all(24),
           child: Column(
             mainAxisSize: MainAxisSize.min,
-            children:[
+            children: [
               ElevatedButton(
-                onPressed: () {
-                  Navigator.pushNamed(context, '/homepage');
-                },
-                child: Text("Go To Home"),
-              ),
-              SizedBox(height: 20),
-              ElevatedButton(
-                onPressed: () {
-                  Navigator.pushNamed(context, '/listcollection');
-                },
-                child: Text("Gift Lists"),
-              ),
-              SizedBox(height: 20),
-              ElevatedButton(
-                onPressed: ()async {
-                  await authService.value.signOut();
-                  Navigator.of(context).pushAndRemoveUntil(
-                  MaterialPageRoute(builder: (context) => StartPage()),
-                  (Route<dynamic> route) => false,
-                );
-                },
-                child: Text("Sign Out"),
+                onPressed: _isLoading ? null : () { signOut(); },
+                child: _isLoading
+                  ? CircularProgressIndicator()
+                  : const Text("Sign Out"),
               )
             ]
           ),
         ),
-      ),
+      ),       
       bottomNavigationBar: NavBar(
         currentIndex: 4,
       ),

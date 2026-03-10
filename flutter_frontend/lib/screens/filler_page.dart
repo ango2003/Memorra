@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'widgets/nav_bar.dart';
+import '../widgets/nav_bar.dart';
 
 class FillerPage extends StatelessWidget {
   final String userId;

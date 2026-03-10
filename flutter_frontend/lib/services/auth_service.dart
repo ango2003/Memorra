@@ -5,7 +5,8 @@ import 'package:flutter/material.dart';
 ValueNotifier<AuthService> authService = ValueNotifier(AuthService());
 
 class AuthService {
-  final firebaseAuth = FirebaseAuth.instance;
+  final FirebaseAuth firebaseAuth = FirebaseAuth.instance;
+  final FirebaseFirestore firestore = FirebaseFirestore.instance;
 
   User? get currentUser => firebaseAuth.currentUser;
 
@@ -51,7 +52,10 @@ class AuthService {
     required String password,
   }) async {
     try {
-      UserCredential userCredential = await FirebaseAuth.instance.signInWithEmailAndPassword(email: email, password: password);
+      UserCredential userCredential = await FirebaseAuth.instance.signInWithEmailAndPassword(
+        email: email, 
+        password: password
+      );
 
       final user = userCredential.user;
       if (user == null) {
@@ -89,21 +93,32 @@ class AuthService {
     required String email,
     required String password,
   }) async {
-    AuthCredential credential =
+    final user = currentUser;
+
+    if (user == null) {
+      throw Exception('User is not signed in.');
+    }
+
+    final credential =
       EmailAuthProvider.credential(email: email, password: password);
-    await currentUser!.reauthenticateWithCredential(credential);
-    await currentUser!.delete();
+    await user.reauthenticateWithCredential(credential);
+    await user.delete();
     await firebaseAuth.signOut();
   }
 
-  Future<void> changePasswordFromCurrentPassword({
+  Future<void> changePassword({
     required String email,
     required String newPassword,
     required String currentPassword,
   }) async {
+    final user = currentUser;
+
+    if (user == null) {
+      throw Exception('User is not signed in.');
+    }
     AuthCredential credential =
       EmailAuthProvider.credential(email: email, password: currentPassword);
-    await currentUser!.reauthenticateWithCredential(credential);
-    await currentUser!.updatePassword(newPassword); 
+    await user.reauthenticateWithCredential(credential);
+    await user.updatePassword(newPassword); 
   }
 }

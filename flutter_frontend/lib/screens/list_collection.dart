@@ -1,14 +1,17 @@
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_frontend/screens/list_page.dart';
-import 'package:flutter_frontend/screens/widgets/nav_bar.dart';
+import 'package:flutter_frontend/widgets/nav_bar.dart';
+import 'package:flutter_frontend/services/gift_service.dart';
+import '../models/gift_list_model.dart';
 
 class ListCollectionPage extends StatelessWidget {
-  const ListCollectionPage({super.key});
+  ListCollectionPage({super.key});
+  
+  final giftService = GiftService.instance;
 
   void createNewList(BuildContext context) {
     final controller = TextEditingController();
+    
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -26,15 +29,13 @@ class ListCollectionPage extends StatelessWidget {
           ),
           ElevatedButton(
             onPressed: () async {
-              final userID = FirebaseAuth.instance.currentUser!.uid;
               final giftRecipient = controller.text.trim();
+
               if (giftRecipient.isNotEmpty) {
-                await FirebaseFirestore.instance
-                    .collection('accounts')
-                    .doc(userID)
-                    .collection('gift_lists')
-                    .add({'gift_recipient': giftRecipient});
-                Navigator.pop(context);
+                await giftService.addGiftList(giftRecipient);
+                if (context.mounted) {
+                  Navigator.pop(context);
+                }
               }
             },
             child: Text("Create"),
@@ -59,14 +60,10 @@ class ListCollectionPage extends StatelessWidget {
           ),
           ElevatedButton(
             onPressed: () async {
-              final userID = FirebaseAuth.instance.currentUser!.uid;
-              await FirebaseFirestore.instance
-                  .collection('accounts')
-                  .doc(userID)
-                  .collection('gift_lists')
-                  .doc(listID)
-                  .delete();
-              Navigator.pop(context);
+              await giftService.deleteGiftList(listID);
+              if (context.mounted) {
+                Navigator.pop(context);
+              }
             },
             child: Text("Delete"),
           ),
@@ -77,39 +74,34 @@ class ListCollectionPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    
-    final userID = FirebaseAuth.instance.currentUser!.uid; // Get current user's UID
 
     return Scaffold(
-      appBar: AppBar(title: Text("My lists")),
+      appBar: AppBar(title: Text("My Gift Lists")),
       floatingActionButton: FloatingActionButton(
         onPressed: () => createNewList(context), // Call createNewList when FAB is pressed
         child: Icon(Icons.add),
       ),
-      body: StreamBuilder<QuerySnapshot>(
-        stream: FirebaseFirestore.instance // Access Firestore instance
-            .collection('accounts')
-            .doc(userID)
-            .collection('gift_lists')
-            .snapshots(),
+      body: StreamBuilder<List<GiftList>>(
+        stream: giftService.getGiftLists(), 
         builder: (context, snapshot) {
-          if (!snapshot.hasData) return const Center(child: CircularProgressIndicator()); // Show loading indicator while fetching data
-
-          final docs = snapshot.data!.docs; // Get list of documents in the 'gift_lists' collection
+          if (!snapshot.hasData) 
+          {
+            return const Center(child: CircularProgressIndicator()); 
+          }
+          final lists = snapshot.data!; // Get list of documents in the 'gift_lists' collection
           
           return ListView.builder(
-            itemCount: docs.length,
+            itemCount: lists.length,
             itemBuilder: (context, index) {
-              final data = docs[index].data() as Map<String, dynamic>; // Get data of each document as a Map
-              final listID = docs[index].id;
+              final list = lists[index]; // Get data of each document as a Map
               return ListTile(
-                title: Text(data['gift_recipient']),
+                title: Text(list.recipient),
                 trailing: IconButton(
-                  icon: Icon(Icons.delete, color: Colors.red),
-                  onPressed: () => deleteList(context, listID), // Call deleteList when delete button is pressed
+                  icon: const Icon(Icons.delete, color: Colors.red),
+                  onPressed: () => deleteList(context, list.id), // Call deleteList when delete button is pressed
                 ),
                 onTap: () {
-                  Navigator.push(context, MaterialPageRoute(builder: (context) => ListPage(listID: listID)), // Navigate to ListPage when a list is tapped
+                  Navigator.push(context, MaterialPageRoute(builder: (context) => ListPage(listID: list.id)), // Navigate to ListPage when a list is tapped
                   );
                 }
               );
