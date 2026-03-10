@@ -49,7 +49,7 @@ class _SignUpPageState extends State<SignUpPage> {
       );
       return;
     }
-  
+    
     setState(() => _isLoading = true);
 
     try {
@@ -368,7 +368,7 @@ class _SignUpPageState extends State<SignUpPage> {
                 ],
               ),
             ),
-          ),
+          ), 
         ),
       ),
     );
