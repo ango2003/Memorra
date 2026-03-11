@@ -3,6 +3,7 @@ import '../home_page.dart';
 import '../profile_page.dart';
 import '../list_collection.dart';
 import '../filler_page.dart';
+import '../reminder_collection.dart';
 import 'dart:ui';
 
 class NavBar extends StatelessWidget {
@@ -95,7 +96,7 @@ class NavBar extends StatelessWidget {
                   target = FillerPage(userId: ' ',);
                 }
                 else if (index == 1) {
-                  target = FillerPage(userId: ' ',);
+                  target = ReminderCollectionPage();
                 }
                 else if (index == 2) {
                   target = HomePage(userId: ' ',);

@@ -48,8 +48,8 @@ class ListCollectionPage extends StatelessWidget {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text("Delete List"),
-        content: Text("Are you sure you want to delete this list?"),
+        title: Text("Delete Reminder"),
+        content: Text("Are you sure you want to delete this reminder?"),
         actions: [
           TextButton(
             onPressed: () {

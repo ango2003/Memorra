@@ -10,6 +10,7 @@ import 'screens/home_page.dart';
 import 'screens/profile_page.dart';
 import 'screens/list_page.dart';
 import 'screens/list_collection.dart';
+import 'screens/reminder_collection.dart';
 import 'screens/filler_page.dart';
 
 void main() async {
@@ -43,6 +44,7 @@ class MyApp extends StatelessWidget {
         '/loginpage': (context) => const LogInPage(),
         '/signuppage': (context) => const SignUpPage(),
         '/listcollection': (context) => const ListCollectionPage(),
+        '/remindercollection': (context) => const ReminderCollectionPage(),
         '/listpage': (context) => const ListPage(listID: ' ',),
         '/wip': (context) => const FillerPage(userId: ' ',),
       },
