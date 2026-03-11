@@ -37,27 +37,28 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       routes: 
       {
-        '/startpage': (context) => const StartPage(),
-        '/homepage': (context) => const HomePage(userId: ' ',),
-        '/profilepage': (context) => const ProfilePage(),
-        '/loginpage': (context) => const LogInPage(),
-        '/signuppage': (context) => const SignUpPage(),
-        '/listcollection': (context) => const ListCollectionPage(),
-        '/listpage': (context) => const ListPage(listID: ' ',),
-        '/wip': (context) => const FillerPage(userId: ' ',),
+        '/startpage': (_) => const StartPage(),
+        '/profilepage': (_) => const ProfilePage(),
+        '/loginpage': (_) => const LogInPage(),
+        '/signuppage': (_) => const SignUpPage(),
+        '/listcollection': (_) => ListCollectionPage(),
       },
+      
       onGenerateRoute: (settings) {
         return PageRouteBuilder(
           settings: settings,
-          pageBuilder: (_, __, ___) {
+          pageBuilder: (_, _, _) {
             switch (settings.name) {
               case '/homepage':
                 final userId = settings.arguments as String;
                 return HomePage(userId: userId);
+              case '/listpage':
+                final listId = settings.arguments as String;
+                return ListPage(listID: listId);
+              case '/listcollection':
+                return ListCollectionPage();
               case '/profilepage':
                 return const ProfilePage();
-              case '/listcollection':
-                return const ListCollectionPage();
               case '/wip':
                 final userId = settings.arguments as String;
                 return FillerPage(userId: userId);
@@ -75,7 +76,7 @@ class MyApp extends StatelessWidget {
       //Authentication for User Login
       home: StreamBuilder<User?>(
         stream: FirebaseAuth.instance.authStateChanges(),
-        builder: (BuildContext context, AsyncSnapshot<User?> snapshot) {
+        builder: (context, snapshot) {
           if (snapshot.hasError) {
             return const Scaffold(body: Center(child: Text('Something went wrong')));
           }

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import '../home_page.dart';
-import '../profile_page.dart';
-import '../list_collection.dart';
-import '../filler_page.dart';
+import '../screens/home_page.dart';
+import '../screens/profile_page.dart';
+import '../screens/list_collection.dart';
+import '../screens/filler_page.dart';
 import 'dart:ui';
 
 class NavBar extends StatelessWidget {
@@ -110,7 +110,7 @@ class NavBar extends StatelessWidget {
                   return;
                 }
                 Navigator.of(context).pushReplacement(PageRouteBuilder(
-                  pageBuilder: (_, __, ___) => target,
+                  pageBuilder: (_, _, _) => target,
                   transitionDuration: Duration.zero,
                   reverseTransitionDuration: Duration.zero,
                 ));

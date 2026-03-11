@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_frontend/screens/list_page.dart';
-import 'package:flutter_frontend/screens/widgets/nav_bar.dart';
+import 'package:flutter_frontend/widgets/nav_bar.dart';
 
 class ListCollectionPage extends StatelessWidget {
   const ListCollectionPage({super.key});
@@ -34,7 +34,9 @@ class ListCollectionPage extends StatelessWidget {
                     .doc(userID)
                     .collection('reminder_lists')
                     .add({'reminder_recipient': reminderRecipient});
-                Navigator.pop(context);
+                if (context.mounted) {
+                  Navigator.pop(context);
+                }
               }
             },
             child: Text("Create"),
@@ -66,7 +68,9 @@ class ListCollectionPage extends StatelessWidget {
                   .collection('reminder_lists')
                   .doc(listID)
                   .delete();
-              Navigator.pop(context);
+              if (context.mounted) {
+                Navigator.pop(context);
+              }
             },
             child: Text("Delete"),
           ),

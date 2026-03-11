@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_frontend/auth_service.dart';
-import 'package:flutter_frontend/google_service.dart';
+import 'package:flutter_frontend/services/auth_service.dart';
+import 'package:flutter_frontend/services/google_service.dart';
 
 class SignUpPage extends StatefulWidget {
   const SignUpPage({super.key});
@@ -339,7 +339,7 @@ class _SignUpPageState extends State<SignUpPage> {
                     ),
                       onPressed: signInWithGoogle,
                       child: Text(
-                        'Continue with Google',
+                        'Sign up with Google',
                         style: TextStyle(fontSize: 20),
                       ),
                     ),
