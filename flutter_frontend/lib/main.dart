@@ -3,6 +3,9 @@ import 'package:flutter/services.dart';
 import 'firebase_options.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:timezone/data/latest_all.dart' as tz;
+import 'package:timezone/timezone.dart' as tz;
+import 'package:flutter_timezone/flutter_timezone.dart';
 import 'screens/start_page.dart';
 import 'screens/login_page.dart';
 import 'screens/sign_up_page.dart';
@@ -10,8 +13,8 @@ import 'screens/home_page.dart';
 import 'screens/profile_page.dart';
 import 'screens/list_page.dart';
 import 'screens/list_collection.dart';
-import 'screens/reminder_collection.dart';
 import 'screens/filler_page.dart';
+import 'services/notif_service.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -24,6 +27,14 @@ void main() async {
     DeviceOrientation.portraitUp,
     DeviceOrientation.portraitDown
   ]);
+
+  tz.initializeTimeZones();
+  
+  // Get the local timezone and set it for the timezone package
+  final timezoneInfo = await FlutterTimezone.getLocalTimezone();
+  tz.setLocalLocation(tz.getLocation(timezoneInfo.identifier));
+
+  await NotifService.instance.init();
 
   runApp(const MyApp());
 }
@@ -38,28 +49,28 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       routes: 
       {
-        '/startpage': (context) => const StartPage(),
-        '/homepage': (context) => const HomePage(userId: ' ',),
-        '/profilepage': (context) => const ProfilePage(),
-        '/loginpage': (context) => const LogInPage(),
-        '/signuppage': (context) => const SignUpPage(),
-        '/listcollection': (context) => const ListCollectionPage(),
-        '/remindercollection': (context) => const ReminderCollectionPage(),
-        '/listpage': (context) => const ListPage(listID: ' ',),
-        '/wip': (context) => const FillerPage(userId: ' ',),
+        '/startpage': (_) => const StartPage(),
+        '/profilepage': (_) => const ProfilePage(),
+        '/loginpage': (_) => const LogInPage(),
+        '/signuppage': (_) => const SignUpPage(),
+        '/listcollection': (_) => ListCollectionPage(),
       },
+      
       onGenerateRoute: (settings) {
         return PageRouteBuilder(
           settings: settings,
-          pageBuilder: (_, __, ___) {
+          pageBuilder: (_, _, _) {
             switch (settings.name) {
               case '/homepage':
                 final userId = settings.arguments as String;
                 return HomePage(userId: userId);
+              case '/listpage':
+                final listId = settings.arguments as String;
+                return ListPage(listID: listId);
+              case '/listcollection':
+                return ListCollectionPage();
               case '/profilepage':
                 return const ProfilePage();
-              case '/listcollection':
-                return const ListCollectionPage();
               case '/wip':
                 final userId = settings.arguments as String;
                 return FillerPage(userId: userId);
@@ -77,7 +88,7 @@ class MyApp extends StatelessWidget {
       //Authentication for User Login
       home: StreamBuilder<User?>(
         stream: FirebaseAuth.instance.authStateChanges(),
-        builder: (BuildContext context, AsyncSnapshot<User?> snapshot) {
+        builder: (context, snapshot) {
           if (snapshot.hasError) {
             return const Scaffold(body: Center(child: Text('Something went wrong')));
           }

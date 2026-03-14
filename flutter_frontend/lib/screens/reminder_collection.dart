@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter_frontend/screens/widgets/nav_bar.dart';
+import 'package:flutter_frontend/widgets/nav_bar.dart';
+import 'package:flutter_frontend/services/notif_service.dart';
 
 class ReminderCollectionPage extends StatelessWidget {
   const ReminderCollectionPage({super.key});
@@ -31,6 +32,10 @@ class ReminderCollectionPage extends StatelessWidget {
       time.hour, 
       time.minute
     );
+  }
+
+  int createUniqueID() { // Generate a unique ID based on the current timestamp
+    return DateTime.now().millisecondsSinceEpoch ~/ 1000;
   }
 
   void createNewReminder(BuildContext context ) {
@@ -81,7 +86,12 @@ class ReminderCollectionPage extends StatelessWidget {
             onPressed: () async {
               final userID = FirebaseAuth.instance.currentUser!.uid;
               final reminderListName = controller.text.trim();
+              final int notifID = createUniqueID(); // Generate a unique notification ID for this reminder
               if (reminderListName.isNotEmpty) {
+
+                if (context.mounted) {
+                  Navigator.pop(context);
+                }
                 await FirebaseFirestore.instance
                     .collection('accounts')
                     .doc(userID)
@@ -89,12 +99,20 @@ class ReminderCollectionPage extends StatelessWidget {
                     .add({ // Add both the reminder name and the selected date and time to Firestore
                       'reminder_name': reminderListName,
                       'reminder_date': selectedReminderDate,
+                      'notif_ID': notifID, // Generate a unique notification ID for this reminder
                     });
-                Navigator.pop(context); // Close the dialog after creating the reminder list
+                await NotifService.instance.scheduleNotification( // Schedule a local notification for the selected date and time
+                  id: notifID, // Use the unique notification ID generated for this reminder
+                  title: reminderListName,
+                  body: "You have a reminder set for ${selectedReminderDate.toString()}",
+                  scheduledDate: selectedReminderDate!,
+                );
+                await NotifService.instance.printPendingNotification(); // Print pending notifications to the console for debugging
               }
             },
             child: Text("Create"),
           ),
+          
         ],
       ),
     );
@@ -121,8 +139,10 @@ class ReminderCollectionPage extends StatelessWidget {
                   .doc(userID)
                   .collection('reminder_lists')
                   .doc(reminderListID)
-                  .delete(); // Delete the reminder list document from Firestore
-              Navigator.pop(context);
+                  .delete();
+              if (context.mounted) {
+                Navigator.pop(context);
+              }
             },
             child: Text("Delete"),
           ),
@@ -160,6 +180,9 @@ class ReminderCollectionPage extends StatelessWidget {
               final reminderlistID = docs[index].id;
               return ListTile(
                 title: Text(data['reminder_name']),
+                subtitle: Text(data['reminder_date'] != null 
+                  ? DateTime.parse(data['reminder_date'].toDate().toString()).toLocal().toString() 
+                  : "No date set"),
                 trailing: IconButton(
                   icon: Icon(Icons.delete),
                   onPressed: () => deleteReminder(context, reminderlistID),
