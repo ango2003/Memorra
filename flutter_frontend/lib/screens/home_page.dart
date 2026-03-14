@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'widgets/home_tile.dart';
-import 'widgets/nav_bar.dart';
+import '../widgets/home_tile.dart';
+import '../widgets/nav_bar.dart';
 
 class HomePage extends StatelessWidget {
   final String userId;
@@ -43,10 +43,10 @@ class HomePage extends StatelessWidget {
               Padding(
                 padding: EdgeInsets.symmetric(horizontal: 20, vertical: 30),
                 child: Text(
-                  "How Can We Help " + userId + "?",
+                  "How Can We Help $userId?",
                   textAlign: TextAlign.center,
                   style: TextStyle(
-                    fontSize: fontsize,
+                    fontSize: 75,
                     fontWeight: FontWeight.bold,
                     color: Theme.of(context).brightness == Brightness.dark
                         ? Colors.white

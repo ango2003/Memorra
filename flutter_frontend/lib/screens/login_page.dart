@@ -1,8 +1,7 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_frontend/auth_service.dart';
+import 'package:flutter_frontend/services/auth_service.dart';
 import 'package:flutter_frontend/screens/home_page.dart';
-import 'package:flutter_frontend/google_service.dart';
+import 'package:flutter_frontend/services/google_service.dart';
 
 class LogInPage extends StatefulWidget {
   const LogInPage({super.key});
@@ -15,33 +14,41 @@ class _LogInPageState extends State<LogInPage> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
+
   final AuthService _authService = AuthService();
+
   bool _isLoading = false;
   bool _obscurePassword = true;
 
-  // Login Function
+  @override
+  void dispose() {
+    _emailController.dispose();
+    _passwordController.dispose();
+    super.dispose();
+  }
+
+  // EMAIL/PASSWORD LOGIN
   Future<void> logIn() async {
     if (!_formKey.currentState!.validate()) return;
 
     setState(() => _isLoading = true);
 
     try {
-      
-      if (!mounted) return;
-
-      UserCredential userCredential = await _authService.logIn(
-        email: _emailController.text.trim(), 
+      final userCredential = await _authService.logIn(
+        email: _emailController.text.trim(),
         password: _passwordController.text.trim(),
       );
 
       if (!mounted) return;
 
       Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: (_) => HomePage(userId: userCredential.user!.uid),
+        MaterialPageRoute(
+          builder: (_) => HomePage(userId: userCredential.user!.uid),
         ),
       );
     } catch (e) {
       if (!mounted) return;
+
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(e.toString())),
       );
@@ -52,22 +59,25 @@ class _LogInPageState extends State<LogInPage> {
     }
   }
 
+  // GOOGLE LOGIN
   Future<void> signInWithGoogle() async {
     setState(() => _isLoading = true);
 
     try {
       final user = await GoogleService().signInWithGoogle();
 
-      if (!mounted || user == null) {
-        return;
-      }
-      Navigator.pushReplacement(
-        context, MaterialPageRoute(builder: (_) => HomePage(userId: user.uid))
+      if (!mounted || user == null) return;
+
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute(
+          builder: (_) => HomePage(userId: user.uid),
+        ),
       );
     } catch (e) {
       if (!mounted) return;
+
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Google Sign-In failed: ${e.toString()}')),
+        SnackBar(content: Text('Google Sign-In failed: $e')),
       );
     } finally {
       if (mounted) {
@@ -76,189 +86,145 @@ class _LogInPageState extends State<LogInPage> {
     }
   }
 
+  void _goBack() {
+    Navigator.pushNamed(context, '/startpage');
+  }
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return Scaffold(
       body: Container(
         decoration: BoxDecoration(
           gradient: LinearGradient(
-            colors: Theme.of(context).brightness == Brightness.dark 
-            ? [
-                Color(0xFF237F8F),                 
-                Color(0xFF19365C),
-              ]
-            : [
-                Color(0xFF5A86C4),
-                Color(0xFF8AD7C9),
-              ],
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
+            colors: isDark
+                ? const [
+                    Color(0xFF237F8F),
+                    Color(0xFF19365C),
+                  ]
+                : const [
+                    Color(0xFF5A86C4),
+                    Color(0xFF8AD7C9),
+                  ],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
           ),
         ),
         child: Padding(
-         padding: const EdgeInsets.all(30),
-         child: Form(
-           key: _formKey,
-           child: Column(
-             children: [
-              Text("Login to\nAccount", 
+          padding: const EdgeInsets.all(30),
+          child: Form(
+            key: _formKey,
+            child: Column(
+              children: [
+                Text(
+                  "Login to\nAccount",
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     fontSize: 50,
                     fontWeight: FontWeight.bold,
-                    color: Theme.of(context).brightness == Brightness.dark
-                    ? Colors.white
-                    : Color(0xFF1A3F7A),
-                  )
+                    color: isDark ? Colors.white : const Color(0xFF1A3F7A),
+                  ),
                 ),
-                
-                SizedBox(height: 15),
 
-                Text("Email Address",
+                const SizedBox(height: 15),
+
+                // EMAIL LABEL
+                Text(
+                  "Email Address",
                   style: TextStyle(
                     fontSize: 20,
-                    color: Theme.of(context).brightness == Brightness.dark
-                    ? Colors.white70
-                    : Color(0xFF3A3A3A),
-                  )
+                    color: isDark ? Colors.white70 : const Color(0xFF3A3A3A),
+                  ),
                 ),
 
-                SizedBox(height: 3),
+                const SizedBox(height: 3),
 
-                // EMAIL
+                // EMAIL FIELD
                 TextFormField(
                   controller: _emailController,
                   keyboardType: TextInputType.emailAddress,
-                  style: TextStyle(
-                    color: Color(0xFF3A3A3A),
-                  ),
-                  cursorColor: Color(0xFF3A3A3A),
-                  decoration: InputDecoration(
+                  decoration: const InputDecoration(
                     labelText: "example@email.com",
-                    labelStyle: TextStyle(
-                      color:  Color(0xFF3A3A3A),
-                    ),
                     filled: true,
                     fillColor: Color(0xFFC6DCFF),
-                    enabledBorder: OutlineInputBorder(
+                    border: OutlineInputBorder(
                       borderRadius: BorderRadius.all(Radius.circular(10)),
-                      borderSide: BorderSide(
-                        color: Color(0xFF3A3A3A),
-                        width: 1,
-                      ),
                     ),
                   ),
-                 validator: (value) {
-                   if (value == null || value.isEmpty) {
-                     return "Email is required";
-                   }
-                   return null;
-                 },
-               ),
+                  validator: (value) =>
+                      value == null || value.isEmpty ? "Email is required" : null,
+                ),
 
                 const SizedBox(height: 10),
 
-                Text("Password",
+                // PASSWORD LABEL
+                Text(
+                  "Password",
                   style: TextStyle(
                     fontSize: 20,
-                    color: Theme.of(context).brightness == Brightness.dark
-                    ? Colors.white70
-                    : Color(0xFF3A3A3A),
-                  )
+                    color: isDark ? Colors.white70 : const Color(0xFF3A3A3A),
+                  ),
                 ),
 
-                SizedBox(height: 3),
+                const SizedBox(height: 3),
 
-                // PASSWORD
-               TextFormField(
-                 controller: _passwordController,
-                 obscureText: _obscurePassword,
-                 style: TextStyle(
-                    color: Color(0xFF3A3A3A),
-                  ),
-                  cursorColor: Color(0xFF3A3A3A),
-                 decoration: InputDecoration(
+                // PASSWORD FIELD
+                TextFormField(
+                  controller: _passwordController,
+                  obscureText: _obscurePassword,
+                  decoration: InputDecoration(
                     labelText: "Example1!",
-                    labelStyle: TextStyle(
-                      color:  Color(0xFF3A3A3A),
-                    ),
                     filled: true,
-                    fillColor: Color(0xFFC6DCFF),
-                    enabledBorder: OutlineInputBorder(
+                    fillColor: const Color(0xFFC6DCFF),
+                    border: const OutlineInputBorder(
                       borderRadius: BorderRadius.all(Radius.circular(10)),
-                      borderSide: BorderSide(
-                        color: Color(0xFF3A3A3A),
-                        width: 1,
-                      ),
                     ),
-                   suffixIcon: IconButton(
-                     icon: Icon(
-                       _obscurePassword
-                           ? Icons.visibility
-                           : Icons.visibility_off,
-                        color: Color(0xFF3A3A3A),
-                     ),
-                     onPressed: () {
-                       setState(() {
-                         _obscurePassword = !_obscurePassword;
-                       });
-                     },
-                   ),
+                    suffixIcon: IconButton(
+                      icon: Icon(
+                        _obscurePassword
+                            ? Icons.visibility
+                            : Icons.visibility_off,
+                      ),
+                      onPressed: () {
+                        setState(() {
+                          _obscurePassword = !_obscurePassword;
+                        });
+                      },
+                    ),
                   ),
-                 validator: (value) {
-                   if (value == null || value.isEmpty) {
-                     return "Password is required";
-                   }
-                   return null;
-                 },
+                  validator: (value) => value == null || value.isEmpty
+                      ? "Password is required"
+                      : null,
                 ),
-
-               const SizedBox(height: 24),
-
-                _isLoading
-                   ? const CircularProgressIndicator()
-                   : SizedBox(
-                       child: ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                          minimumSize: Size (200, 60),
-                          padding: EdgeInsets.symmetric(
-                            horizontal: 40,
-                            vertical: 20,
-                          ),
-                          foregroundColor: Theme.of(context).brightness == Brightness.dark
-                          ? Colors.white
-                          : Color(0xFF3A3A3A),
-                        ),
-                         onPressed: _isLoading ? null : logIn,
-                         child: const Text("Log In",
-                          style: TextStyle(
-                            fontSize: 20,
-                          )
-                         ),
-                       ),
-                     ),
 
                 const SizedBox(height: 24),
 
-                _isLoading
-                  ? const CircularProgressIndicator()
-                  : ElevatedButton(
+                if (_isLoading)
+                  const CircularProgressIndicator()
+                else
+                  ElevatedButton(
                     style: ElevatedButton.styleFrom(
-                      minimumSize: Size (200, 60),
-                      padding: EdgeInsets.symmetric(
-                        horizontal: 40,
-                        vertical: 20,
-                      ),
-                      foregroundColor: Theme.of(context).brightness == Brightness.dark
-                      ? Colors.white
-                      : Color(0xFF3A3A3A),
+                      minimumSize: const Size(200, 60),
+                    ),
+                    onPressed: logIn,
+                    child: const Text(
+                      "Log In",
+                      style: TextStyle(fontSize: 20),
+                    ),
+                  ),
+
+                const SizedBox(height: 24),
+
+                if (!_isLoading)
+                  ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      minimumSize: const Size(200, 60),
                     ),
                     onPressed: signInWithGoogle,
-                    child: Text('Sign Up with Google',
-                      style: TextStyle(
-                        fontSize: 20,
-                      )
+                    child: const Text(
+                      "Continue with Google",
+                      style: TextStyle(fontSize: 20),
                     ),
                   ),
 
@@ -266,25 +232,14 @@ class _LogInPageState extends State<LogInPage> {
 
                 ElevatedButton(
                   style: ElevatedButton.styleFrom(
-                  minimumSize: Size (200, 60),
-                  padding: EdgeInsets.symmetric(
-                    horizontal: 40,
-                    vertical: 20,
+                    minimumSize: const Size(200, 60),
                   ),
-                  foregroundColor: Theme.of(context).brightness == Brightness.dark
-                    ? Colors.white
-                    : Color(0xFF3A3A3A),
-                  ),
-                  onPressed: () {
-                    Navigator.pushNamed(context, '/startpage');
-                  },
-                  child: Text('Return to Starting Page',
-                    style: TextStyle(
-                      fontSize: 20,
-                    )
+                  onPressed: _goBack,
+                  child: const Text(
+                    "Return to Starting Page",
+                    style: TextStyle(fontSize: 20),
                   ),
                 ),
-
               ],
             ),
           ),
