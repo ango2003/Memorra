@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../screens/home_page.dart';
 import '../screens/profile_page.dart';
 import '../screens/list_collection.dart';
+import '../screens/reminder_collection.dart';
 import '../screens/filler_page.dart';
 import 'dart:ui';
 
@@ -95,7 +96,7 @@ class NavBar extends StatelessWidget {
                   target = FillerPage(userId: ' ',);
                 }
                 else if (index == 1) {
-                  target = FillerPage(userId: ' ',);
+                  target = ReminderCollectionPage();
                 }
                 else if (index == 2) {
                   target = HomePage(userId: ' ',);
