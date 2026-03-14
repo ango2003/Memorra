@@ -8,6 +8,13 @@ class HomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final size = MediaQuery.of(context).size;
+    final width = size.width;
+    final height = size.height;
+
+    final sizebox_size = height * 0.05;
+    final fontsize = width * 0.08;
+
     return Scaffold(
       body: SingleChildScrollView(
         child: Container(
@@ -31,7 +38,7 @@ class HomePage extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              SizedBox(height: 60),
+              SizedBox(height: sizebox_size),
 
               Padding(
                 padding: EdgeInsets.symmetric(horizontal: 20, vertical: 30),
@@ -39,7 +46,7 @@ class HomePage extends StatelessWidget {
                   "How Can We Help " + userId + "?",
                   textAlign: TextAlign.center,
                   style: TextStyle(
-                    fontSize: 75,
+                    fontSize: fontsize,
                     fontWeight: FontWeight.bold,
                     color: Theme.of(context).brightness == Brightness.dark
                         ? Colors.white
@@ -56,7 +63,7 @@ class HomePage extends StatelessWidget {
                 indent: 20,
                 endIndent: 20,
               ),
-              SizedBox(height: 50),
+              SizedBox(height: sizebox_size),
 
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -75,7 +82,7 @@ class HomePage extends StatelessWidget {
                         SizedBox(width: 20),
                       ],
                     ),
-                    SizedBox(height: 20),
+                    SizedBox(height: sizebox_size),
                     Row(
                       children: [
                         Expanded(
@@ -98,7 +105,7 @@ class HomePage extends StatelessWidget {
                         SizedBox(width: 20),
                       ],
                     ),
-                    SizedBox(height: 20),
+                    SizedBox(height: sizebox_size),
                     Row(
                       children: [
                         Expanded(
@@ -112,7 +119,7 @@ class HomePage extends StatelessWidget {
                         SizedBox(width: 20),
                       ],
                     ),
-                    SizedBox(height: 40),
+                    SizedBox(height: sizebox_size),
                   ],
                 ),
               )

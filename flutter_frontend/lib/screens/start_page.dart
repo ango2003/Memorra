@@ -5,6 +5,14 @@ class StartPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final size = MediaQuery.of(context).size;
+    final width = size.width;
+    final height = size.height;
+
+    final sizebox_size = height * 0.05;
+    final fontsize_title = width * 0.1;
+    final fontsize_button = width * 0.05;
+
     return Scaffold(
       body: Container(
         decoration: BoxDecoration(
@@ -33,13 +41,14 @@ class StartPage extends StatelessWidget {
               mainAxisSize: MainAxisSize.min,
               children: [
                 
-                SizedBox(height: 200),
+                SizedBox(height: sizebox_size * 2), // Extra space at the top
 
+                //Welcome Text
                 Text(
                   "Welcome to\nMemorra",
                   textAlign: TextAlign.center,
                   style: TextStyle(
-                    fontSize: 75,
+                    fontSize: fontsize_title,
                     fontWeight: FontWeight.bold,
                     color: Theme.of(context).brightness == Brightness.dark
                         ? Colors.white
@@ -47,8 +56,9 @@ class StartPage extends StatelessWidget {
                   ),
                 ),
 
-                SizedBox(height: 100),
+                SizedBox(height: sizebox_size),
 
+                //Sign Up Button
                 ElevatedButton(
                   style: ElevatedButton.styleFrom(
                     minimumSize: Size(300, 60),
@@ -63,12 +73,13 @@ class StartPage extends StatelessWidget {
                   },
                   child: Text(
                     'Sign Up',
-                    style: TextStyle(fontSize: 30),
+                    style: TextStyle(fontSize: fontsize_button),
                   ),
                 ),
 
-                SizedBox(height: 35),
+                SizedBox(height: sizebox_size / 2),
 
+                //Log In Button
                 ElevatedButton(
                   style: ElevatedButton.styleFrom(
                     minimumSize: Size(300, 60),
@@ -83,21 +94,21 @@ class StartPage extends StatelessWidget {
                   },
                   child: Text(
                     'Log In',
-                    style: TextStyle(fontSize: 30),
+                    style: TextStyle(fontSize: fontsize_button),
                   ),
                 ),
               ],
             ),
 
-            // 🔹 Centered app logo
+            //Centered app logo
             Expanded(
               child: Center(
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(75),
                   child: Image.asset(
                     'assets/logo.png',
-                    width: 350,
-                    height: 350,
+                    width: width * 0.5,
+                    height: width * 0.5,
                     fit: BoxFit.cover,
                   ),
                 ),
