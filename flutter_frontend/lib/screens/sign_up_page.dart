@@ -107,7 +107,7 @@ class _SignUpPageState extends State<SignUpPage> {
     final width = size.width;
     final height = size.height;
 
-    final sizebox_size = height * 0.03;
+    final spacing_size = height * 0.03;
     final fontsize_title = width * 0.1;
     final fontsize_button = width * 0.05;
 
@@ -136,249 +136,315 @@ class _SignUpPageState extends State<SignUpPage> {
             padding: EdgeInsets.all(30),
             child: Form(
               key: _formKey,
-              child: SingleChildScrollView(
-                child: Column(
-                  children: [
-                    Text(
-                      "Create New Account",
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        fontSize: fontsize_title,
-                        fontWeight: FontWeight.bold,
-                        color: Theme.of(context).brightness == Brightness.dark
-                            ? Colors.white
-                            : Color(0xFF1A3F7A),
+              child: LayoutBuilder(
+                builder: (context, constraints) {
+                  return SingleChildScrollView(
+                    child: ConstrainedBox(
+                      constraints: BoxConstraints(
+                        minHeight: constraints.maxHeight,
                       ),
-                    ),
-
-                    SizedBox(height: sizebox_size),
-
-                    Text(
-                      "Email Address",
-                      style: TextStyle(
-                        fontSize: fontsize_button,
-                        color: Theme.of(context).brightness == Brightness.dark
-                            ? Colors.white70
-                            : Color(0xFF3A3A3A),
-                      ),
-                    ),
-
-                    SizedBox(height: sizebox_size / 5),
-
-                    // EMAIL FIELD
-                    TextFormField(
-                      controller: _emailController,
-                      keyboardType: TextInputType.emailAddress,
-                      cursorColor: Color(0xFF3A3A3A),
-                      style: TextStyle(color: Color(0xFF3A3A3A)),
-                      decoration: InputDecoration(
-                        labelText: "example@email.com",
-                        labelStyle: TextStyle(color: Color(0xFF3A3A3A)),
-                        filled: true,
-                        fillColor: Color(0xFFC6DCFF),
-                        enabledBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.all(Radius.circular(10)),
-                          borderSide: BorderSide(
-                            color: Color(0xFF3A3A3A),
-                            width: 1,
-                          ),
-                        ),
-                      ),
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return "Email is required";
-                        }
-                        if (!value.contains('@')) {
-                          return "Enter a valid email";
-                        }
-                        return null;
-                      },
-                    ),
-
-                    SizedBox(height: sizebox_size),
-
-                    Text(
-                      "Password",
-                      style: TextStyle(
-                        fontSize: fontsize_button,
-                        color: Theme.of(context).brightness == Brightness.dark
-                            ? Colors.white70
-                            : Color(0xFF3A3A3A),
-                      ),
-                    ),
-
-                    SizedBox(height: sizebox_size / 5),
-
-                    // PASSWORD FIELD
-                    TextFormField(
-                      controller: _passwordController,
-                      obscureText: _obscurePassword,
-                      cursorColor: Color(0xFF3A3A3A),
-                      style: TextStyle(color: Color(0xFF3A3A3A)),
-                      decoration: InputDecoration(
-                        labelText: "Example1!",
-                        labelStyle: TextStyle(color: Color(0xFF3A3A3A)),
-                        filled: true,
-                        fillColor: Color(0xFFC6DCFF),
-                        enabledBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.all(Radius.circular(10)),
-                          borderSide: BorderSide(
-                            color: Color(0xFF3A3A3A),
-                            width: 1,
-                          ),
-                        ),
-                        suffixIcon: IconButton(
-                          icon: Icon(
-                            _obscurePassword
-                                ? Icons.visibility
-                                : Icons.visibility_off,
-                            color: Color(0xFF3A3A3A),
-                          ),
-                          onPressed: () {
-                            setState(() {
-                              _obscurePassword = !_obscurePassword;
-                            });
-                          },
-                        ),
-                      ),
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return "Password is required";
-                        }
-                        if (!isValidPassword(value)) {
-                          return "Min 8 chars, 1 uppercase, 1 number, 1 special char";
-                        }
-                        return null;
-                      },
-                    ),
-
-                    SizedBox(height: sizebox_size),
-
-                    Text(
-                      "Confirm Password",
-                      style: TextStyle(
-                        fontSize: fontsize_button,
-                        color: Theme.of(context).brightness == Brightness.dark
-                            ? Colors.white70
-                            : Color(0xFF3A3A3A),
-                      ),
-                    ),
-
-                    SizedBox(height: sizebox_size / 5),
-
-                    // CONFIRM PASSWORD FIELD
-                    TextFormField(
-                      controller: _confirmPasswordController,
-                      obscureText: _obscureConfirmPassword,
-                      cursorColor: Color(0xFF3A3A3A),
-                      style: TextStyle(color: Color(0xFF3A3A3A)),
-                      decoration: InputDecoration(
-                        labelText: "Example1!",
-                        labelStyle: TextStyle(color: Color(0xFF3A3A3A)),
-                        filled: true,
-                        fillColor: Color(0xFFC6DCFF),
-                        enabledBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.all(Radius.circular(10)),
-                          borderSide: BorderSide(
-                            color: Color(0xFF3A3A3A),
-                            width: 1,
-                          ),
-                        ),
-                        suffixIcon: IconButton(
-                          icon: Icon(
-                            _obscureConfirmPassword
-                                ? Icons.visibility
-                                : Icons.visibility_off,
-                            color: Color(0xFF3A3A3A),
-                          ),
-                          onPressed: () {
-                            setState(() {
-                              _obscureConfirmPassword =
-                                  !_obscureConfirmPassword;
-                            });
-                          },
-                        ),
-                      ),
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return "Please confirm password";
-                        }
-                        if (value != _passwordController.text) {
-                          return "Passwords do not match";
-                        }
-                        return null;
-                      },
-                    ),
-
-                    SizedBox(height: sizebox_size),
-
-                    // SIGN UP BUTTON
-                    _isLoading
-                        ? const CircularProgressIndicator()
-                        : SizedBox(
-                            child: ElevatedButton(
-                              style: ElevatedButton.styleFrom(
-                                minimumSize: Size(200, 60),
-                                padding: EdgeInsets.symmetric(
-                                    horizontal: 40, vertical: 20),
-                                foregroundColor:
-                                    Theme.of(context).brightness ==
-                                            Brightness.dark
-                                        ? Colors.white
-                                        : Color(0xFF3A3A3A),
-                              ),
-                              onPressed: createAccount,
-                              child: Text(
-                                'Sign Up',
-                                style: TextStyle(fontSize: fontsize_button),
-                              ),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                          Text(
+                            "Create New Account",
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              fontSize: fontsize_title,
+                              fontWeight: FontWeight.bold,
+                              color: Theme.of(context).brightness == Brightness.dark
+                                  ? Colors.white
+                                  : Color(0xFF1A3F7A),
                             ),
                           ),
 
-                    SizedBox(height: sizebox_size),
+                          SizedBox(height: spacing_size),
 
-                    // GOOGLE SIGN-IN BUTTON
-                    _isLoading
-                    ? const CircularProgressIndicator()
-                    : ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        minimumSize: Size(200, 60),
-                        padding: EdgeInsets.symmetric(
-                          horizontal: 40, vertical: 20),
-                        foregroundColor:Theme.of(context).brightness == Brightness.dark
-                        ? Colors.white
-                        : Color(0xFF3A3A3A),
-                      ),
-                        onPressed: signInWithGoogle,
-                        child: Text(
-                          'Continue with Google',
-                          style: TextStyle(fontSize: fontsize_button),
-                        ),
-                      ),
+                          Text(
+                            "Email Address",
+                            style: TextStyle(
+                              fontSize: fontsize_button,
+                              color: Theme.of(context).brightness == Brightness.dark
+                                  ? Colors.white70
+                                  : Color(0xFF3A3A3A),
+                            ),
+                          ),
 
-                    SizedBox(height: sizebox_size),
+                          SizedBox(height: spacing_size / 5),
 
-                    // RETURN BUTTON
-                    ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        minimumSize: Size(200, 60),
-                        padding:
-                            EdgeInsets.symmetric(horizontal: 40, vertical: 20),
-                        foregroundColor:
-                            Theme.of(context).brightness == Brightness.dark
-                                ? Colors.white
-                                : Color(0xFF3A3A3A),
-                      ),
-                      onPressed: () {
-                        Navigator.pushNamed(context, '/startpage');
-                      },
-                      child: Text(
-                        'Return to Starting Page',
-                        style: TextStyle(fontSize: fontsize_button),
+                          // EMAIL FIELD
+                          TextFormField(
+                            controller: _emailController,
+                            keyboardType: TextInputType.emailAddress,
+                            cursorColor: Color(0xFF96A4B5),
+                            style: TextStyle(color: Color(0xFF96A4B5)),
+                            decoration: InputDecoration(
+                              hintText: "example@email.com",
+                              hintStyle: TextStyle(color: Color(0xFF96A4B5)),
+                              labelStyle: TextStyle(color: Color(0xFF3A3A3A)),
+                              filled: true,
+                              fillColor: Color(0xFFC6DCFF),
+                              enabledBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.all(Radius.circular(10)),
+                                borderSide: BorderSide(
+                                  color: Color(0xFF3A3A3A),
+                                  width: 1,
+                                ),
+                              ),
+                            ),
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return "Email is required";
+                              }
+                              if (!value.contains('@')) {
+                                return "Enter a valid email";
+                              }
+                              return null;
+                            },
+                          ),
+
+                          SizedBox(height: spacing_size),
+
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text(
+                                "Password",
+                                style: TextStyle(
+                                  fontSize: fontsize_button,
+                                  color: Theme.of(context).brightness == Brightness.dark
+                                      ? Colors.white70
+                                      : Color(0xFF3A3A3A),
+                                ),
+                              ),
+                              SizedBox(width: spacing_size / 20),
+                              IconButton(
+                                icon: Icon(
+                                  Icons.info_outline,
+                                  color: Color(0xFF3A3A3A),
+                                ),
+                                onPressed: () { 
+                                  showDialog(
+                                    context: context,
+                                    builder: (context) => AlertDialog(
+                                      backgroundColor: Theme.of(context).brightness == Brightness.dark
+                                        ? Color(0xFF19365C)
+                                        : Colors.white,
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.all(Radius.circular(20)),
+                                      ),
+                                      titleTextStyle: TextStyle(
+                                        fontSize: fontsize_button,
+                                        fontWeight: FontWeight.bold,
+                                        color: Theme.of(context).brightness == Brightness.dark
+                                          ? Colors.white
+                                          : Color(0xFF1A3F7A),
+                                      ),
+                                      contentTextStyle: TextStyle(
+                                        fontSize: fontsize_button * 0.9,
+                                        color: Theme.of(context).brightness == Brightness.dark
+                                          ? Colors.white70
+                                          : Color(0xFF3A3A3A),
+                                      ),
+                                      title: Text("Password Requirements"),
+                                      content: Text(
+                                        "Your password must be at least 8 characters long and include:\n\n"
+                                        "- At least one uppercase letter\n"
+                                        "- At least one number\n"
+                                        "- At least one special character (e.g. !@#\$%^&*)",
+                                      ),
+                                      actions: [
+                                        TextButton(
+                                          onPressed: () => Navigator.pop(context),
+                                          child: Text("OK"),
+                                        ),
+                                      ],
+                                    ),
+                                  );
+                                }
+                              ),
+                            ],
+                          ),
+
+                          SizedBox(height: spacing_size / 5),
+
+                          // PASSWORD FIELD
+                          TextFormField(
+                            controller: _passwordController,
+                            obscureText: _obscurePassword,
+                            obscuringCharacter: "*",
+                            cursorColor: Color(0xFF96A4B5),
+                            style: TextStyle(color: Color(0xFF96A4B5)),
+                            decoration: InputDecoration(
+                              hintText: "Example1!",
+                              hintStyle: TextStyle(color: Color(0xFF96A4B5)),
+                              labelStyle: TextStyle(color: Color(0xFFA0A0A0)),
+                              filled: true,
+                              fillColor: Color(0xFFC6DCFF),
+                              enabledBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.all(Radius.circular(10)),
+                                borderSide: BorderSide(
+                                  color: Color(0xFF3A3A3A),
+                                  width: 1,
+                                ),
+                              ),
+                              suffixIcon: IconButton(
+                                    icon: Icon(
+                                      _obscurePassword
+                                          ? Icons.visibility
+                                          : Icons.visibility_off,
+                                      color: Color(0xFF3A3A3A),
+                                    ),
+                                    onPressed: () {
+                                      setState(() {
+                                        _obscurePassword = !_obscurePassword;
+                                      });
+                                    },
+                                  ),
+                                ),
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return "Password is required";
+                              }
+                              if (!isValidPassword(value)) {
+                                return "Min 8 chars, 1 uppercase, 1 number, 1 special char";
+                              }
+                              return null;
+                            },
+                          ),
+
+                          SizedBox(height: spacing_size),
+
+                          Text(
+                            "Confirm Password",
+                            style: TextStyle(
+                              fontSize: fontsize_button,
+                              color: Theme.of(context).brightness == Brightness.dark
+                                  ? Colors.white70
+                                  : Color(0xFF3A3A3A),
+                            ),
+                          ),
+
+                          SizedBox(height: spacing_size / 5),
+
+                          // CONFIRM PASSWORD FIELD
+                          TextFormField(
+                            controller: _confirmPasswordController,
+                            obscureText: _obscureConfirmPassword,
+                            obscuringCharacter: "*",
+                            cursorColor: Color(0xFF96A4B5),
+                            style: TextStyle(color: Color(0xFF96A4B5)),
+                            decoration: InputDecoration(
+                              hintText: "Example1!",
+                              hintStyle: TextStyle(color: Color(0xFF96A4B5)),
+                              labelStyle: TextStyle(color: Color(0xFF3A3A3A)),
+                              filled: true,
+                              fillColor: Color(0xFFC6DCFF),
+                              enabledBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.all(Radius.circular(10)),
+                                borderSide: BorderSide(
+                                  color: Color(0xFF3A3A3A),
+                                  width: 1,
+                                ),
+                              ),
+                              suffixIcon: IconButton(
+                                icon: Icon(
+                                  _obscureConfirmPassword
+                                      ? Icons.visibility
+                                      : Icons.visibility_off,
+                                  color: Color(0xFF3A3A3A),
+                                ),
+                                onPressed: () {
+                                  setState(() {
+                                    _obscureConfirmPassword =
+                                        !_obscureConfirmPassword;
+                                  });
+                                },
+                              ),
+                            ),
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return "Please confirm password";
+                              }
+                              if (value != _passwordController.text) {
+                                return "Passwords do not match";
+                              }
+                              return null;
+                            },
+                          ),
+
+                          SizedBox(height: spacing_size),
+
+                          // SIGN UP BUTTON
+                          _isLoading
+                              ? const CircularProgressIndicator()
+                              : SizedBox(
+                                  child: ElevatedButton(
+                                    style: ElevatedButton.styleFrom(
+                                      minimumSize: Size(200, 60),
+                                      padding: EdgeInsets.symmetric(
+                                          horizontal: 40, vertical: 20),
+                                      foregroundColor:
+                                          Theme.of(context).brightness ==
+                                                  Brightness.dark
+                                              ? Colors.white
+                                              : Color(0xFF3A3A3A),
+                                    ),
+                                    onPressed: createAccount,
+                                    child: Text(
+                                      'Sign Up',
+                                      style: TextStyle(fontSize: fontsize_button),
+                                    ),
+                                  ),
+                                ),
+
+                          SizedBox(height: spacing_size),
+
+                          // GOOGLE SIGN-IN BUTTON
+                          _isLoading
+                          ? const CircularProgressIndicator()
+                          : ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              minimumSize: Size(200, 60),
+                              padding: EdgeInsets.symmetric(
+                                horizontal: 40, vertical: 20),
+                              foregroundColor:Theme.of(context).brightness == Brightness.dark
+                              ? Colors.white
+                              : Color(0xFF3A3A3A),
+                            ),
+                              onPressed: signInWithGoogle,
+                              child: Text(
+                                'Continue with Google',
+                                style: TextStyle(fontSize: fontsize_button),
+                              ),
+                            ),
+
+                          SizedBox(height: spacing_size),
+
+                          // RETURN BUTTON
+                          ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              minimumSize: Size(200, 60),
+                              padding:
+                                  EdgeInsets.symmetric(horizontal: 40, vertical: 20),
+                              foregroundColor:
+                                  Theme.of(context).brightness == Brightness.dark
+                                      ? Colors.white
+                                      : Color(0xFF3A3A3A),
+                            ),
+                            onPressed: () {
+                              Navigator.pushNamed(context, '/startpage');
+                            },
+                            child: Text(
+                              'Return to Starting Page',
+                              style: TextStyle(fontSize: fontsize_button),
+                            ),
+                          ),
+                        ],
                       ),
                     ),
-                  ],
-                ),
+                  );
+                },
               ),
             ),
           ),

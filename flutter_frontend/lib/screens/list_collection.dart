@@ -3,7 +3,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_frontend/screens/list_page.dart';
 import 'package:flutter_frontend/screens/widgets/nav_bar.dart';
-import 'package:flutter_frontend/screens/widgets/nav_bar.dart';
 
 class ListCollectionPage extends StatelessWidget {
   const ListCollectionPage({super.key});

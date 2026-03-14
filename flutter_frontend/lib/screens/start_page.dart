@@ -9,9 +9,16 @@ class StartPage extends StatelessWidget {
     final width = size.width;
     final height = size.height;
 
-    final sizebox_size = height * 0.05;
-    final fontsize_title = width * 0.1;
-    final fontsize_button = width * 0.05;
+    final base = width < height ? width : height;
+
+    final fontsize_title = base * 0.12;
+    final spacing_size = base * 0.03;
+    final button_width = base * 0.75;
+    final button_height = base * 0.15;
+    final button_padding_horizontal = base * 0.05;
+    final button_padding_vertical = base * 0.04;
+    final fontsize_button = base * 0.06;
+    final logo_size = base * 0.65;
 
     return Scaffold(
       body: Container(
@@ -31,90 +38,104 @@ class StartPage extends StatelessWidget {
           ),
         ),
 
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-
-            // 🔹 Top content
-            Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                
-                SizedBox(height: sizebox_size * 2), // Extra space at the top
-
-                //Welcome Text
-                Text(
-                  "Welcome to\nMemorra",
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    fontSize: fontsize_title,
-                    fontWeight: FontWeight.bold,
-                    color: Theme.of(context).brightness == Brightness.dark
-                        ? Colors.white
-                        : Color(0xFF071F4A),
-                  ),
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            return SingleChildScrollView(
+              child: ConstrainedBox(
+                constraints: BoxConstraints(
+                  minHeight: constraints.maxHeight,
                 ),
+                child: IntrinsicHeight(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          SizedBox(height: spacing_size * 5),
 
-                SizedBox(height: sizebox_size),
+                          Text(
+                            "Welcome to\nMemorra",
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              fontSize: fontsize_title,
+                              fontWeight: FontWeight.bold,
+                              color: Theme.of(context).brightness == Brightness.dark
+                                  ? Colors.white
+                                  : Color(0xFF071F4A),
+                            ),
+                          ),
 
-                //Sign Up Button
-                ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    minimumSize: Size(300, 60),
-                    padding: EdgeInsets.symmetric(horizontal: 40, vertical: 20),
-                    foregroundColor:
-                        Theme.of(context).brightness == Brightness.dark
-                            ? Colors.white
-                            : Colors.black,
-                  ),
-                  onPressed: () {
-                    Navigator.pushNamed(context, '/signuppage');
-                  },
-                  child: Text(
-                    'Sign Up',
-                    style: TextStyle(fontSize: fontsize_button),
-                  ),
-                ),
+                          SizedBox(height: spacing_size * 3.5),
 
-                SizedBox(height: sizebox_size / 2),
+                          ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              minimumSize: Size(button_width, button_height),
+                              padding: EdgeInsets.symmetric(
+                                horizontal: button_padding_horizontal, 
+                                vertical: button_padding_vertical
+                              ),
+                              foregroundColor:
+                                  Theme.of(context).brightness == Brightness.dark
+                                      ? Colors.white
+                                      : Colors.black,
+                            ),
+                            onPressed: () {
+                              Navigator.pushNamed(context, '/signuppage');
+                            },
+                            child: Text(
+                              'Sign Up',
+                              style: TextStyle(fontSize: fontsize_button),
+                            ),
+                          ),
 
-                //Log In Button
-                ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    minimumSize: Size(300, 60),
-                    padding: EdgeInsets.symmetric(horizontal: 40, vertical: 20),
-                    foregroundColor:
-                        Theme.of(context).brightness == Brightness.dark
-                            ? Colors.white
-                            : Colors.black,
-                  ),
-                  onPressed: () {
-                    Navigator.pushNamed(context, '/loginpage');
-                  },
-                  child: Text(
-                    'Log In',
-                    style: TextStyle(fontSize: fontsize_button),
-                  ),
-                ),
-              ],
-            ),
+                          SizedBox(height: 20),
 
-            //Centered app logo
-            Expanded(
-              child: Center(
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(75),
-                  child: Image.asset(
-                    'assets/logo.png',
-                    width: width * 0.5,
-                    height: width * 0.5,
-                    fit: BoxFit.cover,
+                          ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              minimumSize: Size(button_width, button_height),
+                              padding: EdgeInsets.symmetric(
+                                horizontal: button_padding_horizontal, 
+                                vertical: button_padding_vertical
+                              ),
+                              foregroundColor:
+                                  Theme.of(context).brightness == Brightness.dark
+                                      ? Colors.white
+                                      : Colors.black,
+                            ),
+                            onPressed: () {
+                              Navigator.pushNamed(context, '/loginpage');
+                            },
+                            child: Text(
+                              'Log In',
+                              style: TextStyle(fontSize: fontsize_button),
+                            ),
+                          ),
+
+                          SizedBox(height: spacing_size * 5),
+
+                          Center(
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(75),
+                              child: Image.asset(
+                                'assets/logo.png',
+                                width: logo_size,
+                                height: logo_size,
+                                fit: BoxFit.cover,
+                              ),
+                            ),
+                          ),
+
+                          SizedBox(height: spacing_size * 2),
+                        ],
+                      ),
+                    ],
                   ),
                 ),
               ),
-            ),
-          ],
+            );
+          },
         ),
       ),
     );
