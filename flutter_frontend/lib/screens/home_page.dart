@@ -12,8 +12,8 @@ class HomePage extends StatelessWidget {
     final width = size.width;
     final height = size.height;
 
-    final sizebox_size = height * 0.05;
-    final fontsize = width * 0.08;
+    final sizeboxSize = height * 0.05;
+    final fontSize = width * 0.08;
 
     return Scaffold(
       body: SingleChildScrollView(
@@ -38,7 +38,7 @@ class HomePage extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              SizedBox(height: sizebox_size),
+              SizedBox(height: sizeboxSize),
 
               Padding(
                 padding: EdgeInsets.symmetric(horizontal: 20, vertical: 30),
@@ -46,7 +46,7 @@ class HomePage extends StatelessWidget {
                   "How Can We Help $userId?",
                   textAlign: TextAlign.center,
                   style: TextStyle(
-                    fontSize: 75,
+                    fontSize: fontSize,
                     fontWeight: FontWeight.bold,
                     color: Theme.of(context).brightness == Brightness.dark
                         ? Colors.white
@@ -63,7 +63,7 @@ class HomePage extends StatelessWidget {
                 indent: 20,
                 endIndent: 20,
               ),
-              SizedBox(height: sizebox_size),
+              SizedBox(height: sizeboxSize),
 
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -82,7 +82,7 @@ class HomePage extends StatelessWidget {
                         SizedBox(width: 20),
                       ],
                     ),
-                    SizedBox(height: sizebox_size),
+                    SizedBox(height: sizeboxSize),
                     Row(
                       children: [
                         Expanded(
@@ -105,21 +105,21 @@ class HomePage extends StatelessWidget {
                         SizedBox(width: 20),
                       ],
                     ),
-                    SizedBox(height: sizebox_size),
+                    SizedBox(height: sizeboxSize),
                     Row(
                       children: [
                         Expanded(
                           child: HomeTile(
                             title: "Set New Reminder",
                             onTap: () {
-                              Navigator.pushNamed(context, '/wip');
+                              Navigator.pushNamed(context, '/remindercollection');
                             },
                           ),
                         ),
                         SizedBox(width: 20),
                       ],
                     ),
-                    SizedBox(height: sizebox_size),
+                    SizedBox(height: sizeboxSize),
                   ],
                 ),
               )

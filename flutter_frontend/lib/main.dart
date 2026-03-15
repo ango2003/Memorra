@@ -13,6 +13,7 @@ import 'screens/home_page.dart';
 import 'screens/profile_page.dart';
 import 'screens/list_page.dart';
 import 'screens/list_collection.dart';
+import 'screens/reminder_collection.dart';
 import 'screens/filler_page.dart';
 import 'services/notif_service.dart';
 
@@ -54,8 +55,9 @@ class MyApp extends StatelessWidget {
         '/profilepage': (context) => const ProfilePage(),
         '/loginpage': (context) => const LogInPage(),
         '/signuppage': (context) => const SignUpPage(),
-        '/listcollection': (context) => const ListCollectionPage(),
-        '/listpage': (context) => const ListPage(listID: ' ',),
+        '/listcollection': (context) => ListCollectionPage(),
+        '/listpage': (context) => ListPage(listID: ' ',),
+        '/remindercollection': (context) => ReminderCollectionPage(),
         '/wip': (context) => const FillerPage(userId: ' ',),
       },
       

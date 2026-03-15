@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_frontend/services/auth_service.dart';
 import 'package:flutter_frontend/services/google_service.dart';
+import '../widgets/background.dart';
+import '../themes/app_colors.dart';
 
 class SignUpPage extends StatefulWidget {
   const SignUpPage({super.key});
@@ -103,35 +105,33 @@ class _SignUpPageState extends State<SignUpPage> {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     final size = MediaQuery.of(context).size;
     final width = size.width;
     final height = size.height;
 
-    final spacing_size = height * 0.03;
-    final fontsize_title = width * 0.1;
-    final fontsize_button = width * 0.05;
+    final base = width < height ? width : height;
+
+    final spacingSize = height * 0.03;
+    final fontsizeTitle = width * 0.1;
+    final fontsizeTextTitle = width * 0.04;
+    final fontsizeButton = width * 0.05;
+    final buttonWidth = base * 0.75;
+    final buttonHeight = base * 0.15;
+    final buttonPaddingHorizontal = base * 0.05;
+    final buttonPaddingVertical = base * 0.04;
+
+    Color titleColor = isDark ? AppColors.titleDark : AppColors.titleLight;
+    Color subtitleColor = isDark ? AppColors.subtitleDark : AppColors.subtitleLight;
+    Color buttonTextColor = isDark ? AppColors.buttonTextDark : AppColors.buttonTextLight;
+    Color buttonBackgroundColor = isDark ? AppColors.buttonBackgroundDark : AppColors.buttonBackgroundLight;
 
     return Scaffold(
       extendBody: true,
       backgroundColor: Colors.transparent,
       body: SafeArea(
         bottom: false,
-        child: Container(
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              colors: Theme.of(context).brightness == Brightness.dark
-                  ? [
-                      Color(0xFF237F8F),
-                      Color(0xFF19365C),
-                    ]
-                  : [
-                      Color(0xFF5A86C4),
-                      Color(0xFF8AD7C9),
-                    ],
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-            ),
-          ),
+        child: AppBackground(
           child: Padding(
             padding: EdgeInsets.all(30),
             child: Form(
@@ -150,44 +150,39 @@ class _SignUpPageState extends State<SignUpPage> {
                             "Create New Account",
                             textAlign: TextAlign.center,
                             style: TextStyle(
-                              fontSize: fontsize_title,
+                              fontSize: fontsizeTitle,
                               fontWeight: FontWeight.bold,
-                              color: Theme.of(context).brightness == Brightness.dark
-                                  ? Colors.white
-                                  : Color(0xFF1A3F7A),
+                              color: titleColor,
                             ),
                           ),
 
-                          SizedBox(height: spacing_size),
+                          SizedBox(height: spacingSize),
 
                           Text(
                             "Email Address",
                             style: TextStyle(
-                              fontSize: fontsize_button,
-                              color: Theme.of(context).brightness == Brightness.dark
-                                  ? Colors.white70
-                                  : Color(0xFF3A3A3A),
+                              fontSize: fontsizeTextTitle,
+                              color: subtitleColor,
                             ),
                           ),
 
-                          SizedBox(height: spacing_size / 5),
+                          SizedBox(height: spacingSize / 5),
 
                           // EMAIL FIELD
                           TextFormField(
                             controller: _emailController,
                             keyboardType: TextInputType.emailAddress,
-                            cursorColor: Color(0xFF96A4B5),
-                            style: TextStyle(color: Color(0xFF96A4B5)),
+                            cursorColor: AppColors.inputText,
+                            style: TextStyle(color: AppColors.inputText),
                             decoration: InputDecoration(
                               hintText: "example@email.com",
-                              hintStyle: TextStyle(color: Color(0xFF96A4B5)),
-                              labelStyle: TextStyle(color: Color(0xFF3A3A3A)),
+                              hintStyle: TextStyle(color: AppColors.hintText),
                               filled: true,
-                              fillColor: Color(0xFFC6DCFF),
+                              fillColor: AppColors.inputBackground,
                               enabledBorder: OutlineInputBorder(
                                 borderRadius: BorderRadius.all(Radius.circular(10)),
                                 borderSide: BorderSide(
-                                  color: Color(0xFF3A3A3A),
+                                  color: AppColors.border,
                                   width: 1,
                                 ),
                               ),
@@ -203,7 +198,7 @@ class _SignUpPageState extends State<SignUpPage> {
                             },
                           ),
 
-                          SizedBox(height: spacing_size),
+                          SizedBox(height: spacingSize),
 
                           Row(
                             mainAxisAlignment: MainAxisAlignment.center,
@@ -211,40 +206,32 @@ class _SignUpPageState extends State<SignUpPage> {
                               Text(
                                 "Password",
                                 style: TextStyle(
-                                  fontSize: fontsize_button,
-                                  color: Theme.of(context).brightness == Brightness.dark
-                                      ? Colors.white70
-                                      : Color(0xFF3A3A3A),
+                                  fontSize: fontsizeTextTitle,
+                                  color: subtitleColor,
                                 ),
                               ),
-                              SizedBox(width: spacing_size / 20),
+                              SizedBox(width: spacingSize / 20),
                               IconButton(
                                 icon: Icon(
                                   Icons.info_outline,
-                                  color: Color(0xFF3A3A3A),
+                                  color: subtitleColor,
                                 ),
                                 onPressed: () { 
                                   showDialog(
                                     context: context,
                                     builder: (context) => AlertDialog(
-                                      backgroundColor: Theme.of(context).brightness == Brightness.dark
-                                        ? Color(0xFF19365C)
-                                        : Colors.white,
+                                      backgroundColor: buttonBackgroundColor,
                                       shape: RoundedRectangleBorder(
                                         borderRadius: BorderRadius.all(Radius.circular(20)),
                                       ),
                                       titleTextStyle: TextStyle(
-                                        fontSize: fontsize_button,
+                                        fontSize: fontsizeTextTitle,
                                         fontWeight: FontWeight.bold,
-                                        color: Theme.of(context).brightness == Brightness.dark
-                                          ? Colors.white
-                                          : Color(0xFF1A3F7A),
+                                        color: titleColor,
                                       ),
                                       contentTextStyle: TextStyle(
-                                        fontSize: fontsize_button * 0.9,
-                                        color: Theme.of(context).brightness == Brightness.dark
-                                          ? Colors.white70
-                                          : Color(0xFF3A3A3A),
+                                        fontSize: fontsizeTextTitle * 0.9,
+                                        color: subtitleColor,
                                       ),
                                       title: Text("Password Requirements"),
                                       content: Text(
@@ -266,25 +253,24 @@ class _SignUpPageState extends State<SignUpPage> {
                             ],
                           ),
 
-                          SizedBox(height: spacing_size / 5),
+                          SizedBox(height: spacingSize / 5),
 
                           // PASSWORD FIELD
                           TextFormField(
                             controller: _passwordController,
                             obscureText: _obscurePassword,
                             obscuringCharacter: "*",
-                            cursorColor: Color(0xFF96A4B5),
-                            style: TextStyle(color: Color(0xFF96A4B5)),
+                            cursorColor: AppColors.inputText,
+                            style: TextStyle(color: AppColors.inputText),
                             decoration: InputDecoration(
                               hintText: "Example1!",
-                              hintStyle: TextStyle(color: Color(0xFF96A4B5)),
-                              labelStyle: TextStyle(color: Color(0xFFA0A0A0)),
+                              hintStyle: TextStyle(color: AppColors.hintText),
                               filled: true,
-                              fillColor: Color(0xFFC6DCFF),
+                              fillColor: AppColors.inputBackground,
                               enabledBorder: OutlineInputBorder(
                                 borderRadius: BorderRadius.all(Radius.circular(10)),
                                 borderSide: BorderSide(
-                                  color: Color(0xFF3A3A3A),
+                                  color: AppColors.border,
                                   width: 1,
                                 ),
                               ),
@@ -293,7 +279,7 @@ class _SignUpPageState extends State<SignUpPage> {
                                       _obscurePassword
                                           ? Icons.visibility
                                           : Icons.visibility_off,
-                                      color: Color(0xFF3A3A3A),
+                                      color: AppColors.inputText,
                                     ),
                                     onPressed: () {
                                       setState(() {
@@ -313,37 +299,35 @@ class _SignUpPageState extends State<SignUpPage> {
                             },
                           ),
 
-                          SizedBox(height: spacing_size),
+                          SizedBox(height: spacingSize),
 
                           Text(
                             "Confirm Password",
                             style: TextStyle(
-                              fontSize: fontsize_button,
-                              color: Theme.of(context).brightness == Brightness.dark
-                                  ? Colors.white70
-                                  : Color(0xFF3A3A3A),
+                              fontSize: fontsizeTextTitle,
+                              color: subtitleColor,
                             ),
                           ),
 
-                          SizedBox(height: spacing_size / 5),
+                          SizedBox(height: spacingSize / 5),
 
                           // CONFIRM PASSWORD FIELD
                           TextFormField(
                             controller: _confirmPasswordController,
                             obscureText: _obscureConfirmPassword,
                             obscuringCharacter: "*",
-                            cursorColor: Color(0xFF96A4B5),
-                            style: TextStyle(color: Color(0xFF96A4B5)),
+                            cursorColor: AppColors.inputText,
+                            style: TextStyle(color: AppColors.inputText),
                             decoration: InputDecoration(
                               hintText: "Example1!",
-                              hintStyle: TextStyle(color: Color(0xFF96A4B5)),
-                              labelStyle: TextStyle(color: Color(0xFF3A3A3A)),
+                              hintStyle: TextStyle(color: AppColors.inputText),
+                              labelStyle: TextStyle(color: AppColors.border),
                               filled: true,
-                              fillColor: Color(0xFFC6DCFF),
+                              fillColor: AppColors.inputBackground,
                               enabledBorder: OutlineInputBorder(
                                 borderRadius: BorderRadius.all(Radius.circular(10)),
                                 borderSide: BorderSide(
-                                  color: Color(0xFF3A3A3A),
+                                  color: AppColors.border,
                                   width: 1,
                                 ),
                               ),
@@ -352,7 +336,7 @@ class _SignUpPageState extends State<SignUpPage> {
                                   _obscureConfirmPassword
                                       ? Icons.visibility
                                       : Icons.visibility_off,
-                                  color: Color(0xFF3A3A3A),
+                                  color: AppColors.border,
                                 ),
                                 onPressed: () {
                                   setState(() {
@@ -373,71 +357,77 @@ class _SignUpPageState extends State<SignUpPage> {
                             },
                           ),
 
-                          SizedBox(height: spacing_size),
+                          SizedBox(height: spacingSize),
 
                           // SIGN UP BUTTON
                           _isLoading
-                              ? const CircularProgressIndicator()
-                              : SizedBox(
-                                  child: ElevatedButton(
-                                    style: ElevatedButton.styleFrom(
-                                      minimumSize: Size(200, 60),
-                                      padding: EdgeInsets.symmetric(
-                                          horizontal: 40, vertical: 20),
-                                      foregroundColor:
-                                          Theme.of(context).brightness ==
-                                                  Brightness.dark
-                                              ? Colors.white
-                                              : Color(0xFF3A3A3A),
-                                    ),
-                                    onPressed: createAccount,
-                                    child: Text(
-                                      'Sign Up',
-                                      style: TextStyle(fontSize: fontsize_button),
-                                    ),
+                            ? const CircularProgressIndicator()
+                            : SizedBox(
+                              child: ElevatedButton(
+                                style: ElevatedButton.styleFrom(
+                                  minimumSize: Size(buttonWidth, buttonHeight),
+                                  padding: EdgeInsets.symmetric(
+                                    horizontal: buttonPaddingHorizontal, 
+                                    vertical: buttonPaddingVertical
+                                  ),
+                                  backgroundColor: buttonBackgroundColor,
+                                ),
+                                onPressed: createAccount,
+                                child: Text(
+                                 'Sign Up',
+                                  style: TextStyle(
+                                    fontSize: fontsizeButton,
+                                    color: buttonTextColor,
                                   ),
                                 ),
+                              ),
+                            ),
 
-                          SizedBox(height: spacing_size),
+                          SizedBox(height: spacingSize),
 
                           // GOOGLE SIGN-IN BUTTON
                           _isLoading
                           ? const CircularProgressIndicator()
                           : ElevatedButton(
                             style: ElevatedButton.styleFrom(
-                              minimumSize: Size(200, 60),
+                              minimumSize: Size(buttonWidth, buttonHeight),
                               padding: EdgeInsets.symmetric(
-                                horizontal: 40, vertical: 20),
-                              foregroundColor:Theme.of(context).brightness == Brightness.dark
-                              ? Colors.white
-                              : Color(0xFF3A3A3A),
+                                horizontal: buttonPaddingHorizontal, 
+                                vertical: buttonPaddingVertical
+                              ),
+                              backgroundColor:buttonBackgroundColor,
                             ),
                               onPressed: signInWithGoogle,
                               child: Text(
                                 'Continue with Google',
-                                style: TextStyle(fontSize: fontsize_button),
+                                style: TextStyle(
+                                  fontSize: fontsizeButton,
+                                  color: buttonTextColor,
+                                ),
                               ),
                             ),
 
-                          SizedBox(height: spacing_size),
+                          SizedBox(height: spacingSize),
 
                           // RETURN BUTTON
                           ElevatedButton(
                             style: ElevatedButton.styleFrom(
-                              minimumSize: Size(200, 60),
-                              padding:
-                                  EdgeInsets.symmetric(horizontal: 40, vertical: 20),
-                              foregroundColor:
-                                  Theme.of(context).brightness == Brightness.dark
-                                      ? Colors.white
-                                      : Color(0xFF3A3A3A),
+                              minimumSize: Size(buttonWidth, buttonHeight),
+                              padding:EdgeInsets.symmetric(
+                                horizontal: buttonPaddingHorizontal, 
+                                vertical: buttonPaddingVertical
+                              ),
+                              backgroundColor: buttonBackgroundColor,
                             ),
                             onPressed: () {
                               Navigator.pushNamed(context, '/startpage');
                             },
                             child: Text(
                               'Return to Starting Page',
-                              style: TextStyle(fontSize: fontsize_button),
+                              style: TextStyle(
+                                fontSize: fontsizeButton,
+                                color: buttonTextColor,
+                                ),
                             ),
                           ),
                         ],

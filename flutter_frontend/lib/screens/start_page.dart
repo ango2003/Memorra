@@ -1,134 +1,127 @@
 import 'package:flutter/material.dart';
+import '../widgets/background.dart';
+import '../themes/app_colors.dart';
 
 class StartPage extends StatelessWidget {
   const StartPage({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     final size = MediaQuery.of(context).size;
     final width = size.width;
     final height = size.height;
 
     final base = width < height ? width : height;
 
-    final fontsize_title = base * 0.12;
-    final spacing_size = base * 0.03;
-    final button_width = base * 0.75;
-    final button_height = base * 0.15;
-    final button_padding_horizontal = base * 0.05;
-    final button_padding_vertical = base * 0.04;
-    final fontsize_button = base * 0.06;
-    final logo_size = base * 0.65;
+    final fontsizeTitle = base * 0.12;
+    final spacingSize = base * 0.03;
+    final buttonWidth = base * 0.75;
+    final buttonHeight = base * 0.15;
+    final buttonPaddingHorizontal = base * 0.05;
+    final buttonPaddingVertical = base * 0.04;
+    final fontsizeButton = base * 0.06;
+    final logoSize = base * 0.65;
+
+    Color titleColor = isDark ? AppColors.titleDark : AppColors.titleLight;
+    Color buttonTextColor = isDark ? AppColors.buttonTextDark : AppColors.buttonTextLight;
+    Color buttonBackgroundColor = isDark ? AppColors.buttonBackgroundDark : AppColors.buttonBackgroundLight;
 
     return Scaffold(
-      body: Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            colors: Theme.of(context).brightness == Brightness.dark
-                ? [
-                    Color(0xFF0A6F85),
-                    Color(0xFF071F4A),
-                  ]
-                : [
-                    Color(0xFF3F6BB5),
-                    Color(0xFF0A8C7A),
-                  ],
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-          ),
-        ),
-
+      body: AppBackground(
         child: LayoutBuilder(
           builder: (context, constraints) {
-            return SingleChildScrollView(
-              child: ConstrainedBox(
-                constraints: BoxConstraints(
-                  minHeight: constraints.maxHeight,
-                ),
-                child: IntrinsicHeight(
+            return ScrollConfiguration(
+              behavior: ScrollConfiguration.of(context).copyWith(
+                overscroll: false,
+                scrollbars: false,
+              ),
+              child: SingleChildScrollView(
+                physics: const ClampingScrollPhysics(),
+                child: ConstrainedBox(
+                  constraints: BoxConstraints(
+                    minHeight: constraints.maxHeight,
+                  ),
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                      Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          SizedBox(height: spacing_size * 5),
-
-                          Text(
-                            "Welcome to\nMemorra",
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                              fontSize: fontsize_title,
-                              fontWeight: FontWeight.bold,
-                              color: Theme.of(context).brightness == Brightness.dark
-                                  ? Colors.white
-                                  : Color(0xFF071F4A),
-                            ),
-                          ),
-
-                          SizedBox(height: spacing_size * 3.5),
-
-                          ElevatedButton(
-                            style: ElevatedButton.styleFrom(
-                              minimumSize: Size(button_width, button_height),
-                              padding: EdgeInsets.symmetric(
-                                horizontal: button_padding_horizontal, 
-                                vertical: button_padding_vertical
+                      Center(
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            SizedBox(height: spacingSize * 2),
+                            Text(
+                              "Welcome to\nMemorra",
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                fontSize: fontsizeTitle,
+                                fontWeight: FontWeight.bold,
+                                color: titleColor,
                               ),
-                              foregroundColor:
-                                  Theme.of(context).brightness == Brightness.dark
-                                      ? Colors.white
-                                      : Colors.black,
                             ),
-                            onPressed: () {
-                              Navigator.pushNamed(context, '/signuppage');
-                            },
-                            child: Text(
-                              'Sign Up',
-                              style: TextStyle(fontSize: fontsize_button),
-                            ),
-                          ),
 
-                          SizedBox(height: 20),
+                            SizedBox(height: spacingSize * 3.5),
 
-                          ElevatedButton(
-                            style: ElevatedButton.styleFrom(
-                              minimumSize: Size(button_width, button_height),
-                              padding: EdgeInsets.symmetric(
-                                horizontal: button_padding_horizontal, 
-                                vertical: button_padding_vertical
+                            ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                minimumSize: Size(buttonWidth, buttonHeight),
+                                padding: EdgeInsets.symmetric(
+                                  horizontal: buttonPaddingHorizontal,
+                                  vertical: buttonPaddingVertical,
+                                ),
+                                backgroundColor: buttonBackgroundColor,
                               ),
-                              foregroundColor:
-                                  Theme.of(context).brightness == Brightness.dark
-                                      ? Colors.white
-                                      : Colors.black,
+                              onPressed: () {
+                                Navigator.pushNamed(context, '/signuppage');
+                              },
+                              child: Text(
+                                'Sign Up',
+                                style: TextStyle(
+                                  fontSize: fontsizeButton,
+                                  color: buttonTextColor,
+                                ),
+                              ),
                             ),
-                            onPressed: () {
-                              Navigator.pushNamed(context, '/loginpage');
-                            },
-                            child: Text(
-                              'Log In',
-                              style: TextStyle(fontSize: fontsize_button),
+
+                            const SizedBox(height: 20),
+
+                            ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                minimumSize: Size(buttonWidth, buttonHeight),
+                                padding: EdgeInsets.symmetric(
+                                  horizontal: buttonPaddingHorizontal,
+                                  vertical: buttonPaddingVertical,
+                                ),
+                                backgroundColor: buttonBackgroundColor,
+                              ),
+                              onPressed: () {
+                                Navigator.pushNamed(context, '/loginpage');
+                              },
+                              child: Text(
+                                'Log In',
+                                style: TextStyle(
+                                  fontSize: fontsizeButton,
+                                  color: buttonTextColor,  
+                                ),
+                              ),
                             ),
-                          ),
 
-                          SizedBox(height: spacing_size * 5),
+                            SizedBox(height: spacingSize * 5),
 
-                          Center(
-                            child: ClipRRect(
+                            ClipRRect(
                               borderRadius: BorderRadius.circular(75),
                               child: Image.asset(
                                 'assets/logo.png',
-                                width: logo_size,
-                                height: logo_size,
+                                width: logoSize,
+                                height: logoSize,
                                 fit: BoxFit.cover,
                               ),
                             ),
-                          ),
 
-                          SizedBox(height: spacing_size * 2),
-                        ],
+                            SizedBox(height: spacingSize * 2),
+                          ],
+                        ),
                       ),
                     ],
                   ),
