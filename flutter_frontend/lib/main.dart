@@ -3,6 +3,9 @@ import 'package:flutter/services.dart';
 import 'firebase_options.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:timezone/data/latest_all.dart' as tz;
+import 'package:timezone/timezone.dart' as tz;
+import 'package:flutter_timezone/flutter_timezone.dart';
 import 'screens/start_page.dart';
 import 'screens/login_page.dart';
 import 'screens/sign_up_page.dart';
@@ -11,6 +14,7 @@ import 'screens/profile_page.dart';
 import 'screens/list_page.dart';
 import 'screens/list_collection.dart';
 import 'screens/filler_page.dart';
+import 'services/notif_service.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -23,6 +27,14 @@ void main() async {
     DeviceOrientation.portraitUp,
     DeviceOrientation.portraitDown
   ]);
+
+  tz.initializeTimeZones();
+  
+  // Get the local timezone and set it for the timezone package
+  final timezoneInfo = await FlutterTimezone.getLocalTimezone();
+  tz.setLocalLocation(tz.getLocation(timezoneInfo.identifier));
+
+  await NotifService.instance.init();
 
   runApp(const MyApp());
 }

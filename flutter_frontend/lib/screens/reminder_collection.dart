@@ -1,22 +1,80 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter_frontend/screens/list_page.dart';
 import 'package:flutter_frontend/widgets/nav_bar.dart';
+import 'package:flutter_frontend/services/notif_service.dart';
 
-class ListCollectionPage extends StatelessWidget {
-  const ListCollectionPage({super.key});
+class ReminderCollectionPage extends StatelessWidget {
+  const ReminderCollectionPage({super.key});
 
-  void createNewList(BuildContext context) {
-    final controller = TextEditingController();
+  Future<DateTime?> pickDate(BuildContext context) async {
+
+    final date = await showDatePicker(
+      context: context,
+      initialDate: DateTime.now(),
+      firstDate: DateTime.now(),
+      lastDate: DateTime(DateTime.now().year + 5),
+    );
+
+    if (date == null) return null;
+
+    final time = await showTimePicker(
+      context: context,
+      initialTime: TimeOfDay.now(),
+    );
+
+    if (time == null) return null;
+
+    return DateTime(
+      date.year, 
+      date.month, 
+      date.day, 
+      time.hour, 
+      time.minute
+    );
+  }
+
+  int createUniqueID() { // Generate a unique ID based on the current timestamp
+    return DateTime.now().millisecondsSinceEpoch ~/ 1000;
+  }
+
+  void createNewReminder(BuildContext context ) {
+    // Controllers and variable to store selected date and time
+    final controller  = TextEditingController();
+    final timeController = TextEditingController();
+    DateTime? selectedReminderDate;
+
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text("Create New List"),
-        content: TextField(
-          controller: controller,
-          decoration: InputDecoration(hintText: "Reminder Recipient"),
+        title: Text("Create New Reminder List"),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            TextField(
+              controller: controller,
+              decoration: InputDecoration(hintText: "Reminder Name"),
+            ),
+            SizedBox(height: 16),
+            TextField(
+              controller: timeController,
+              readOnly: true,
+              decoration: InputDecoration(
+                hintText: "Select Reminder Date & Time",
+                suffixIcon: Icon(Icons.calendar_today),
+              ),
+              onTap: () async {
+                final selectedDateTime = await pickDate(context);
+                if (selectedDateTime != null) {
+                  selectedReminderDate = selectedDateTime; // Store the selected date and time in a variable
+                  timeController.text = selectedDateTime.toString();
+                }
+                
+              },
+            )
+          ]
         ),
+
         actions: [
           TextButton(
             onPressed: () {
@@ -27,31 +85,35 @@ class ListCollectionPage extends StatelessWidget {
           ElevatedButton(
             onPressed: () async {
               final userID = FirebaseAuth.instance.currentUser!.uid;
-              final reminderRecipient = controller.text.trim();
-              if (reminderRecipient.isNotEmpty) {
+              final reminderListName = controller.text.trim();
+              final int notifID = createUniqueID(); // Generate a unique notification ID for this reminder
+              if (reminderListName.isNotEmpty) {
+
+                if (context.mounted) {
+                  Navigator.pop(context);
+                }
                 await FirebaseFirestore.instance
                     .collection('accounts')
                     .doc(userID)
                     .collection('reminder_lists')
                     .add({'reminder_recipient': reminderRecipient});
-                if (context.mounted) {
-                  Navigator.pop(context);
-                }
+                Navigator.pop(context);
               }
             },
             child: Text("Create"),
           ),
+          
         ],
-      )
+      ),
     );
   }
 
-  void deleteList(BuildContext context, String listID) {
+  void deleteReminder(BuildContext context, String reminderListID) {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text("Delete List"),
-        content: Text("Are you sure you want to delete this list?"),
+        title: Text("Delete Reminder List"),
+        content: Text("Are you sure you want to delete this reminder list?"),
         actions: [
           TextButton(
             onPressed: () {
@@ -66,7 +128,7 @@ class ListCollectionPage extends StatelessWidget {
                   .collection('accounts')
                   .doc(userID)
                   .collection('reminder_lists')
-                  .doc(listID)
+                  .doc(reminderListID)
                   .delete();
               if (context.mounted) {
                 Navigator.pop(context);
@@ -75,7 +137,7 @@ class ListCollectionPage extends StatelessWidget {
             child: Text("Delete"),
           ),
         ],
-      )
+      ),
     );
   }
 
@@ -85,9 +147,9 @@ class ListCollectionPage extends StatelessWidget {
     final userID = FirebaseAuth.instance.currentUser!.uid; // Get current user's UID
 
     return Scaffold(
-      appBar: AppBar(title: Text("My lists")),
+      appBar: AppBar(title: Text("Reminders")),
       floatingActionButton: FloatingActionButton(
-        onPressed: () => createNewList(context), // Call createNewList when FAB is pressed
+        onPressed: () => createNewReminder(context),
         child: Icon(Icons.add),
       ),
       body: StreamBuilder<QuerySnapshot>(
@@ -105,17 +167,16 @@ class ListCollectionPage extends StatelessWidget {
             itemCount: docs.length,
             itemBuilder: (context, index) {
               final data = docs[index].data() as Map<String, dynamic>; // Get data of each document as a Map
-              final listID = docs[index].id;
+              final reminderlistID = docs[index].id;
               return ListTile(
-                title: Text(data['gift_recipient']),
+                title: Text(data['reminder_name']),
+                subtitle: Text(data['reminder_date'] != null 
+                  ? DateTime.parse(data['reminder_date'].toDate().toString()).toLocal().toString() 
+                  : "No date set"),
                 trailing: IconButton(
-                  icon: Icon(Icons.delete, color: Colors.red),
-                  onPressed: () => deleteList(context, listID), // Call deleteList when delete button is pressed
+                  icon: Icon(Icons.delete),
+                  onPressed: () => deleteReminder(context, reminderlistID),
                 ),
-                onTap: () {
-                  Navigator.push(context, MaterialPageRoute(builder: (context) => ListPage(listID: listID)), // Navigate to ListPage when a list is tapped
-                  );
-                }
               );
             },
           );

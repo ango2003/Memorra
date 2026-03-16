@@ -85,8 +85,6 @@ void deleteGift(BuildContext context, String listID, String giftID) {
                 .doc(userID)
                 .collection('reminder_lists')
                 .doc(listID)
-                .collection('reminders')
-                .doc(giftID)
                 .delete();
             if (context.mounted) Navigator.pop(context);
           },
@@ -115,8 +113,6 @@ class _ListPageState extends State<ListPage> {
             .collection("accounts")
             .doc(userID)
             .collection("reminder_lists")
-            .doc(widget.listID)
-            .collection("gifts")
             .snapshots(),
         builder: (context, snapshot) {
           if (!snapshot.hasData) return const Center(child: CircularProgressIndicator());
