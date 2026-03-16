@@ -25,6 +25,7 @@ class ConnectionsService {
     final invite = ConnectionInvite(
       token: token,
       inviterId: userId,
+      redeemBy: userId,
       isUsed: false,
       createdAt: DateTime.now(),
       expiresAt: DateTime.now().add(time),
@@ -35,29 +36,36 @@ class ConnectionsService {
   }
 
   Future<bool> redeemInvite(String token) async {
-    final inviteDoc = await firestore.collection('connection_invites').doc(token).get();
     
     try {
-        await firestore.runTransaction((transaction) async {
-          final doc = await transaction.get(inviteDoc.reference);
-          if (!doc.exists) {
-            throw Exception('Invite not found');
-          }
+      await firestore.runTransaction((transaction) async {
+        final inviteRef = firestore.collection('connection_invites').doc(token);
+        final doc = await transaction.get(inviteRef);
+        if (!doc.exists) {
+          throw Exception('Invite not found');
+        }
   
-          final invite = ConnectionInvite.fromFirestore(doc.data()!, doc.id);
+        final invite = ConnectionInvite.fromFirestore(doc.data()!, doc.id);
   
-          if (invite.isUsed || invite.expiresAt.isBefore(DateTime.now()) || invite.inviterId == userId) {
-            throw Exception('Invalid or expired invite');
-          }
+        if (invite.isUsed || invite.expiresAt.isBefore(DateTime.now()) || invite.inviterId == userId) {
+          throw Exception('Invalid or expired invite');
+        }
+        
+        final connectionId = _generateConnectionId(invite.inviterId, userId);
+
+        transaction.update(inviteRef, {'isUsed': true, 'redeemBy': userId});
   
-          transaction.update(inviteDoc.reference, {'isUsed': true});
-  
-          final connectionRef = firestore.collection('connections').doc();
-          transaction.set(connectionRef, {
-            'participants': [invite.inviterId, userId],
-            'createdAt': DateTime.now(),
-          });
+        final connectionRef = firestore.collection('connections').doc(connectionId);
+        transaction.set(connectionRef, {
+         'participants': [invite.inviterId, userId],
+         'users': {
+            invite.inviterId: true,
+            userId: true,
+          },
+         'redeemedBy': userId,
+          'createdAt': DateTime.now(),
         });
+     });
     } catch (e) {
       return false;
     }
@@ -115,10 +123,15 @@ class ConnectionsService {
           throw Exception('You are not the receiver of this connection request');
         }
 
-        final connectionsRef = firestore.collection('connections').doc();
+        final connectionId = _generateConnectionId(request.senderId, request.receiverId);
+        final connectionsRef = firestore.collection('connections').doc(connectionId);
 
         transaction.set(connectionsRef, {
           'participants': [request.senderId, request.receiverId],
+          'users': {
+            request.senderId: true,
+            request.receiverId: true,
+          },
           'createdAt': DateTime.now(),
         });
         
@@ -172,21 +185,15 @@ class ConnectionsService {
   }
 
   Future<bool> isConnected(String userId1, String userId2) async {
-    final snapshot = await firestore
-        .collection('connections')
-        .where('participants', arrayContains: userId1)
-        .get();
-
-    return snapshot.docs.any((doc) {
-      final connection = Connection.fromFirestore(doc.data(), doc.id);
-      return connection.participants.contains(userId2);
-    });
+    final connectionId = _generateConnectionId(userId1, userId2);
+    final doc = await firestore.collection('connections').doc(connectionId).get();
+    return doc.exists;
   }
 
   Stream<List<Connection>> getUserConnections(String userId) {
     return firestore
         .collection('connections')
-        .where('participants', arrayContains: userId)
+        .where('users.$userId', isEqualTo: true)
         .orderBy('createdAt', descending: true)
         .snapshots()
         .map((snapshot) => snapshot.docs
@@ -215,4 +222,9 @@ class ConnectionsService {
             .map((doc) => ConnectionRequest.fromFirestore(doc.data(), doc.id))
             .toList());
   }
+}
+
+String _generateConnectionId(String userId1, String userId2) {
+  final connectionId = [userId1, userId2]..sort();
+  return connectionId.join('_');
 }
