@@ -3,19 +3,31 @@ import 'package:flutter/material.dart';
 class HomeTile extends StatelessWidget {
   final String title;
   final VoidCallback onTap;
+  final bool inMiddle;
 
   const HomeTile({
     super.key,
     required this.title,
     required this.onTap,
+    required this.inMiddle,
   });
 
   @override
   Widget build(BuildContext context) {
+    final size = MediaQuery.of(context).size;
+    final width = size.width;
+    final height = size.height;
+
+    final base = width < height ? width : height;
+    
+    final double tile_height = height * 0.22;
+    final double font_size = base * 0.05;
+    final FontWeight font_weight = FontWeight.w600;
+
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        height: 245,
+        height: inMiddle ? tile_height / 1.5 : tile_height,
         decoration: BoxDecoration(
           color: Colors.grey,
           borderRadius: BorderRadius.circular(20),
@@ -31,8 +43,8 @@ class HomeTile extends StatelessWidget {
         child: Text(
           title,
           style: TextStyle(
-            fontSize: 20,
-            fontWeight: FontWeight.w600,
+            fontSize: font_size,
+            fontWeight: font_weight,
           ),
         ),
       ),
