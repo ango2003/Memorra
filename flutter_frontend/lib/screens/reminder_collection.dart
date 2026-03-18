@@ -101,6 +101,7 @@ class ReminderCollectionPage extends StatelessWidget {
                       'reminder_date': selectedReminderDate,
                       'notif_ID': notifID, // Generate a unique notification ID for this reminder
                     });
+<<<<<<< HEAD
                 // await NotifService.instance.scheduleNotification( // Schedule a local notification for the selected date and time
                 //   id: notifID, // Use the unique notification ID generated for this reminder
                 //   title: reminderListName,
@@ -114,6 +115,15 @@ class ReminderCollectionPage extends StatelessWidget {
                   "You have a reminder set for ${selectedReminderDate.toString()}",
                   selectedReminderDate!,
                 );
+=======
+                await NotifService.instance.scheduleNotification( // Schedule a local notification for the selected date and time
+                  id: notifID, // Use the unique notification ID generated for this reminder
+                  title: reminderListName,
+                  body: "You have a reminder set for ${selectedReminderDate.toString()}",
+                  scheduledDate: selectedReminderDate!,
+                );
+                await NotifService.instance.printPendingNotification(); // Print pending notifications to the console for debugging
+>>>>>>> origin/main
               }
             },
             child: Text("Create"),
