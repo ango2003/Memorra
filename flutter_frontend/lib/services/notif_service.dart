@@ -1,7 +1,6 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'package:timezone/timezone.dart' as tz;
 
 Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   await Firebase.initializeApp();
@@ -69,103 +68,37 @@ class NotifService {
 
   }
 
-  // Method to show a local notification
-  // Future<void> scheduleNotification({ 
-    
-  //   required int id,
-  //   required String title,
-  //   required String body,
-  //   required DateTime scheduledDate,
-  // }) async {
-  //   try {
-  //   await flutterLocalNotificationsPlugin.zonedSchedule(
-  //     id: id,
-  //     title: title,
-  //     body: body,
-  //     scheduledDate: tz.TZDateTime.from(scheduledDate, tz.local),
-  //     notificationDetails: const NotificationDetails( 
-  //       android: AndroidNotificationDetails(
-  //         'reminder_channel', 
-  //         'Reminder Notifications', 
-  //         channelDescription: 'Notifications for reminders',
-  //         importance: Importance.max,
-  //         priority: Priority.high,
-  //       ),
-  //       iOS: DarwinNotificationDetails(
-  //         sound: 'default.wav',
-  //         presentAlert: true,
-  //         presentBadge: true,
-  //         presentSound: true,
-  //       ),
-  //     ),
-  //     androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
-  //     matchDateTimeComponents: null,
+  Future<void> scheduleWithTimer(
+    int id,
+    String title,
+    String body,
+    DateTime scheduledDate
+    ) async {
+    final delay = scheduledDate.difference(DateTime.now());
 
-  //   ); 
-  //   print("Notification scheduled successfully!");
-  //   } catch (e) {
-  //     print("Error scheduling notification: $e");
-  //   }
-  // }
-  Future<void> scheduleNotification({ 
-  required int id,
-  required String title,
-  required String body,
-  required DateTime scheduledDate,
-}) async {
-  try {
-    // Convert scheduledDate to TZDateTime
-    final tzScheduled = tz.TZDateTime.from(scheduledDate, tz.local);
-
-    // Notification details
-    const notificationDetails = NotificationDetails(
-      android: AndroidNotificationDetails(
-        'reminder_channel', 
-        'Reminder Notifications', 
-        channelDescription: 'Notifications for reminders',
-        importance: Importance.max,
-        priority: Priority.high,
-      ),
-      iOS: DarwinNotificationDetails(
-        sound: 'default.wav',
-        presentAlert: true,
-        presentBadge: true,
-        presentSound: true,
-      ),
-    );
-
-    // If scheduled time is now or in the past, show immediately
-    if (scheduledDate.isBefore(DateTime.now().add(const Duration(seconds: 1)))) {
+    Future.delayed(delay, () async {
       await flutterLocalNotificationsPlugin.show(
         id: id,
-        title: title,
-        body: body,
-        notificationDetails: notificationDetails,
-        payload: 'foreground_notification',
+        title: 'Reminder',
+        body: 'This is your scheduled reminder.',
+        notificationDetails: const NotificationDetails(
+          android: AndroidNotificationDetails(
+            'reminder_channel', 
+            'Reminder Notifications', 
+            channelDescription: 'Notifications for reminders',
+            importance: Importance.max,
+            priority: Priority.high,
+          ),
+          iOS: DarwinNotificationDetails(
+            sound: 'default.wav',
+            presentAlert: true,
+            presentBadge: true,
+            presentSound: true,
+          ),
+        ),
       );
-      print('Notification shown immediately (foreground).');
-      return;
     }
-
-    // Otherwise, schedule normally
-    await flutterLocalNotificationsPlugin.zonedSchedule(
-      id: id,
-      title: title,
-      body: body,
-      scheduledDate: tzScheduled,
-      notificationDetails: notificationDetails,
-      androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
-      matchDateTimeComponents: null,
-    ); 
-
-    print("Notification scheduled successfully for $scheduledDate!");
-  } catch (e) {
-    print("Error scheduling notification: $e");
+    );
   }
-}
-  Future<void> printPendingNotification() async {
-    final pending = await flutterLocalNotificationsPlugin.pendingNotificationRequests();
 
-    print("Pending Notifications: ${pending.length}");
-  }
 }
