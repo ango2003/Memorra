@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../services/connections_service.dart';
+import '../widgets/nav_bar.dart';
 
 // ChatGPT TEST PAGE FOR CONNECTIONS SERVICE - NOT FOR PRODUCTION USE
 class ConnectionsTestPage extends StatefulWidget {
@@ -113,6 +114,9 @@ class _ConnectionsTestPageState extends State<ConnectionsTestPage> {
           ],
         ),
       ),
+      bottomNavigationBar: NavBar(
+          currentIndex: 3,
+        ),
     );
   }
 }
