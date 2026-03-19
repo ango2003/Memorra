@@ -29,7 +29,7 @@ class HomeTile extends StatelessWidget {
       child: Container(
         height: inMiddle ? tileHeight / 1.5 : tileHeight,
         decoration: BoxDecoration(
-          color: Colors.grey,
+          color: Colors.blueGrey,
           borderRadius: BorderRadius.circular(20),
           boxShadow: [
             BoxShadow(
@@ -42,6 +42,7 @@ class HomeTile extends StatelessWidget {
         alignment: Alignment.center,
         child: Text(
           title,
+          textAlign: TextAlign.center,
           style: TextStyle(
             fontSize: fontSize,
             fontWeight: fontWeight,
