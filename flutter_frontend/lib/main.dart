@@ -52,17 +52,16 @@ class _MyAppState extends State<MyApp> {
 
   Future<void> _initDeepLinkListener() async {
     try {
-      final initialUrl = await getInitialUri();
+      final appLinks = AppLinks();
+      final initialUrl = await appLinks.getInitialLink();
 
       if (!_handleInitialLink && initialUrl != null) {
         _handleInitialLink = true;
         DeepLinkService.instance.handleIncomingLink(initialUrl);
       }
       
-      uriLinkStream.listen((Uri? url) {
-        if (url != null) {
-          DeepLinkService.instance.handleIncomingLink(url);
-        }
+      appLinks.uriLinkStream.listen((Uri url) {
+        DeepLinkService.instance.handleIncomingLink(url);
       });
 
     } catch (e) {
