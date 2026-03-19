@@ -11,18 +11,28 @@ class ConnectionsService {
   final FirebaseFirestore firestore = FirebaseFirestore.instance;
   final FirebaseAuth auth = FirebaseAuth.instance;
 
-  String get userId => auth.currentUser!.uid;
+  String get userId {
+    final user = auth.currentUser;
+    if (user == null) {
+      throw Exception('User not authenticated');
+    }
+    return user.uid;
+  }
 
   Future<String> createInvite(Duration time) async {
     String token;
-    DocumentSnapshot tokenDoc;
     
-    do {
+    while (true) {
       token = TokenGenerator.generateToken(10);
-      tokenDoc = await firestore.collection('connection_invites').doc(token).get();
-    } while (tokenDoc.exists);
 
-    final invite = ConnectionInvite(
+      final inviteRef = firestore.collection('connection_invites').doc(token);
+      final success = await firestore.runTransaction((transaction) async {
+        final inviteDoc = await transaction.get(inviteRef);
+        if (inviteDoc.exists) {
+          return false; // Token already exists, generate a new one
+        }
+
+      final invite = ConnectionInvite(
       token: token,
       inviterId: userId,
       redeemBy: userId,
@@ -31,7 +41,12 @@ class ConnectionsService {
       expiresAt: DateTime.now().add(time),
     );
 
-    await firestore.collection('connection_invites').doc(token).set(invite.toFirestore());
+    transaction.set(inviteRef, invite.toFirestore());
+    return true;
+    });
+    
+    if (success) break; // Successfully created invite, exit loop
+    }
     return token;
   }
 
@@ -40,22 +55,27 @@ class ConnectionsService {
     try {
       await firestore.runTransaction((transaction) async {
         final inviteRef = firestore.collection('connection_invites').doc(token);
-        final doc = await transaction.get(inviteRef);
-        if (!doc.exists) {
+        final inviteDoc = await transaction.get(inviteRef);
+        if (!inviteDoc.exists) {
           throw Exception('Invite not found');
         }
   
-        final invite = ConnectionInvite.fromFirestore(doc.data()!, doc.id);
+        final invite = ConnectionInvite.fromFirestore(inviteDoc.data()!, inviteDoc.id);
   
         if (invite.isUsed || invite.expiresAt.isBefore(DateTime.now()) || invite.inviterId == userId) {
           throw Exception('Invalid or expired invite');
         }
         
         final connectionId = _generateConnectionId(invite.inviterId, userId);
+        final connectionRef = firestore.collection('connections').doc(connectionId);
+
+        final connectionDoc = await transaction.get(connectionRef);
+        if (connectionDoc.exists) {
+          throw Exception('You are already connected with this user');
+        }
 
         transaction.update(inviteRef, {'isUsed': true, 'redeemBy': userId});
   
-        final connectionRef = firestore.collection('connections').doc(connectionId);
         transaction.set(connectionRef, {
          'participants': [invite.inviterId, userId],
          'users': {
@@ -63,7 +83,7 @@ class ConnectionsService {
             userId: true,
           },
          'redeemedBy': userId,
-          'createdAt': DateTime.now(),
+          'createdAt': FieldValue.serverTimestamp(),
         });
      });
     } catch (e) {
@@ -88,6 +108,15 @@ class ConnectionsService {
     
     if (snapshot.docs.isNotEmpty) return false;
     
+    final reversesnapshot = await firestore
+        .collection('connection_requests')
+        .where('senderId', isEqualTo: receiverId)
+        .where('receiverId', isEqualTo: senderId)
+        .where('status', isEqualTo: RequestStatus.pending.name)
+        .get();
+
+    if (reversesnapshot.docs.isNotEmpty) return false;
+
     final request = ConnectionRequest(
       requestId: '', // Firestore will generate the ID
       senderId: senderId,
@@ -107,6 +136,7 @@ class ConnectionsService {
     try {
       await firestore.runTransaction((transaction) async {
         final doc = await transaction.get(requestRef);
+        
         if (!doc.exists) {
           throw Exception('Connection request not found');
         }
@@ -126,13 +156,18 @@ class ConnectionsService {
         final connectionId = _generateConnectionId(request.senderId, request.receiverId);
         final connectionsRef = firestore.collection('connections').doc(connectionId);
 
+        final connectionDoc = await transaction.get(connectionsRef);
+        if (connectionDoc.exists) {
+          throw Exception('You are already connected with this user');
+        }
+
         transaction.set(connectionsRef, {
           'participants': [request.senderId, request.receiverId],
           'users': {
             request.senderId: true,
             request.receiverId: true,
           },
-          'createdAt': DateTime.now(),
+          'createdAt': FieldValue.serverTimestamp(),
         });
         
         transaction.update(requestRef, {'status': RequestStatus.accepted.name});

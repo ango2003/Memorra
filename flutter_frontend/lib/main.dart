@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'firebase_options.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:app_links/app_links.dart';
+import 'firebase_options.dart';
 import 'screens/start_page.dart';
 import 'screens/login_page.dart';
 import 'screens/sign_up_page.dart';
@@ -12,6 +13,7 @@ import 'screens/list_page.dart';
 import 'screens/list_collection.dart';
 import 'screens/filler_page.dart';
 import 'services/notif_service.dart';
+import 'services/deep_link_service.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -30,8 +32,41 @@ void main() async {
   runApp(const MyApp());
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
   const MyApp({super.key});
+
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  @override
+  void initState() {
+    super.initState();
+    _initDeepLinkListener();
+  }
+  
+  bool _handleInitialLink = false;
+
+  Future<void> _initDeepLinkListener() async {
+    try {
+      final initialUrl = await getInitialUri();
+
+      if (!_handleInitialLink && initialUrl != null) {
+        _handleInitialLink = true;
+        DeepLinkService.instance.handleIncomingLink(initialUrl);
+      }
+      
+      uriLinkStream.listen((Uri? url) {
+        if (url != null) {
+          DeepLinkService.instance.handleIncomingLink(url);
+        }
+      });
+
+    } catch (e) {
+      print('Error occurred while initializing deep link: $e');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
