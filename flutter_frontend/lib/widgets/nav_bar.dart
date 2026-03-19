@@ -36,69 +36,69 @@ class NavBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final screen_width = MediaQuery.of(context).size.width;
-    final screen_height = MediaQuery.of(context).size.height;
+    final screenWidth = MediaQuery.of(context).size.width;
+    final screenHeight = MediaQuery.of(context).size.height;
 
-    final base = screen_width < screen_height ? screen_width : screen_height;
+    final base = screenWidth < screenHeight ? screenWidth : screenHeight;
 
-    final icon_size = base * 0.055;
-    final bar_height = screen_height * 0.09;
+    final iconSize = base * 0.055;
+    final barHeight = screenHeight * 0.09;
 
-    final double outer_curve = 20;
-    final double nav_spacing = 4;
-    final FontWeight unchosen_icon = FontWeight.w400;
-    final FontWeight chosen_icon = FontWeight.w600;
+    final double outerCurve = 20;
+    final double navSpacing = 4;
+    final FontWeight unchosenIcon = FontWeight.w400;
+    final FontWeight chosenIcon = FontWeight.w600;
 
-    Color nav_bar_bg_color = isDark 
+    Color navBarBgColor = isDark 
       ? AppColors.buttonBackgroundDark.withValues(alpha: 0.4) 
       : AppColors.buttonBackgroundLight.withValues(alpha: 0.15);
     
-    Color icon_selected = isDark
+    Color iconSelected = isDark
       ? AppColors.navSelectedDark
       : AppColors.navSelectedLight;
-    Color icon_unselected = isDark
+    Color iconUnselected = isDark
       ? AppColors.navUnselectedDark
       : AppColors.navUnselectedLight;
 
     return SizedBox(
-      height: bar_height,
+      height: barHeight,
       child: Padding(
-        padding: EdgeInsets.only(left: nav_spacing/2, right: nav_spacing/2, bottom: nav_spacing),
+        padding: EdgeInsets.only(left: navSpacing/2, right: navSpacing/2, bottom: navSpacing),
         child: ClipRRect(
           borderRadius: BorderRadius.only(
-            topLeft: Radius.circular(outer_curve),
-            topRight: Radius.circular(outer_curve),
-            bottomLeft: Radius.circular(outer_curve),
-            bottomRight: Radius.circular(outer_curve),
+            topLeft: Radius.circular(outerCurve),
+            topRight: Radius.circular(outerCurve),
+            bottomLeft: Radius.circular(outerCurve),
+            bottomRight: Radius.circular(outerCurve),
           ),
           child: BackdropFilter(
             filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
             child: BottomNavigationBar(
-              backgroundColor: nav_bar_bg_color,
+              backgroundColor: navBarBgColor,
               elevation: 0,
               currentIndex: currentIndex == -1 ? 0 : currentIndex,
               selectedItemColor: currentIndex == -1
-              ? icon_unselected
-              : icon_selected,
-              unselectedItemColor: icon_unselected,
+              ? iconUnselected
+              : iconSelected,
+              unselectedItemColor: iconUnselected,
               selectedIconTheme: IconThemeData(
                 color: currentIndex == -1
-                ? icon_unselected
-                : icon_selected,
-                size: icon_size,
+                ? iconUnselected
+                : iconSelected,
+                size: iconSize,
               ),
               selectedLabelStyle: TextStyle(
-                color: icon_selected,
-                fontWeight: currentIndex == -1 ? unchosen_icon : chosen_icon,
+                color: iconSelected,
+                fontWeight: currentIndex == -1 ? unchosenIcon : chosenIcon,
               ),
               unselectedLabelStyle: TextStyle(
-                color: icon_unselected,
-                fontWeight: unchosen_icon,
+                color: iconUnselected,
+                fontWeight: unchosenIcon,
               ),
               showSelectedLabels: false,
               showUnselectedLabels: false,
               type: BottomNavigationBarType.fixed,
-              unselectedIconTheme: IconThemeData(size: icon_size),
+              unselectedIconTheme: IconThemeData(size: iconSize),
               onTap: (index) {
                 Widget target;
                 if (index == 0) {
