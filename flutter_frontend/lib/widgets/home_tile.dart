@@ -20,14 +20,14 @@ class HomeTile extends StatelessWidget {
 
     final base = width < height ? width : height;
     
-    final double tile_height = height * 0.22;
-    final double font_size = base * 0.05;
-    final FontWeight font_weight = FontWeight.w600;
+    final double tileHeight = height * 0.22;
+    final double fontSize = base * 0.05;
+    final FontWeight fontWeight = FontWeight.w600;
 
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        height: inMiddle ? tile_height / 1.5 : tile_height,
+        height: inMiddle ? tileHeight / 1.5 : tileHeight,
         decoration: BoxDecoration(
           color: Colors.grey,
           borderRadius: BorderRadius.circular(20),
@@ -43,8 +43,8 @@ class HomeTile extends StatelessWidget {
         child: Text(
           title,
           style: TextStyle(
-            fontSize: font_size,
-            fontWeight: font_weight,
+            fontSize: fontSize,
+            fontWeight: fontWeight,
           ),
         ),
       ),

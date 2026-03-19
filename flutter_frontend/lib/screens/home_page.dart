@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../widgets/home_tile.dart';
 import '../widgets/nav_bar.dart';
 import '../widgets/background.dart';
+import '../themes/app_colors.dart';
 
 class HomePage extends StatelessWidget {
   final String userId;
@@ -9,6 +10,7 @@ class HomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     final size = MediaQuery.of(context).size;
     final width = size.width;
     final height = size.height;
@@ -16,8 +18,13 @@ class HomePage extends StatelessWidget {
     final base = width < height ? width : height;
 
     final sizeboxSize = base * 0.05;
+    final titleFontSize = base * 0.08;
     final fontSize = base * 0.08;
     final horizontalSpacing = width * 0.02;
+    final h_padding = width * 0.01;
+    final w_padding = height * 0.01;
+
+    Color titleColor = isDark ? AppColors.titleDark : AppColors.titleLight;
 
     return AppBackground(
       child: Scaffold(
@@ -30,16 +37,14 @@ class HomePage extends StatelessWidget {
             children: [
               SizedBox(height: sizeboxSize),
               Padding(
-                padding: EdgeInsets.symmetric(horizontal: 20, vertical: 30),
+                padding: EdgeInsets.symmetric(horizontal: h_padding, vertical: w_padding),
                 child: Text(
                   "How Can We Help $userId?",
                   textAlign: TextAlign.center,
                   style: TextStyle(
-                    fontSize: fontSize,
+                    fontSize: titleFontSize,
                     fontWeight: FontWeight.bold,
-                    color: Theme.of(context).brightness == Brightness.dark
-                        ? Colors.white
-                        : Color(0xFF071F4A),
+                    color: titleColor,
                   ),
                 ),
               ),

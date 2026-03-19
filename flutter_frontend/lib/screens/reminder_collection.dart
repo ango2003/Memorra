@@ -192,7 +192,7 @@ class ReminderCollectionPage extends StatelessWidget {
         },
       ),
       bottomNavigationBar: NavBar(
-        currentIndex: 3,
+        currentIndex: 1,
       ),
     );
   }

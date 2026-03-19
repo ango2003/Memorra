@@ -124,7 +124,8 @@ class _SignUpPageState extends State<SignUpPage> {
     Color titleColor = isDark ? AppColors.titleDark : AppColors.titleLight;
     Color subtitleColor = isDark ? AppColors.subtitleDark : AppColors.subtitleLight;
     Color buttonTextColor = isDark ? AppColors.buttonTextDark : AppColors.buttonTextLight;
-    Color buttonBackgroundColor = isDark ? AppColors.buttonBackgroundDark : AppColors.buttonBackgroundLight;
+    Color buttonBGColor = isDark ? AppColors.buttonBackgroundDark : AppColors.buttonBackgroundLight;
+    Color popUpBGColor = isDark ? AppColors.buttonBackgroundDark : AppColors.buttonBackgroundLight;
 
     return Scaffold(
       extendBody: true,
@@ -220,7 +221,7 @@ class _SignUpPageState extends State<SignUpPage> {
                                   showDialog(
                                     context: context,
                                     builder: (context) => AlertDialog(
-                                      backgroundColor: buttonBackgroundColor,
+                                      backgroundColor: popUpBGColor,
                                       shape: RoundedRectangleBorder(
                                         borderRadius: BorderRadius.all(Radius.circular(20)),
                                       ),
@@ -370,7 +371,7 @@ class _SignUpPageState extends State<SignUpPage> {
                                     horizontal: buttonPaddingHorizontal, 
                                     vertical: buttonPaddingVertical
                                   ),
-                                  backgroundColor: buttonBackgroundColor,
+                                  backgroundColor: buttonBGColor,
                                 ),
                                 onPressed: createAccount,
                                 child: Text(
@@ -395,7 +396,7 @@ class _SignUpPageState extends State<SignUpPage> {
                                 horizontal: buttonPaddingHorizontal, 
                                 vertical: buttonPaddingVertical
                               ),
-                              backgroundColor:buttonBackgroundColor,
+                              backgroundColor:buttonBGColor,
                             ),
                               onPressed: signInWithGoogle,
                               child: Text(
@@ -417,7 +418,7 @@ class _SignUpPageState extends State<SignUpPage> {
                                 horizontal: buttonPaddingHorizontal, 
                                 vertical: buttonPaddingVertical
                               ),
-                              backgroundColor: buttonBackgroundColor,
+                              backgroundColor: buttonBGColor,
                             ),
                             onPressed: () {
                               Navigator.pushNamed(context, '/startpage');

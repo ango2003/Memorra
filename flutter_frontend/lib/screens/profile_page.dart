@@ -50,6 +50,12 @@ class _ProfilePageState extends State<ProfilePage> {
             mainAxisSize: MainAxisSize.min,
             children: [
               ElevatedButton(
+                onPressed:() {
+                  Navigator.pushNamed(context, '/listcollection');
+                },
+                child: Text("Friend's Lists"),
+              ),
+              ElevatedButton(
                 onPressed: _isLoading ? null : () { signOut(); },
                 child: _isLoading
                   ? CircularProgressIndicator()
