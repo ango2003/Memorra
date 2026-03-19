@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import '../screens/home_page.dart';
 import '../screens/profile_page.dart';
-import '../screens/list_collection.dart';
+import '../screens/connections_page.dart';
 import '../screens/reminder_collection.dart';
 import '../screens/filler_page.dart';
+import '../themes/app_colors.dart';
 import 'dart:ui';
 
 class NavBar extends StatelessWidget {
@@ -24,74 +25,82 @@ class NavBar extends StatelessWidget {
   final isSelected = currentIndex == index && currentIndex != -1;
 
   return BottomNavigationBarItem(
-    icon: Icon(isSelected ? activeIcon : icon),
+    icon: Icon(
+      isSelected ? activeIcon : icon,
+      color: null,
+    ),
     label: label,
   );
 }
 
   @override
   Widget build(BuildContext context) {
-    final screenWidth = MediaQuery.of(context).size.width;
-    final screenHeight = MediaQuery.of(context).size.height;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final screen_width = MediaQuery.of(context).size.width;
+    final screen_height = MediaQuery.of(context).size.height;
 
-    final iconSize = screenWidth * 0.05; // 7% of screen width
+    final base = screen_width < screen_height ? screen_width : screen_height;
+
+    final icon_size = base * 0.055;
+    final bar_height = screen_height * 0.09;
+
+    final double outer_curve = 20;
+    final double nav_spacing = 4;
+    final FontWeight unchosen_icon = FontWeight.w400;
+    final FontWeight chosen_icon = FontWeight.w600;
+
+    Color nav_bar_bg_color = isDark 
+      ? AppColors.buttonBackgroundDark.withValues(alpha: 0.4) 
+      : AppColors.buttonBackgroundLight.withValues(alpha: 0.15);
+    
+    Color icon_selected = isDark
+      ? AppColors.navSelectedDark
+      : AppColors.navSelectedLight;
+    Color icon_unselected = isDark
+      ? AppColors.navUnselectedDark
+      : AppColors.navUnselectedLight;
 
     return SizedBox(
-      height: screenHeight * 0.07, // 8% of screen height
-      child: ClipRRect(
-        borderRadius: BorderRadius.only(
-          topLeft: Radius.circular(20),
-          topRight: Radius.circular(20),
-        ),
-        child: BackdropFilter(
-          filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
-          child: Container(
-            color: Theme.of(context).brightness == Brightness.dark
-                ? Color(0xFF0A8C7A).withValues(alpha: 0.05)
-                : Colors.white.withValues(alpha: 0.05),
+      height: bar_height,
+      child: Padding(
+        padding: EdgeInsets.only(left: nav_spacing/2, right: nav_spacing/2, bottom: nav_spacing),
+        child: ClipRRect(
+          borderRadius: BorderRadius.only(
+            topLeft: Radius.circular(outer_curve),
+            topRight: Radius.circular(outer_curve),
+            bottomLeft: Radius.circular(outer_curve),
+            bottomRight: Radius.circular(outer_curve),
+          ),
+          child: BackdropFilter(
+            filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
             child: BottomNavigationBar(
-              backgroundColor: Colors.transparent,
+              backgroundColor: nav_bar_bg_color,
               elevation: 0,
               currentIndex: currentIndex == -1 ? 0 : currentIndex,
               selectedItemColor: currentIndex == -1
-              ? Theme.of(context).brightness == Brightness.dark
-                ? Colors.white
-                : Color(0xFF3A3A3A)
-              : Theme.of(context).brightness == Brightness.dark
-                ? Colors.white
-                : Color(0xFF3A3A3A),
-              unselectedItemColor: Theme.of(context).brightness == Brightness.dark
-              ? Colors.white
-              : Color(0xFF3A3A3A),
+              ? icon_unselected
+              : icon_selected,
+              unselectedItemColor: icon_unselected,
               selectedIconTheme: IconThemeData(
                 color: currentIndex == -1
-                ? Theme.of(context).brightness == Brightness.dark
-                  ? Colors.white
-                  : Color(0xFF3A3A3A)
-                : Theme.of(context).brightness == Brightness.dark
-                  ? Colors.white
-                  : Color(0xFF3A3A3A),
-                size: iconSize,
+                ? icon_unselected
+                : icon_selected,
+                size: icon_size,
               ),
               selectedLabelStyle: TextStyle(
-                color: Theme.of(context).brightness == Brightness.dark
-                  ? Colors.white
-                  : Color(0xFF3A3A3A),
-                  fontWeight: currentIndex == -1 ? FontWeight.w400 : FontWeight.w600,
-                ),
+                color: icon_selected,
+                fontWeight: currentIndex == -1 ? unchosen_icon : chosen_icon,
+              ),
               unselectedLabelStyle: TextStyle(
-                color: Theme.of(context).brightness == Brightness.dark
-                  ? Colors.white
-                  : Color(0xFF3A3A3A),
-                  fontWeight: FontWeight.w400,
-                ),
+                color: icon_unselected,
+                fontWeight: unchosen_icon,
+              ),
               showSelectedLabels: false,
               showUnselectedLabels: false,
               type: BottomNavigationBarType.fixed,
-              unselectedIconTheme: IconThemeData(size: iconSize),
+              unselectedIconTheme: IconThemeData(size: icon_size),
               onTap: (index) {
                 Widget target;
-
                 if (index == 0) {
                   target = FillerPage(userId: ' ',);
                 }
@@ -102,7 +111,7 @@ class NavBar extends StatelessWidget {
                   target = HomePage(userId: ' ',);
                 }
                 else if (index == 3) {
-                  target = ListCollectionPage();
+                  target = ConnectionsTestPage();
                 }
                 else if (index == 4) {
                   target = ProfilePage();

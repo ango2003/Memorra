@@ -11,7 +11,9 @@ import 'screens/home_page.dart';
 import 'screens/profile_page.dart';
 import 'screens/list_page.dart';
 import 'screens/list_collection.dart';
+import 'screens/reminder_collection.dart';
 import 'screens/filler_page.dart';
+import 'screens/connections_page.dart';
 import 'services/notif_service.dart';
 import 'services/deep_link_service.dart';
 
@@ -75,11 +77,16 @@ class _MyAppState extends State<MyApp> {
       debugShowCheckedModeBanner: false,
       routes: 
       {
-        '/startpage': (_) => const StartPage(),
-        '/profilepage': (_) => const ProfilePage(),
-        '/loginpage': (_) => const LogInPage(),
-        '/signuppage': (_) => const SignUpPage(),
-        '/listcollection': (_) => ListCollectionPage(),
+        '/startpage': (context) => const StartPage(),
+        '/homepage': (context) => const HomePage(userId: ' ',),
+        '/profilepage': (context) => const ProfilePage(),
+        '/loginpage': (context) => const LogInPage(),
+        '/signuppage': (context) => const SignUpPage(),
+        '/listcollection': (context) => ListCollectionPage(),
+        '/listpage': (context) => ListPage(listID: ' ',),
+        '/remindercollection': (context) => ReminderCollectionPage(),
+        '/friendpage': (context) => ConnectionsTestPage(),
+        '/wip': (context) => const FillerPage(userId: ' ',),
       },
       
       onGenerateRoute: (settings) {
