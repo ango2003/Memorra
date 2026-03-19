@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import '../widgets/home_tile.dart';
 import '../widgets/nav_bar.dart';
+import '../widgets/background.dart';
+import '../themes/app_colors.dart';
 
 class HomePage extends StatelessWidget {
   final String userId;
@@ -8,56 +10,53 @@ class HomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: SingleChildScrollView(
-        child: Container(
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              colors: Theme.of(context).brightness == Brightness.dark
-                  ? [
-                      Color(0xFF0A6F85),
-                      Color(0xFF071F4A),
-                    ]
-                  : [
-                      Color(0xFF3F6BB5),
-                      Color(0xFF0A8C7A),
-                    ],
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-            ),
-          ),
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final size = MediaQuery.of(context).size;
+    final width = size.width;
+    final height = size.height;
 
+    final base = width < height ? width : height;
+
+    final sizeboxSize = base * 0.05;
+    final titleFontSize = base * 0.08;
+    final fontSize = base * 0.08;
+    final horizontalSpacing = width * 0.02;
+    final h_padding = width * 0.01;
+    final w_padding = height * 0.01;
+
+    Color titleColor = isDark ? AppColors.titleDark : AppColors.titleLight;
+
+    return AppBackground(
+      child: Scaffold(
+        backgroundColor: Colors.transparent,
+        extendBody: true,
+        body: SingleChildScrollView(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              SizedBox(height: 60),
-
+              SizedBox(height: sizeboxSize),
               Padding(
-                padding: EdgeInsets.symmetric(horizontal: 20, vertical: 30),
+                padding: EdgeInsets.symmetric(horizontal: h_padding, vertical: w_padding),
                 child: Text(
                   "How Can We Help $userId?",
                   textAlign: TextAlign.center,
                   style: TextStyle(
-                    fontSize: 75,
+                    fontSize: titleFontSize,
                     fontWeight: FontWeight.bold,
-                    color: Theme.of(context).brightness == Brightness.dark
-                        ? Colors.white
-                        : Color(0xFF071F4A),
+                    color: titleColor,
                   ),
                 ),
               ),
-
               Divider(
-                color: Theme.of(context).brightness == Brightness.dark
-                    ? Colors.white
-                    : Colors.black54,
+               color: Theme.of(context).brightness == Brightness.dark
+                  ? Colors.white
+                  : Colors.black54,
                 thickness: 5,
                 indent: 20,
                 endIndent: 20,
               ),
-              SizedBox(height: 50),
-
+              SizedBox(height: sizeboxSize),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 20),
                 child: Column(
@@ -70,12 +69,12 @@ class HomePage extends StatelessWidget {
                             onTap: () {
                               Navigator.pushNamed(context, '/wip');
                             },
+                            inMiddle: false,
                           ),
                         ),
-                        SizedBox(width: 20),
                       ],
                     ),
-                    SizedBox(height: 20),
+                    SizedBox(height: sizeboxSize),
                     Row(
                       children: [
                         Expanded(
@@ -84,44 +83,45 @@ class HomePage extends StatelessWidget {
                             onTap: () {
                               Navigator.pushNamed(context, '/wip');
                             },
+                            inMiddle: true,
                           ),
                         ),
-                        SizedBox(width: 20),
+                        SizedBox(width: horizontalSpacing),
                         Expanded(
                           child: HomeTile(
                             title: "Friend Gift Ideas",
                             onTap: () {
                               Navigator.pushNamed(context, '/wip');
                             },
+                            inMiddle: true,
                           ),
                         ),
-                        SizedBox(width: 20),
                       ],
                     ),
-                    SizedBox(height: 20),
+                    SizedBox(height: sizeboxSize),
                     Row(
                       children: [
                         Expanded(
                           child: HomeTile(
                             title: "Set New Reminder",
                             onTap: () {
-                              Navigator.pushNamed(context, '/wip');
+                              Navigator.pushNamed(context, '/remindercollection');
                             },
+                            inMiddle: false,
                           ),
                         ),
-                        SizedBox(width: 20),
                       ],
                     ),
-                    SizedBox(height: 40),
+                    SizedBox(height: sizeboxSize),
                   ],
                 ),
               )
             ],
-          )
+          )        
         ),
-      ),
-      bottomNavigationBar: NavBar(
-        currentIndex: 2,
+        bottomNavigationBar: NavBar(
+          currentIndex: 2,
+        ),
       ),
     );
   }
