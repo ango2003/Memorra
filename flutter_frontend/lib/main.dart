@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'firebase_options.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+<<<<<<< HEAD
+=======
+import 'package:app_links/app_links.dart';
+import 'firebase_options.dart';
+>>>>>>> origin/main
 import 'screens/start_page.dart';
 import 'screens/login_page.dart';
 import 'screens/sign_up_page.dart';
@@ -10,8 +14,11 @@ import 'screens/home_page.dart';
 import 'screens/profile_page.dart';
 import 'screens/list_page.dart';
 import 'screens/list_collection.dart';
+import 'screens/reminder_collection.dart';
 import 'screens/filler_page.dart';
+import 'screens/connections_page.dart';
 import 'services/notif_service.dart';
+import 'services/deep_link_service.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -30,8 +37,40 @@ void main() async {
   runApp(const MyApp());
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
   const MyApp({super.key});
+
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  @override
+  void initState() {
+    super.initState();
+    _initDeepLinkListener();
+  }
+  
+  bool _handleInitialLink = false;
+
+  Future<void> _initDeepLinkListener() async {
+    try {
+      final appLinks = AppLinks();
+      final initialUrl = await appLinks.getInitialLink();
+
+      if (!_handleInitialLink && initialUrl != null) {
+        _handleInitialLink = true;
+        DeepLinkService.instance.handleIncomingLink(initialUrl);
+      }
+      
+      appLinks.uriLinkStream.listen((Uri url) {
+        DeepLinkService.instance.handleIncomingLink(url);
+      });
+
+    } catch (e) {
+      print('Error occurred while initializing deep link: $e');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -40,11 +79,16 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       routes: 
       {
-        '/startpage': (_) => const StartPage(),
-        '/profilepage': (_) => const ProfilePage(),
-        '/loginpage': (_) => const LogInPage(),
-        '/signuppage': (_) => const SignUpPage(),
-        '/listcollection': (_) => ListCollectionPage(),
+        '/startpage': (context) => const StartPage(),
+        '/homepage': (context) => const HomePage(userId: ' ',),
+        '/profilepage': (context) => const ProfilePage(),
+        '/loginpage': (context) => const LogInPage(),
+        '/signuppage': (context) => const SignUpPage(),
+        '/listcollection': (context) => ListCollectionPage(),
+        '/listpage': (context) => ListPage(listID: ' ',),
+        '/remindercollection': (context) => ReminderCollectionPage(),
+        '/friendpage': (context) => ConnectionsTestPage(),
+        '/wip': (context) => const FillerPage(userId: ' ',),
       },
       
       onGenerateRoute: (settings) {
