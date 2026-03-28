@@ -2,8 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_frontend/services/auth_service.dart';
 import 'package:flutter_frontend/screens/start_page.dart';
 import 'package:flutter_frontend/widgets/nav_bar.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:flutter_frontend/utils/pickAvatarutil.dart';
 import '../widgets/background.dart';
 import '../themes/app_colors.dart';
+import 'dart:typed_data';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
@@ -14,6 +17,7 @@ class ProfilePage extends StatefulWidget {
 
 class _ProfilePageState extends State<ProfilePage> {
   bool _isLoading = false;
+  Uint8List? _image;
   
   // Sign Out Function
   Future<void> signOut() async {
@@ -39,6 +43,17 @@ class _ProfilePageState extends State<ProfilePage> {
         setState(() => _isLoading = false);
       }
     }
+  }
+
+  void selectImage() async {
+    Uint8List img = await pickImage(ImageSource.gallery);
+    setState(() {
+      _image = img;
+    });
+  }
+
+  void saveProfile() {
+      // Implement save profile functionality here
   }
 
   @override
