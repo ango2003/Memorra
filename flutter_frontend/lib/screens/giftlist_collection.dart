@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_frontend/screens/list_page.dart';
+import 'package:flutter_frontend/screens/giftlist_page.dart';
 import 'package:flutter_frontend/widgets/nav_bar.dart';
 import 'package:flutter_frontend/services/gift_service.dart';
 import '../widgets/background.dart';

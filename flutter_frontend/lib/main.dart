@@ -9,11 +9,13 @@ import 'screens/login_page.dart';
 import 'screens/sign_up_page.dart';
 import 'screens/home_page.dart';
 import 'screens/profile_page.dart';
-import 'screens/list_page.dart';
-import 'screens/list_collection.dart';
+import 'screens/giftlist_page.dart';
+import 'screens/giftlist_collection.dart';
 import 'screens/reminder_collection.dart';
 import 'screens/filler_page.dart';
 import 'screens/connections_page.dart';
+import 'screens/connections_request_page.dart';
+import 'screens/connections_invite_page.dart';
 import 'services/notif_service.dart';
 import 'services/deep_link_service.dart';
 
@@ -84,7 +86,9 @@ class _MyAppState extends State<MyApp> {
         '/listcollection': (context) => ListCollectionPage(),
         '/listpage': (context) => ListPage(listID: ' ',),
         '/remindercollection': (context) => ReminderCollectionPage(),
-        '/friendpage': (context) => ConnectionsTestPage(),
+        '/connectionpage': (context) => ConnectionsPage(),
+        '/requestpage': (context) => const ConnectionsRequestPage(),
+        '/invitepage': (context) => const ConnectionsInvitePage(),
         '/wip': (context) => const FillerPage(userId: ' ',),
       },
       
