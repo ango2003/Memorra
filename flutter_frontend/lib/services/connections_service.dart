@@ -32,7 +32,7 @@ class ConnectionsService {
         final invite = ConnectionInvite(
           token: token,
           inviterId: userId,
-          redeemBy: null, // null until someone redeems
+          redeemBy: '', // null until someone redeems
           isUsed: false,
           createdAt: DateTime.now(),
           expiresAt: DateTime.now().add(time),
