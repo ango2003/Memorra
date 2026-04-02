@@ -21,8 +21,8 @@ class HomePage extends StatelessWidget {
     final titleFontSize = base * 0.08;
     final fontSize = base * 0.08;
     final horizontalSpacing = width * 0.02;
-    final h_padding = width * 0.01;
-    final w_padding = height * 0.01;
+    final hPadding = width * 0.01;
+    final wPadding = height * 0.01;
 
     Color titleColor = isDark ? AppColors.titleDark : AppColors.titleLight;
 
@@ -37,7 +37,7 @@ class HomePage extends StatelessWidget {
             children: [
               SizedBox(height: sizeboxSize),
               Padding(
-                padding: EdgeInsets.symmetric(horizontal: h_padding, vertical: w_padding),
+                padding: EdgeInsets.symmetric(horizontal: hPadding, vertical: wPadding),
                 child: Text(
                   "How Can We Help $userId?",
                   textAlign: TextAlign.center,
