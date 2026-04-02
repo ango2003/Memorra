@@ -100,7 +100,7 @@ class _ProfilePageState extends State<ProfilePage> {
               SizedBox(height: sizeboxSize),
 
               Text(
-                "_insert_username_here_",
+                "Thornwick Briarblade",
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   fontSize: usernameFontSize,
