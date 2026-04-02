@@ -9,6 +9,7 @@ class DeepLinkService {
     if (token == null) {
       return Future.value(false);
     }
+    print("Deep link received: $url with token: $token");
     return await InviteService.instance.redeemInvite(token);
   }
 }
