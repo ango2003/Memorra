@@ -49,9 +49,7 @@ class HomePage extends StatelessWidget {
                 ),
               ),
               Divider(
-               color: Theme.of(context).brightness == Brightness.dark
-                  ? Colors.white
-                  : Colors.black54,
+               color: titleColor,
                 thickness: 5,
                 indent: 20,
                 endIndent: 20,
@@ -120,7 +118,7 @@ class HomePage extends StatelessWidget {
           )        
         ),
         bottomNavigationBar: NavBar(
-          currentIndex: 2,
+          currentIndex: 0,
         ),
       ),
     );

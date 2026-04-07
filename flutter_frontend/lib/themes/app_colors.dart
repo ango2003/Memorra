@@ -34,4 +34,5 @@ class AppColors {
   static const Color inputText = Color(0xFF96A4B5);
   static const Color inputBackground = Color(0xFFC6DCFF);
   static const Color border = Color(0xFF3A3A3A);
+  static const Color homeTile = Colors.blueGrey;
 }
