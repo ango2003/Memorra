@@ -433,7 +433,6 @@ class _ListCollectionPageState extends State<ListCollectionPage>
                                             crossAxisAlignment: CrossAxisAlignment.start,
                                             children: [
 
-                                              // ⭐ UPDATED: Spread List.generate + button
                                               ...List.generate(5, (i) {
                                                 final idea = ideas[i];
 
@@ -466,11 +465,15 @@ class _ListCollectionPageState extends State<ListCollectionPage>
 
                                               SizedBox(height: 12),
 
-                                              // ⭐ NEW BUTTON ADDED HERE
                                               Center(
                                                 child: TextButton(
                                                   onPressed: () {
-                                                    Navigator.pushNamed(context, '/listpage');
+                                                  Navigator.push(
+                                                      context,
+                                                      MaterialPageRoute(
+                                                        builder: (context) => ListPage(listID: list.id),
+                                                      ),
+                                                    );
                                                   },
                                                   child: Text(
                                                     "Click Here to View More",
