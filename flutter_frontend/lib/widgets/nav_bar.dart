@@ -111,7 +111,7 @@ class NavBar extends StatelessWidget {
                   target = HomePage(userId: ' ',);
                 }
                 else if (index == 3) {
-                  target = ConnectionsTestPage();
+                  target = ConnectionsPage();
                 }
                 else if (index == 4) {
                   target = ProfilePage();

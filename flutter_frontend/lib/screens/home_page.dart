@@ -19,7 +19,7 @@ class HomePage extends StatelessWidget {
 
     final sizeboxSize = base * 0.05;
     final titleFontSize = base * 0.08;
-    final fontSize = base * 0.08;
+    final fontSize = base * 0.08; // Currently not used, but can be applied to tile text if needed
     final horizontalSpacing = width * 0.02;
     final hPadding = width * 0.01;
     final wPadding = height * 0.01;
