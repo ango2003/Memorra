@@ -102,19 +102,19 @@ class NavBar extends StatelessWidget {
               onTap: (index) {
                 Widget target;
                 if (index == 0) {
-                  target = FillerPage(userId: ' ',);
+                  target = HomePage(userId: ' ',);
                 }
                 else if (index == 1) {
                   target = ReminderCollectionPage();
                 }
                 else if (index == 2) {
-                  target = HomePage(userId: ' ',);
+                  target = ProfilePage();
                 }
                 else if (index == 3) {
                   target = ConnectionsPage();
                 }
                 else if (index == 4) {
-                  target = ProfilePage();
+                  target = FillerPage(userId: ' ',);
                 }
                 else {
                   return;
@@ -127,9 +127,9 @@ class NavBar extends StatelessWidget {
               },
               items: [
                 buildItem(
-                  icon: Icons.settings_outlined,
-                  activeIcon: Icons.settings,
-                  label: "Settings",
+                  icon: Icons.home_outlined,
+                  activeIcon: Icons.home,
+                  label: "Home",
                   index: 0,
                 ),
                 buildItem(
@@ -139,9 +139,9 @@ class NavBar extends StatelessWidget {
                   index: 1,
                 ),
                 buildItem(
-                  icon: Icons.home_outlined,
-                  activeIcon: Icons.home,
-                  label: "Home",
+                  icon: Icons.person_outlined,
+                  activeIcon: Icons.person,
+                  label: "Profile",
                   index: 2,
                 ),
                 buildItem(
@@ -151,9 +151,9 @@ class NavBar extends StatelessWidget {
                   index: 3,
                 ),
                 buildItem(
-                  icon: Icons.person_outlined,
-                  activeIcon: Icons.person,
-                  label: "Profile",
+                  icon: Icons.settings_outlined,
+                  activeIcon: Icons.settings,
+                  label: "Settings",
                   index: 4,
                 ),
               ],
