@@ -18,6 +18,7 @@ class ProfilePage extends StatefulWidget {
 class _ProfilePageState extends State<ProfilePage> {
   bool _isLoading = false;
   Uint8List? _image;
+
   
   // Sign Out Function
   Future<void> signOut() async {
@@ -52,8 +53,10 @@ class _ProfilePageState extends State<ProfilePage> {
     });
   }
 
-  void saveProfile() {
+  void saveProfile() async{
       // Implement save profile functionality here
+
+      String resp = await StoreData().saveData(file: _image!);
   }
 
   @override
