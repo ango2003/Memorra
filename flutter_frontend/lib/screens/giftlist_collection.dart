@@ -223,6 +223,8 @@ class _ListCollectionPageState extends State<ListCollectionPage>
     final double topExpandedRadius = listCornerRadius;
     final double bottomExpandedRadius = listCornerRadius;
 
+    final favoriteLabels = ["Favorite 1", "Favorite 2", "Favorite 3", "Favorite 4", "Favorite 5"];
+
     Color addButtonTextColor = isDark ? AppColors.buttonTextDark : AppColors.buttonTextLight;
     Color addButtonBackgroundColor = isDark ? AppColors.buttonBackgroundDark : AppColors.buttonBackgroundLight.withValues(alpha: 0.75);
     Color titleColor = isDark ? AppColors.titleDark : AppColors.titleLight;
@@ -429,35 +431,59 @@ class _ListCollectionPageState extends State<ListCollectionPage>
                                           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
                                           child: Column(
                                             crossAxisAlignment: CrossAxisAlignment.start,
-                                            children: List.generate(5, (i) {
-                                              final idea = ideas[i];
+                                            children: [
 
-                                              return Padding(
-                                                padding: const EdgeInsets.only(bottom: 10),
-                                                child: Row(
-                                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                                  children: [
-                                                    Text(
-                                                      "Idea ${i + 1}: ",
-                                                      style: TextStyle(
-                                                        color: listTextColor,
-                                                        fontSize: subtitleFontSize * 1.1,
-                                                        fontWeight: FontWeight.w600,
-                                                      ),
-                                                    ),
-                                                    Expanded(
-                                                      child: Text(
-                                                        idea,
+                                              // ⭐ UPDATED: Spread List.generate + button
+                                              ...List.generate(5, (i) {
+                                                final idea = ideas[i];
+
+                                                return Padding(
+                                                  padding: const EdgeInsets.only(bottom: 10),
+                                                  child: Row(
+                                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                                    children: [
+                                                      Text(
+                                                        "${favoriteLabels[i]}: ",
                                                         style: TextStyle(
-                                                          color: subtitleColor,
-                                                          fontSize: subtitleFontSize * 1.05,
+                                                          color: listTextColor,
+                                                          fontSize: subtitleFontSize * 1.1,
+                                                          fontWeight: FontWeight.w600,
                                                         ),
                                                       ),
+                                                      Expanded(
+                                                        child: Text(
+                                                          idea,
+                                                          style: TextStyle(
+                                                            color: subtitleColor,
+                                                            fontSize: subtitleFontSize * 1.05,
+                                                          ),
+                                                        ),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                );
+                                              }),
+
+                                              SizedBox(height: 12),
+
+                                              // ⭐ NEW BUTTON ADDED HERE
+                                              Center(
+                                                child: TextButton(
+                                                  onPressed: () {
+                                                    Navigator.pushNamed(context, '/listpage');
+                                                  },
+                                                  child: Text(
+                                                    "Click Here to View More",
+                                                    style: TextStyle(
+                                                      color: listTextColor,
+                                                      fontSize: subtitleFontSize * 1.2,
+                                                      fontWeight: FontWeight.w600,
                                                     ),
-                                                  ],
+                                                  ),
                                                 ),
-                                              );
-                                            }),
+                                              ),
+
+                                            ],
                                           ),
                                         ),
                                       ),
