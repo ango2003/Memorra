@@ -323,7 +323,7 @@ class _ListPageState extends State<ListPage>
                         final list = docs[index];
                         final listID = list.id;
 
-                        final ideas = List<String>.from(list["generatedIdeas"] ?? []);
+                        final ideas = ["", "", "", "", "",];
 
                         return Container(
                           margin: EdgeInsets.only(bottom: spaceBetweenLists),
