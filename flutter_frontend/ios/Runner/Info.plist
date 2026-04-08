@@ -15,7 +15,14 @@
 	<key>CFBundleName</key>
 	<string>Memorra</string>
 	<key>CFBundlePackageType</key>
-	<string>APPL</string>
+	<array>
+		<dict>
+			<key>CFBundleURLScheme</key>
+			<array>
+				<string>memorra</string>
+			</array>
+		</dict>
+	</array>
 	<key>CFBundleShortVersionString</key>
 	<string>$(FLUTTER_BUILD_NAME)</string>
 	<key>CFBundleSignature</key>

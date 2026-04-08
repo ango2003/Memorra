@@ -91,29 +91,29 @@ class _MyAppState extends State<MyApp> {
         '/invitepage': (context) => const ConnectionsInvitePage(),
         '/wip': (context) => const FillerPage(userId: ' ',),
       },
-      
-      onGenerateRoute: (settings) {
-        return PageRouteBuilder(
-          settings: settings,
-          pageBuilder: (_, _, _) {
-            switch (settings.name) {
-              case '/homepage':
-                final userId = settings.arguments as String;
-                return HomePage(userId: userId);
-              case '/listpage':
-                final listId = settings.arguments as String;
-                return ListPage(listID: listId);
-              case '/listcollection':
-                return ListCollectionPage();
-              case '/profilepage':
-                return const ProfilePage();
-              case '/wip':
-                final userId = settings.arguments as String;
-                return FillerPage(userId: userId);
-              default:
-                return const StartPage();
-            }
-          },
+
+        onGenerateRoute: (settings) {
+          return PageRouteBuilder(
+            settings: settings,
+            pageBuilder: (_, _, _) {
+              switch (settings.name) {
+                case '/homepage':
+                  final userId = settings.arguments as String;
+                  return HomePage(userId: userId);
+                case '/listpage':
+                  final listId = settings.arguments as String;
+                  return ListPage(listID: listId);
+                case '/listcollection':
+                  return ListCollectionPage();
+                case '/profilepage':
+                  return const ProfilePage();
+                case '/wip':
+                  final userId = settings.arguments as String;
+                  return FillerPage(userId: userId);
+                default:
+                  return const StartPage();
+              }
+            },
           transitionDuration: Duration.zero,
           reverseTransitionDuration: Duration.zero,
         );

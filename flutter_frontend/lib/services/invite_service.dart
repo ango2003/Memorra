@@ -7,9 +7,8 @@ class InviteService {
   Future<String> createInviteURL() async {
     final token = await ConnectionsService.instance.createInvite(Duration(hours: 24));
     final url = Uri(
-      scheme: 'https',
-      host: 'memorra.app',
-      path: '/invite',
+      scheme: 'memorra',
+      host: 'invite',
       queryParameters: {
         'token': token,
       },

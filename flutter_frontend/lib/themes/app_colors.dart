@@ -29,11 +29,10 @@ class AppColors {
   static const Color profileColorDark = Color(0xFFFFFFFF);
   static const Color profileBGDark = Color(0xFF0C2252);
 
-
-
   //Both Mode Colors
   static const Color hintText = Color(0xFF8894A4);
   static const Color inputText = Color(0xFF96A4B5);
   static const Color inputBackground = Color(0xFFC6DCFF);
   static const Color border = Color(0xFF3A3A3A);
+  static const Color homeTile = Colors.blueGrey;
 }
