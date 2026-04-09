@@ -41,7 +41,7 @@ class NavBar extends StatelessWidget {
 
     final base = screenWidth < screenHeight ? screenWidth : screenHeight;
 
-    final iconSize = base * 0.055;
+    final iconSize = base * 0.045;
     final barHeight = screenHeight * 0.09;
 
     final double outerCurve = 20;
