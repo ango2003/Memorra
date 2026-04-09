@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_frontend/services/auth_service.dart';
 import 'package:flutter_frontend/services/google_service.dart';
-import '../models/user_model.dart';
 import '../widgets/background.dart';
 import '../themes/app_colors.dart';
 
@@ -20,7 +19,7 @@ class _SignUpPageState extends State<SignUpPage> {
   final _lastNameController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
   final AuthService _authService = AuthService();
-  final GoogleService _googleService = GoogleService();
+  final GoogleService _googleService = GoogleService.instance;
   bool _isLoading = false;
   bool _obscurePassword = true;
   bool _obscureConfirmPassword = true;

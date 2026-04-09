@@ -32,11 +32,14 @@ class ConnectionsRequestPageState extends State<ConnectionsRequestPage> {
         requests = fetchRequests;
       });
     } catch (e) {
+      if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Failed to load requests")),
+        const SnackBar(content: Text("Failed to load requests")),
       );
     } finally {
-      setState(() => isLoading = false);
+      if (mounted) {
+        setState(() => isLoading = false);
+      }
     }
   }
 

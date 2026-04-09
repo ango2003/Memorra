@@ -4,7 +4,11 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import '../models/user_model.dart';
 
 class GoogleService {
+  GoogleService.privateConstructor();
+  static final GoogleService instance = GoogleService.privateConstructor();
+
   final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
   Future<AppUser?> signInWithGoogle() async {
     try {
@@ -37,9 +41,7 @@ class GoogleService {
   }
 
   Future<void> _saveUserToFirestore(User user) async {
-    final userDoc = FirebaseFirestore.instance
-        .collection('users')
-        .doc(user.uid);
+    final userDoc = _firestore.collection('users').doc(user.uid);
 
     await userDoc.set({
       'name': user.displayName ?? '',

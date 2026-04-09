@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_frontend/services/auth_service.dart';
 import 'package:flutter_frontend/services/google_service.dart';
-import '../models/user_model.dart';
 import '../widgets/background.dart';
 import '../themes/app_colors.dart';
 
@@ -61,7 +60,7 @@ class _LogInPageState extends State<LogInPage> {
     setState(() => _isLoading = true);
 
     try {
-      final appUser = await GoogleService().signInWithGoogle();
+      final appUser = await GoogleService.instance.signInWithGoogle();
       if (!mounted || appUser == null) return;
 
       Navigator.pushReplacementNamed(
@@ -117,7 +116,7 @@ class _LogInPageState extends State<LogInPage> {
                     email: email,
                   );
 
-                  if (!mounted) return;
+                  if (!context.mounted) return;
 
                   Navigator.pop(context);
 
