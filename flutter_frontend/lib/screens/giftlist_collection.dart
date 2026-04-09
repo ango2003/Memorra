@@ -1,3 +1,4 @@
+import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_frontend/screens/giftlist_page.dart';
 import 'package:flutter_frontend/widgets/nav_bar.dart';
@@ -6,10 +7,27 @@ import '../widgets/background.dart';
 import '../models/gift_list_model.dart';
 import '../themes/app_colors.dart';
 
-class ListCollectionPage extends StatelessWidget {
-  ListCollectionPage({super.key});
-  
+class ListCollectionPage extends StatefulWidget {
+  const ListCollectionPage({super.key});
+
+  @override
+  State<ListCollectionPage> createState() => _ListCollectionPageState();
+}
+
+class _ListCollectionPageState extends State<ListCollectionPage>
+    with TickerProviderStateMixin {
   final giftService = GiftService.instance;
+
+  final Map<String, AnimationController> _arrowControllers = {};
+  final Map<String, bool> _expandedState = {};
+
+  @override
+  void dispose() {
+    for (var controller in _arrowControllers.values) {
+      controller.dispose();
+    }
+    super.dispose();
+  }
 
   void createNewList(BuildContext context) {
     final controller = TextEditingController();
@@ -27,12 +45,12 @@ class ListCollectionPage extends StatelessWidget {
     Color titleColor = isDark ? AppColors.titleDark : AppColors.titleLight;
     Color inputHintColor = isDark ? AppColors.hintTextDark : AppColors.hintTextLight;
     Color inputColor = isDark ? AppColors.subtitleDark : AppColors.subtitleLight;
-    
+
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(boxCurve)
+          borderRadius: BorderRadius.circular(boxCurve),
         ),
         backgroundColor: bgColor,
         title: Text(
@@ -41,7 +59,7 @@ class ListCollectionPage extends StatelessWidget {
           style: TextStyle(
             fontSize: titleFontSize,
             color: titleColor,
-          )
+          ),
         ),
         content: TextField(
           controller: controller,
@@ -60,14 +78,12 @@ class ListCollectionPage extends StatelessWidget {
             ),
             focusedBorder: UnderlineInputBorder(
               borderSide: BorderSide(color: inputColor),
-            )
+            ),
           ),
         ),
         actions: [
           TextButton(
-            onPressed: () {
-              Navigator.pop(context);
-            },
+            onPressed: () => Navigator.pop(context),
             child: Text(
               "Cancel",
               style: TextStyle(
@@ -82,12 +98,9 @@ class ListCollectionPage extends StatelessWidget {
             ),
             onPressed: () async {
               final giftRecipient = controller.text.trim();
-
               if (giftRecipient.isNotEmpty) {
                 await giftService.addGiftList(giftRecipient);
-                if (context.mounted) {
-                  Navigator.pop(context);
-                }
+                if (context.mounted) Navigator.pop(context);
               }
             },
             child: Text(
@@ -99,12 +112,12 @@ class ListCollectionPage extends StatelessWidget {
             ),
           ),
         ],
-      )
+      ),
     );
   }
 
   void deleteList(BuildContext context, String listID) {
-final isDark = Theme.of(context).brightness == Brightness.dark;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     final size = MediaQuery.of(context).size;
     final width = size.width;
 
@@ -122,7 +135,7 @@ final isDark = Theme.of(context).brightness == Brightness.dark;
       context: context,
       builder: (context) => AlertDialog(
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(boxCurve)
+          borderRadius: BorderRadius.circular(boxCurve),
         ),
         backgroundColor: bgColor,
         title: Text(
@@ -138,15 +151,13 @@ final isDark = Theme.of(context).brightness == Brightness.dark;
           "\n(You cannot undo once deleted)",
           textAlign: TextAlign.center,
           style: TextStyle(
-              color: subtitleColor,
-              fontSize: subtitleFontSize,
-            ),
+            color: subtitleColor,
+            fontSize: subtitleFontSize,
+          ),
         ),
         actions: [
           TextButton(
-            onPressed: () {
-              Navigator.pop(context);
-            },
+            onPressed: () => Navigator.pop(context),
             child: Text(
               "Cancel",
               style: TextStyle(
@@ -161,9 +172,7 @@ final isDark = Theme.of(context).brightness == Brightness.dark;
             ),
             onPressed: () async {
               await giftService.deleteGiftList(listID);
-              if (context.mounted) {
-                Navigator.pop(context);
-              }
+              if (context.mounted) Navigator.pop(context);
             },
             child: Text(
               "Delete",
@@ -174,7 +183,7 @@ final isDark = Theme.of(context).brightness == Brightness.dark;
             ),
           ),
         ],
-      )
+      ),
     );
   }
 
@@ -187,40 +196,35 @@ final isDark = Theme.of(context).brightness == Brightness.dark;
 
     final base = width < height ? width : height;
 
-    //Spacing in between
     final sizeboxSize = base * 0.05;
-    
-    //Title Padding
     final heightPadding = width * 0.01;
     final widthPadding = height * 0.01;
-    
-    //Add Friend Sizing
+
     final addBoxWidth = width * 0.325;
     final addBoxHeight = height * 0.075;
     final addIconSize = base * 0.06;
     final addFontSize = base * 0.035;
     final double addBoxCurve = 50;
-    final FontWeight addFontWeight = FontWeight.w600;
-    
-    //Title Size
+
     final titleFontSize = base * 0.1;
-    
-    //Divider Size
+
     final dividerThickness = height * 0.01;
     final dividerIndent = width * 0.075;
     final double dividerCurve = 45;
 
-    //List Size
+    final containerAnimationTime = 600;
     final listFontSize = base * 0.04;
     final listLetterSpacing = 1.2;
     final subtitleFontSize = base * 0.02;
     final double spaceBetweenLists = height * 0.005;
     final double listTextPadding = width * 0.02;
     final double listBoxPadding = 5;
-    final double listCornerRadius = 125;
-    final FontWeight listFontWeight = FontWeight.w400;
+    final double listCornerRadius = 40;
+    final double topExpandedRadius = listCornerRadius;
+    final double bottomExpandedRadius = listCornerRadius;
 
-    //Colors
+    final favoriteLabels = ["Favorite 1", "Favorite 2", "Favorite 3", "Favorite 4", "Favorite 5"];
+
     Color addButtonTextColor = isDark ? AppColors.buttonTextDark : AppColors.buttonTextLight;
     Color addButtonBackgroundColor = isDark ? AppColors.buttonBackgroundDark : AppColors.buttonBackgroundLight.withValues(alpha: 0.75);
     Color titleColor = isDark ? AppColors.titleDark : AppColors.titleLight;
@@ -242,23 +246,19 @@ final isDark = Theme.of(context).brightness == Brightness.dark;
             backgroundColor: addButtonBackgroundColor,
             foregroundColor: addButtonTextColor,
             onPressed: () => createNewList(context),
-            icon: Icon(Icons.add, 
-              size: addIconSize,
-            ),
+            icon: Icon(Icons.add, size: addIconSize),
             label: Text(
               "Add New\nFriend List",
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontSize: addFontSize,
-                fontWeight: addFontWeight,
+                fontWeight: FontWeight.w600,
               ),
-            )
+            ),
           ),
         ),
 
         body: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             SizedBox(height: sizeboxSize),
             Padding(
@@ -270,19 +270,20 @@ final isDark = Theme.of(context).brightness == Brightness.dark;
                   fontSize: titleFontSize,
                   fontWeight: FontWeight.bold,
                   color: titleColor,
-                )
-              )
+                ),
+              ),
             ),
 
             Divider(
               color: titleColor,
               thickness: dividerThickness,
               indent: dividerIndent,
-              endIndent:dividerIndent,
+              endIndent: dividerIndent,
               radius: BorderRadius.circular(dividerCurve),
             ),
-            
+
             SizedBox(height: sizeboxSize),
+
             Expanded(
               child: StreamBuilder<List<GiftList>>(
                 stream: giftService.getGiftLists(),
@@ -293,54 +294,208 @@ final isDark = Theme.of(context).brightness == Brightness.dark;
 
                   final lists = snapshot.data!;
 
+                  for (var list in lists) {
+                    _arrowControllers[list.id] ??= AnimationController(
+                      vsync: this,
+                      duration: const Duration(milliseconds: 200),
+                    );
+                  }
+
                   return Padding(
-                    padding: EdgeInsets.symmetric(horizontal: listBoxPadding, vertical: listBoxPadding),
+                    padding: EdgeInsets.all(listBoxPadding),
                     child: ListView.builder(
                       itemCount: lists.length,
                       itemBuilder: (context, index) {
                         final list = lists[index];
+                        final ideas = ["Like 1", "Like 2", "Like 3", "Like 4", "Like 5"]; // temporary ideas
 
-                        return Container(
+                        return AnimatedContainer(
+                          duration: Duration(milliseconds: containerAnimationTime),
+                          curve: Curves.easeInOut,
                           margin: EdgeInsets.only(bottom: spaceBetweenLists),
-                          child: ListTile(
-                            tileColor: listBoxColor,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(listCornerRadius),
-                            ),
-                            title: Padding(
-                              padding: EdgeInsets.only(left: listTextPadding),
-                              child: Text(
-                                list.recipient,
-                                style: TextStyle(
-                                  fontSize: listFontSize,
-                                  fontWeight: listFontWeight,
-                                  color: listTextColor,
-                                  letterSpacing: listLetterSpacing,
+                          decoration: BoxDecoration(
+                            borderRadius: _expandedState[list.id] == true
+                                ? BorderRadius.only(
+                                    topLeft: Radius.circular(topExpandedRadius),
+                                    topRight: Radius.circular(topExpandedRadius),
+                                    bottomLeft: Radius.circular(bottomExpandedRadius),
+                                    bottomRight: Radius.circular(bottomExpandedRadius),
+                                  )
+                                : BorderRadius.circular(listCornerRadius),
+                          ),
+                          child: ClipRRect(
+                            borderRadius: _expandedState[list.id] == true
+                                ? BorderRadius.only(
+                                    topLeft: Radius.circular(topExpandedRadius),
+                                    topRight: Radius.circular(topExpandedRadius),
+                                    bottomLeft: Radius.circular(bottomExpandedRadius),
+                                    bottomRight: Radius.circular(bottomExpandedRadius),
+                                  )
+                                : BorderRadius.circular(listCornerRadius),
+                            child: BackdropFilter(
+                              filter: ImageFilter.blur(sigmaX: 12, sigmaY: 12),
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  color: listBoxColor,
+                                  borderRadius: _expandedState[list.id] == true
+                                      ? BorderRadius.only(
+                                          topLeft: Radius.circular(topExpandedRadius),
+                                          topRight: Radius.circular(topExpandedRadius),
+                                          bottomLeft: Radius.circular(bottomExpandedRadius),
+                                          bottomRight: Radius.circular(bottomExpandedRadius),
+                                        )
+                                      : BorderRadius.circular(listCornerRadius),
+                                ),
+
+                                child: Column(
+                                  children: [
+                                    GestureDetector(
+                                      onTap: () {
+                                        setState(() {
+                                          _expandedState[list.id] = !(_expandedState[list.id] ?? false);
+                                        });
+
+                                        if (_expandedState[list.id] == true) {
+                                          _arrowControllers[list.id]!.forward();
+                                        } else {
+                                          _arrowControllers[list.id]!.reverse();
+                                        }
+                                      },
+
+                                      child: AnimatedContainer(
+                                        duration: Duration(milliseconds: containerAnimationTime),
+                                        curve: Curves.easeOutCubic,
+                                        padding: EdgeInsets.symmetric(
+                                          horizontal: listTextPadding,
+                                          vertical: 12,
+                                        ),
+                                        child: Row(
+                                          children: [
+                                            Expanded(
+                                              child: Column(
+                                                crossAxisAlignment: CrossAxisAlignment.start,
+                                                children: [
+                                                  Text(
+                                                    list.recipient,
+                                                    style: TextStyle(
+                                                      fontSize: listFontSize,
+                                                      fontWeight: FontWeight.w400,
+                                                      color: listTextColor,
+                                                      letterSpacing: listLetterSpacing,
+                                                    ),
+                                                  ),
+                                                  SizedBox(height: 4),
+                                                  Text(
+                                                    "Tap here to view gift ideas",
+                                                    style: TextStyle(
+                                                      color: subtitleColor,
+                                                      fontSize: subtitleFontSize,
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+
+                                            IconButton(
+                                              icon: Icon(
+                                                Icons.delete,
+                                                color: deleteListIcon,
+                                                size: listFontSize * 1.2,
+                                              ),
+                                              onPressed: () => deleteList(context, list.id),
+                                            ),
+
+                                            RotationTransition(
+                                              turns: Tween(begin: 0.0, end: 0.5)
+                                                  .animate(_arrowControllers[list.id]!),
+                                              child: Icon(
+                                                Icons.keyboard_arrow_down_rounded,
+                                                color: listTextColor,
+                                                size: listFontSize * 1.4,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+
+                                    AnimatedCrossFade(
+                                      duration: Duration(milliseconds: containerAnimationTime + 100),
+                                      crossFadeState: _expandedState[list.id] == true
+                                          ? CrossFadeState.showFirst
+                                          : CrossFadeState.showSecond,
+                                      firstChild: AnimatedOpacity(
+                                        duration: Duration(milliseconds: containerAnimationTime),
+                                        opacity: _expandedState[list.id] == true ? 1 : 0,
+                                        child: Padding(
+                                          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                                          child: Column(
+                                            crossAxisAlignment: CrossAxisAlignment.start,
+                                            children: [
+
+                                              ...List.generate(5, (i) {
+                                                final idea = ideas[i];
+
+                                                return Padding(
+                                                  padding: const EdgeInsets.only(bottom: 10),
+                                                  child: Row(
+                                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                                    children: [
+                                                      Text(
+                                                        "${favoriteLabels[i]}: ",
+                                                        style: TextStyle(
+                                                          color: listTextColor,
+                                                          fontSize: subtitleFontSize * 1.1,
+                                                          fontWeight: FontWeight.w600,
+                                                        ),
+                                                      ),
+                                                      Expanded(
+                                                        child: Text(
+                                                          idea,
+                                                          style: TextStyle(
+                                                            color: subtitleColor,
+                                                            fontSize: subtitleFontSize * 1.05,
+                                                          ),
+                                                        ),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                );
+                                              }),
+
+                                              SizedBox(height: 12),
+
+                                              Center(
+                                                child: TextButton(
+                                                  onPressed: () {
+                                                  Navigator.push(
+                                                      context,
+                                                      MaterialPageRoute(
+                                                        builder: (context) => ListPage(listID: list.id),
+                                                      ),
+                                                    );
+                                                  },
+                                                  child: Text(
+                                                    "Click Here to View More",
+                                                    style: TextStyle(
+                                                      color: listTextColor,
+                                                      fontSize: subtitleFontSize * 1.2,
+                                                      fontWeight: FontWeight.w600,
+                                                    ),
+                                                  ),
+                                                ),
+                                              ),
+
+                                            ],
+                                          ),
+                                        ),
+                                      ),
+                                      secondChild: SizedBox.shrink(),
+                                    ),
+                                  ],
                                 ),
                               ),
                             ),
-                            subtitle: Padding(
-                              padding: EdgeInsets.only(left: listTextPadding),
-                              child: Text(
-                                "Tap to View Gift Ideas",
-                                style: TextStyle(
-                                  color: subtitleColor,
-                                  fontSize: subtitleFontSize,
-                                ),
-                              ),
-                            ),
-                            trailing: IconButton(
-                              icon: Icon(Icons.delete, color: deleteListIcon),
-                              onPressed: () => deleteList(context, list.id),
-                            ),
-                            onTap: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => ListPage(listID: list.id),
-                                ),
-                              );
-                            },
                           ),
                         );
                       },
@@ -351,8 +506,10 @@ final isDark = Theme.of(context).brightness == Brightness.dark;
             ),
           ],
         ),
-        bottomNavigationBar: NavBar(
-          currentIndex: -1,
+
+        bottomNavigationBar: 
+        NavBar(
+          currentIndex: -1
         ),
       ),
     );

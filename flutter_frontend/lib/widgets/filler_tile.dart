@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import '../themes/app_colors.dart';
 
-class HomeTile extends StatelessWidget {
+class FillerTile extends StatelessWidget {
   final String title;
   final VoidCallback onTap;
   final bool inMiddle;
 
-  const HomeTile({
+  const FillerTile({
     super.key,
     required this.title,
     required this.onTap,
@@ -21,7 +21,7 @@ class HomeTile extends StatelessWidget {
 
     final base = width < height ? width : height;
     
-    final double tileHeight = height * 0.22;
+    final double tileHeight = height * 0.1;
     final double fontSize = base * 0.05;
     final FontWeight fontWeight = FontWeight.w600;
 
