@@ -15,27 +15,49 @@ class ConnectionInvite {
     required this.isUsed,
     required this.createdAt,
     required this.expiresAt,
-   });
+  });
 
-   factory ConnectionInvite.fromFirestore(Map<String, dynamic> data, String id) {
+  static DateTime _parseDateTime(dynamic value) {
+    if (value is Timestamp) return value.toDate();
+    if (value is DateTime) return value;
+    if (value is String) {
+      final parsed = DateTime.tryParse(value);
+      if (parsed != null) return parsed;
+    }
+    return DateTime.now();
+  }
+
+  factory ConnectionInvite.fromJson(Map<String, dynamic> json) {
     return ConnectionInvite(
-      inviterId: data['inviterId'] ?? '',
-      redeemBy: data['redeemBy'] ?? '',
-      token: data['token'] ?? '',
-      isUsed: data['isUsed'] ?? false,
-      createdAt: (data['createdAt'] as Timestamp).toDate(),
-      expiresAt: (data['expiresAt'] as Timestamp).toDate(),
-     );
-   }
+      inviterId: json['inviterId'] ?? '',
+      redeemBy: json['redeemBy'] ?? '',
+      token: json['token'] ?? '',
+      isUsed: json['isUsed'] as bool? ?? false,
+      createdAt: _parseDateTime(json['createdAt']),
+      expiresAt: _parseDateTime(json['expiresAt']),
+    );
+  }
 
-   Map<String, dynamic> toFirestore() {
+  factory ConnectionInvite.fromFirestore(Map<String, dynamic> data, String id) {
+    return ConnectionInvite.fromJson(data);
+  }
+
+  Map<String, dynamic> toJson() {
     return {
       'inviterId': inviterId,
       'redeemBy': redeemBy,
       'token': token,
       'isUsed': isUsed,
-      'createdAt': createdAt,
-      'expiresAt': expiresAt,
+      'createdAt': createdAt.toIso8601String(),
+      'expiresAt': expiresAt.toIso8601String(),
     };
-   }
+  }
+
+  Map<String, dynamic> toFirestore() {
+    return {
+      ...toJson(),
+      'createdAt': Timestamp.fromDate(createdAt),
+      'expiresAt': Timestamp.fromDate(expiresAt),
+    };
+  }
 }

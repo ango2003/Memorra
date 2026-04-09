@@ -39,7 +39,7 @@ class ScanQrPageState extends State<ScanQrPage> {
             
             HapticFeedback.mediumImpact();
 
-            final uri = Uri.parse(value);
+            final uri = Uri.parse(barcode.rawValue!);
             final success = await DeepLinkService.instance.handleIncomingLink(uri);
 
             if (success) {

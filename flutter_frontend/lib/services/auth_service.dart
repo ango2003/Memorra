@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import '../models/user_model.dart';
 
 ValueNotifier<AuthService> authService = ValueNotifier(AuthService());
 
@@ -12,28 +13,34 @@ class AuthService {
 
   Stream<User?> get authStateChanges => firebaseAuth.authStateChanges();
 
-  Future<UserCredential> createAccount({
+  Future<AppUser> createAccount({
     required String email,
     required String password,
+    required String firstName,
+    required String lastName,
   }) async {
     try {
-      final userCredential = await firebaseAuth.createUserWithEmailAndPassword(
-        email: email,
-        password: password,
-      );
+      UserCredential userCredential = await firebaseAuth
+          .createUserWithEmailAndPassword(email: email, password: password);
 
       final user = userCredential.user;
       if (user == null) {
         throw Exception('User creation failed.');
       }
 
-      await FirebaseFirestore.instance.collection('users').doc(user.uid).set({
+      final fullName = '$firstName $lastName'.trim();
+      final appUser = AppUser(id: user.uid, name: fullName, email: user.email);
+
+      await firestore.collection('users').doc(user.uid).set({
+        'name': fullName,
         'email': user.email,
+        'firstName': firstName,
+        'lastName': lastName,
         'createdAt': Timestamp.now(),
         'provider': 'email',
-      });
+      }, SetOptions(merge: true));
 
-      return userCredential;
+      return appUser;
     } on FirebaseAuthException catch (e) {
       throw Exception(_getAuthErrorMessage(e));
     }
@@ -47,25 +54,31 @@ class AuthService {
     };
   }
 
-  Future<UserCredential> logIn( {
+  Future<AppUser> logIn({
     required String email,
     required String password,
   }) async {
     try {
-      UserCredential userCredential = await FirebaseAuth.instance.signInWithEmailAndPassword(
-        email: email, 
-        password: password
-      );
+      UserCredential userCredential = await FirebaseAuth.instance
+          .signInWithEmailAndPassword(email: email, password: password);
 
       final user = userCredential.user;
       if (user == null) {
         throw Exception('Login failed.');
       }
 
-      return userCredential;
+      return fetchUser(user.uid);
     } on FirebaseAuthException catch (e) {
       throw Exception(_getLogInErrorMessage(e));
     }
+  }
+
+  Future<AppUser> fetchUser(String uid) async {
+    final doc = await firestore.collection('users').doc(uid).get();
+    if (!doc.exists) {
+      throw Exception('User not found.');
+    }
+    return AppUser.fromFirestore(doc);
   }
 
   String _getLogInErrorMessage(FirebaseAuthException e) {
@@ -81,12 +94,8 @@ class AuthService {
     await firebaseAuth.signOut();
   }
 
-  Future<void> resetPassword({
-    required String email,
-  }) async {
-    await firebaseAuth.sendPasswordResetEmail(
-      email: email
-    );
+  Future<void> resetPassword({required String email}) async {
+    await firebaseAuth.sendPasswordResetEmail(email: email);
   }
 
   Future<void> deleteAccount({
@@ -99,8 +108,10 @@ class AuthService {
       throw Exception('User is not signed in.');
     }
 
-    final credential =
-      EmailAuthProvider.credential(email: email, password: password);
+    final credential = EmailAuthProvider.credential(
+      email: email,
+      password: password,
+    );
     await user.reauthenticateWithCredential(credential);
     await user.delete();
     await firebaseAuth.signOut();
@@ -116,9 +127,11 @@ class AuthService {
     if (user == null) {
       throw Exception('User is not signed in.');
     }
-    AuthCredential credential =
-      EmailAuthProvider.credential(email: email, password: currentPassword);
+    AuthCredential credential = EmailAuthProvider.credential(
+      email: email,
+      password: currentPassword,
+    );
     await user.reauthenticateWithCredential(credential);
-    await user.updatePassword(newPassword); 
+    await user.updatePassword(newPassword);
   }
 }

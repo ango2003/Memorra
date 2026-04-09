@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import 'package:flutter/services.dart';
-import '../services/invite_service.dart';
+import '../services/connections_service.dart';
 
 class ConnectionsInvitePage extends StatefulWidget{
   const ConnectionsInvitePage({super.key});
@@ -24,7 +24,8 @@ class ConnectionsInvitePageState extends State<ConnectionsInvitePage> {
   setState(() => isLoading = true);
 
   try {
-    final url = await InviteService.instance.createInviteURL();
+    final token = await ConnectionsService.instance.createInvite(Duration(hours: 24));
+    final url = 'memorra://invite?token=$token';
     setState(() { 
       inviteUrl = url; 
       isLoading = false;
