@@ -21,14 +21,12 @@ import 'services/deep_link_service.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
+
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
   await SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
-    DeviceOrientation.portraitDown
+    DeviceOrientation.portraitDown,
   ]);
 
   await NotifService.instance.init();
@@ -49,7 +47,7 @@ class _MyAppState extends State<MyApp> {
     super.initState();
     _initDeepLinkListener();
   }
-  
+
   bool _handleInitialLink = false;
 
   Future<void> _initDeepLinkListener() async {
@@ -61,11 +59,10 @@ class _MyAppState extends State<MyApp> {
         _handleInitialLink = true;
         DeepLinkService.instance.handleIncomingLink(initialUrl);
       }
-      
+
       appLinks.uriLinkStream.listen((Uri url) {
         DeepLinkService.instance.handleIncomingLink(url);
       });
-
     } catch (e) {
       print('Error occurred while initializing deep link: $e');
     }
@@ -76,20 +73,24 @@ class _MyAppState extends State<MyApp> {
     return MaterialApp(
       title: 'Memorra',
       debugShowCheckedModeBanner: false,
-      routes: 
-      {
+      routes: {
         '/startpage': (context) => const StartPage(),
-        '/homepage': (context) => const HomePage(userId: ' ',),
+        '/homepage': (context) {
+          final args = ModalRoute.of(context)?.settings.arguments;
+          final currentUser = FirebaseAuth.instance.currentUser;
+          final userId = args is String ? args : currentUser?.uid ?? '';
+          return HomePage(userId: userId);
+        },
         '/profilepage': (context) => const ProfilePage(),
         '/loginpage': (context) => const LogInPage(),
         '/signuppage': (context) => const SignUpPage(),
         '/listcollection': (context) => ListCollectionPage(),
-        '/listpage': (context) => ListPage(listID: ' ',),
+        '/listpage': (context) => ListPage(listID: ' '),
         '/remindercollection': (context) => ReminderCollectionPage(),
         '/connectionpage': (context) => ConnectionsPage(),
         '/requestpage': (context) => const ConnectionsRequestPage(),
         '/invitepage': (context) => const ConnectionsInvitePage(),
-        '/wip': (context) => const FillerPage(userId: ' ',),
+        '/wip': (context) => const FillerPage(userId: ' '),
       },
 
         onGenerateRoute: (settings) {
@@ -126,22 +127,22 @@ class _MyAppState extends State<MyApp> {
         stream: FirebaseAuth.instance.authStateChanges(),
         builder: (context, snapshot) {
           if (snapshot.hasError) {
-            return const Scaffold(body: Center(child: Text('Something went wrong')));
+            return const Scaffold(
+              body: Center(child: Text('Something went wrong')),
+            );
           }
 
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Scaffold(
-              body: Center(child: Text("Loading..."))
-            );
+            return const Scaffold(body: Center(child: Text("Loading...")));
           }
-          
+
           final user = snapshot.data;
           if (user != null) {
             return HomePage(userId: user.uid);
           }
           return const StartPage();
         },
-      )
+      ),
     );
   }
 }

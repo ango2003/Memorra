@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_frontend/services/auth_service.dart';
 import 'package:flutter_frontend/services/google_service.dart';
 import '../widgets/background.dart';
@@ -33,7 +34,7 @@ class _LogInPageState extends State<LogInPage> {
     setState(() => _isLoading = true);
 
     try {
-      final userCredential = await _authService.logIn(
+      final appUser = await _authService.logIn(
         email: _emailController.text.trim(),
         password: _passwordController.text.trim(),
       );
@@ -43,13 +44,13 @@ class _LogInPageState extends State<LogInPage> {
       Navigator.pushReplacementNamed(
         context,
         '/homepage',
-        arguments: userCredential.user!.uid,
+        arguments: appUser.id,
       );
     } catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(e.toString())),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(e.toString())));
     } finally {
       if (mounted) setState(() => _isLoading = false);
     }
@@ -59,18 +60,81 @@ class _LogInPageState extends State<LogInPage> {
     setState(() => _isLoading = true);
 
     try {
-      final user = await GoogleService().signInWithGoogle();
-      if (!mounted || user == null) return;
+      final appUser = await GoogleService.instance.signInWithGoogle();
+      if (!mounted || appUser == null) return;
 
-      Navigator.pushReplacementNamed(context, '/homepage');
+      Navigator.pushReplacementNamed(
+        context,
+        '/homepage',
+        arguments: appUser.id,
+      );
     } catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Google Sign-In failed: $e")),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text("Google Sign-In failed: $e")));
     } finally {
       if (mounted) setState(() => _isLoading = false);
     }
+  }
+
+  void _showForgotPasswordDialog() {
+    final TextEditingController emailController = TextEditingController();
+
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text('Reset Password'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Text('Enter your email to receive a reset link.'),
+              const SizedBox(height: 10),
+              TextField(
+                controller: emailController,
+                decoration: const InputDecoration(
+                  labelText: 'Email',
+                  border: OutlineInputBorder(),
+                ),
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('Cancel'),
+            ),
+            ElevatedButton(
+              onPressed: () async {
+                final email = emailController.text.trim();
+
+                if (email.isEmpty) return;
+
+                try {
+                  await FirebaseAuth.instance.sendPasswordResetEmail(
+                    email: email,
+                  );
+
+                  if (!context.mounted) return;
+
+                  Navigator.pop(context);
+
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Password reset email sent!')),
+                  );
+                } catch (e) {
+                  ScaffoldMessenger.of(
+                    context,
+                  ).showSnackBar(SnackBar(content: Text(e.toString())));
+                }
+              },
+              child: const Text('Send'),
+            ),
+          ],
+        );
+      },
+    );
   }
 
   void _goBack() {
@@ -96,9 +160,15 @@ class _LogInPageState extends State<LogInPage> {
     final buttonPaddingVertical = base * 0.04;
 
     Color titleColor = isDark ? AppColors.titleDark : AppColors.titleLight;
-    Color subtitleColor = isDark ? AppColors.subtitleDark : AppColors.subtitleLight;
-    Color buttonTextColor = isDark ? AppColors.buttonTextDark : AppColors.buttonTextLight;
-    Color buttonBackgroundColor = isDark ? AppColors.buttonBackgroundDark : AppColors.buttonBackgroundLight;
+    Color subtitleColor = isDark
+        ? AppColors.subtitleDark
+        : AppColors.subtitleLight;
+    Color buttonTextColor = isDark
+        ? AppColors.buttonTextDark
+        : AppColors.buttonTextLight;
+    Color buttonBackgroundColor = isDark
+        ? AppColors.buttonBackgroundDark
+        : AppColors.buttonBackgroundLight;
 
     return Scaffold(
       extendBody: true,
@@ -154,8 +224,9 @@ class _LogInPageState extends State<LogInPage> {
                               filled: true,
                               fillColor: AppColors.inputBackground,
                               enabledBorder: OutlineInputBorder(
-                                borderRadius:
-                                    const BorderRadius.all(Radius.circular(10)),
+                                borderRadius: const BorderRadius.all(
+                                  Radius.circular(10),
+                                ),
                                 borderSide: BorderSide(
                                   color: AppColors.border,
                                   width: 1,
@@ -197,8 +268,9 @@ class _LogInPageState extends State<LogInPage> {
                               filled: true,
                               fillColor: AppColors.inputBackground,
                               enabledBorder: OutlineInputBorder(
-                                borderRadius:
-                                    const BorderRadius.all(Radius.circular(10)),
+                                borderRadius: const BorderRadius.all(
+                                  Radius.circular(10),
+                                ),
                                 borderSide: BorderSide(
                                   color: AppColors.border,
                                   width: 1,
@@ -226,6 +298,20 @@ class _LogInPageState extends State<LogInPage> {
                             },
                           ),
 
+                          SizedBox(height: spacingSize / 2),
+
+                          TextButton(
+                            onPressed: () {
+                              _showForgotPasswordDialog();
+                            },
+                            child: const Text(
+                              "Forgot Password?",
+                              style: TextStyle(
+                                decoration: TextDecoration.underline,
+                              ),
+                            ),
+                          ),
+
                           SizedBox(height: spacingSize),
 
                           _isLoading
@@ -233,8 +319,10 @@ class _LogInPageState extends State<LogInPage> {
                               : SizedBox(
                                   child: ElevatedButton(
                                     style: ElevatedButton.styleFrom(
-                                      minimumSize:
-                                          Size(buttonWidth, buttonHeight),
+                                      minimumSize: Size(
+                                        buttonWidth,
+                                        buttonHeight,
+                                      ),
                                       padding: EdgeInsets.symmetric(
                                         horizontal: buttonPaddingHorizontal,
                                         vertical: buttonPaddingVertical,
@@ -258,8 +346,10 @@ class _LogInPageState extends State<LogInPage> {
                               ? const CircularProgressIndicator()
                               : ElevatedButton(
                                   style: ElevatedButton.styleFrom(
-                                    minimumSize:
-                                        Size(buttonWidth, buttonHeight),
+                                    minimumSize: Size(
+                                      buttonWidth,
+                                      buttonHeight,
+                                    ),
                                     padding: EdgeInsets.symmetric(
                                       horizontal: buttonPaddingHorizontal,
                                       vertical: buttonPaddingVertical,

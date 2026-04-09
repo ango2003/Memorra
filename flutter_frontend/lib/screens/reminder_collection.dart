@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import '../widgets/nav_bar.dart';
 import '../widgets/background.dart';
 import '../themes/app_colors.dart';
 import '../services/notif_service.dart';
+import '../services/reminder_service.dart';
+import '../models/reminder_list_model.dart';
 
 class ReminderCollectionPage extends StatelessWidget {
   const ReminderCollectionPage({super.key});
@@ -17,14 +17,14 @@ class ReminderCollectionPage extends StatelessWidget {
       lastDate: DateTime(DateTime.now().year + 5),
     );
 
-    if (date == null) return null;
+    if (!context.mounted || date == null) return null;
 
     final time = await showTimePicker(
       context: context,
       initialTime: TimeOfDay.now(),
     );
 
-    if (time == null) return null;
+    if (!context.mounted || time == null) return null;
 
     return DateTime(date.year, date.month, date.day, time.hour, time.minute);
   }
@@ -41,19 +41,19 @@ class ReminderCollectionPage extends StatelessWidget {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text("Create New Reminder"),
+        title: const Text("Create New Reminder"),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             TextField(
               controller: controller,
-              decoration: InputDecoration(hintText: "Reminder Name"),
+              decoration: const InputDecoration(hintText: "Reminder Name"),
             ),
-            SizedBox(height: 16),
+            const SizedBox(height: 16),
             TextField(
               controller: timeController,
               readOnly: true,
-              decoration: InputDecoration(
+              decoration: const InputDecoration(
                 hintText: "Select Reminder Date & Time",
                 suffixIcon: Icon(Icons.calendar_today),
               ),
@@ -70,35 +70,30 @@ class ReminderCollectionPage extends StatelessWidget {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: Text("Cancel"),
+            child: const Text("Cancel"),
           ),
           ElevatedButton(
             onPressed: () async {
-              final userID = FirebaseAuth.instance.currentUser!.uid;
               final reminderListName = controller.text.trim();
               final notifID = createUniqueID();
 
               if (reminderListName.isNotEmpty && selectedReminderDate != null) {
-                if (context.mounted) Navigator.pop(context);
-
-                await FirebaseFirestore.instance
-                    .collection('accounts')
-                    .doc(userID)
-                    .collection('reminder_lists')
-                    .add({
-                  'reminder_name': reminderListName,
-                  'reminder_date': selectedReminderDate,
-                  'notif_ID': notifID,
-                });
+                await ReminderService.instance.addReminderList(
+                  name: reminderListName,
+                  reminderDate: selectedReminderDate!,
+                  notifId: notifID,
+                );
 
                 await NotifService.instance.scheduleWithTimer(
                   notifID,
                   reminderListName,
                   selectedReminderDate!,
                 );
+
+                if (context.mounted) Navigator.pop(context);
               }
             },
-            child: Text("Create"),
+            child: const Text("Create"),
           ),
         ],
       ),
@@ -109,27 +104,19 @@ class ReminderCollectionPage extends StatelessWidget {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text("Delete Reminder"),
-        content: Text("Are you sure you want to delete this reminder?"),
+        title: const Text("Delete Reminder"),
+        content: const Text("Are you sure you want to delete this reminder?"),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: Text("Cancel"),
+            child: const Text("Cancel"),
           ),
           ElevatedButton(
             onPressed: () async {
-              final userID = FirebaseAuth.instance.currentUser!.uid;
-
-              await FirebaseFirestore.instance
-                  .collection('accounts')
-                  .doc(userID)
-                  .collection('reminder_lists')
-                  .doc(reminderListID)
-                  .delete();
-
+              await ReminderService.instance.deleteReminderList(reminderListID);
               if (context.mounted) Navigator.pop(context);
             },
-            child: Text("Delete"),
+            child: const Text("Delete"),
           ),
         ],
       ),
@@ -138,8 +125,6 @@ class ReminderCollectionPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final userID = FirebaseAuth.instance.currentUser!.uid;
-
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final size = MediaQuery.of(context).size;
     final width = size.width;
@@ -160,7 +145,7 @@ class ReminderCollectionPage extends StatelessWidget {
         extendBody: true,
         floatingActionButton: FloatingActionButton(
           onPressed: () => createNewReminder(context),
-          child: Icon(Icons.add),
+          child: const Icon(Icons.add),
         ),
         body: SingleChildScrollView(
           child: Column(
@@ -170,7 +155,10 @@ class ReminderCollectionPage extends StatelessWidget {
 
               /// Title
               Padding(
-                padding: EdgeInsets.symmetric(horizontal: hPadding, vertical: wPadding),
+                padding: EdgeInsets.symmetric(
+                  horizontal: hPadding,
+                  vertical: wPadding,
+                ),
                 child: Text(
                   "Your Reminders",
                   textAlign: TextAlign.center,
@@ -195,20 +183,16 @@ class ReminderCollectionPage extends StatelessWidget {
               /// Reminder List
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 20),
-                child: StreamBuilder<QuerySnapshot>(
-                  stream: FirebaseFirestore.instance
-                      .collection('accounts')
-                      .doc(userID)
-                      .collection('reminder_lists')
-                      .snapshots(),
+                child: StreamBuilder<List<ReminderList>>(
+                  stream: ReminderService.instance.getReminderLists(),
                   builder: (context, snapshot) {
                     if (!snapshot.hasData) {
-                      return Center(child: CircularProgressIndicator());
+                      return const Center(child: CircularProgressIndicator());
                     }
 
-                    final docs = snapshot.data!.docs;
+                    final reminderLists = snapshot.data!;
 
-                    if (docs.isEmpty) {
+                    if (reminderLists.isEmpty) {
                       return Center(
                         child: Padding(
                           padding: const EdgeInsets.only(top: 40),
@@ -216,7 +200,7 @@ class ReminderCollectionPage extends StatelessWidget {
                             "No reminders yet",
                             style: TextStyle(
                               fontSize: base * 0.06,
-                              color: titleColor.withOpacity(0.7),
+                              color: titleColor.withValues(alpha: 0.7),
                             ),
                           ),
                         ),
@@ -224,27 +208,18 @@ class ReminderCollectionPage extends StatelessWidget {
                     }
 
                     return Column(
-                      children: docs.map((doc) {
-                        final data = doc.data() as Map<String, dynamic>;
-                        final reminderID = doc.id;
-
-                        final date = data['reminder_date'] != null
-                            ? (data['reminder_date'] as Timestamp).toDate()
-                            : null;
-
+                      children: reminderLists.map((list) {
                         return Card(
                           elevation: 3,
                           margin: EdgeInsets.only(bottom: sizeboxSize),
                           child: ListTile(
-                            title: Text(data['reminder_name']),
+                            title: Text(list.name),
                             subtitle: Text(
-                              date != null
-                                  ? date.toLocal().toString()
-                                  : "No date set",
+                              list.reminderDate.toLocal().toString(),
                             ),
                             trailing: IconButton(
-                              icon: Icon(Icons.delete),
-                              onPressed: () => deleteReminder(context, reminderID),
+                              icon: const Icon(Icons.delete),
+                              onPressed: () => deleteReminder(context, list.id),
                             ),
                           ),
                         );
@@ -257,7 +232,7 @@ class ReminderCollectionPage extends StatelessWidget {
           ),
         ),
 
-        bottomNavigationBar: NavBar(currentIndex: 1),
+        bottomNavigationBar: const NavBar(currentIndex: 1),
       ),
     );
   }

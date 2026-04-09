@@ -15,9 +15,11 @@ class _SignUpPageState extends State<SignUpPage> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
+  final _firstNameController = TextEditingController();
+  final _lastNameController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
   final AuthService _authService = AuthService();
-  final GoogleService _googleService = GoogleService();
+  final GoogleService _googleService = GoogleService.instance;
   bool _isLoading = false;
   bool _obscurePassword = true;
   bool _obscureConfirmPassword = true;
@@ -37,7 +39,9 @@ class _SignUpPageState extends State<SignUpPage> {
   // Signup function
   Future<void> createAccount() async {
     if (!_formKey.currentState!.validate()) return;
-    
+
+    final firstName = _firstNameController.text.trim();
+    final lastName = _lastNameController.text.trim();
     final email = _emailController.text.trim();
     final password = _passwordController.text.trim();
 
@@ -46,29 +50,35 @@ class _SignUpPageState extends State<SignUpPage> {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text(
-              'Password must be at least 8 characters and include an uppercase letter, a number, and a special character.'),
+            'Password must be at least 8 characters and include an uppercase letter, a number, and a special character.',
+          ),
         ),
       );
       return;
     }
-    
+
     setState(() => _isLoading = true);
 
     try {
       // Create Auth user
-      await _authService.createAccount(
+      final appUser = await _authService.createAccount(
         email: email,
         password: password,
+        firstName: firstName,
+        lastName: lastName,
       );
-        
-      if(!mounted) return;
-      Navigator.pushReplacementNamed(context, '/homepage');
-  
+
+      if (!mounted) return;
+      Navigator.pushReplacementNamed(
+        context,
+        '/homepage',
+        arguments: appUser.id,
+      );
     } catch (e) {
-      if(!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(e.toString())),
-      );
+      if (!mounted) return;
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(e.toString())));
     } finally {
       setState(() => _isLoading = false);
     }
@@ -76,13 +86,17 @@ class _SignUpPageState extends State<SignUpPage> {
 
   Future<void> signInWithGoogle() async {
     setState(() => _isLoading = true);
-    
+
     try {
-      final user = await _googleService.signInWithGoogle();
-      
-      if (!mounted || user == null) return;
-      
-      Navigator.pushReplacementNamed(context, '/homepage');
+      final appUser = await _googleService.signInWithGoogle();
+
+      if (!mounted || appUser == null) return;
+
+      Navigator.pushReplacementNamed(
+        context,
+        '/homepage',
+        arguments: appUser.id,
+      );
     } catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
@@ -122,10 +136,18 @@ class _SignUpPageState extends State<SignUpPage> {
     final buttonPaddingVertical = base * 0.04;
 
     Color titleColor = isDark ? AppColors.titleDark : AppColors.titleLight;
-    Color subtitleColor = isDark ? AppColors.subtitleDark : AppColors.subtitleLight;
-    Color buttonTextColor = isDark ? AppColors.buttonTextDark : AppColors.buttonTextLight;
-    Color buttonBGColor = isDark ? AppColors.buttonBackgroundDark : AppColors.buttonBackgroundLight;
-    Color popUpBGColor = isDark ? AppColors.buttonBackgroundDark : AppColors.buttonBackgroundLight;
+    Color subtitleColor = isDark
+        ? AppColors.subtitleDark
+        : AppColors.subtitleLight;
+    Color buttonTextColor = isDark
+        ? AppColors.buttonTextDark
+        : AppColors.buttonTextLight;
+    Color buttonBGColor = isDark
+        ? AppColors.buttonBackgroundDark
+        : AppColors.buttonBackgroundLight;
+    Color popUpBGColor = isDark
+        ? AppColors.buttonBackgroundDark
+        : AppColors.buttonBackgroundLight;
 
     return Scaffold(
       extendBody: true,
@@ -160,6 +182,82 @@ class _SignUpPageState extends State<SignUpPage> {
                           SizedBox(height: spacingSize),
 
                           Text(
+                            "First Name",
+                            style: TextStyle(
+                              fontSize: fontsizeTextTitle,
+                              color: subtitleColor,
+                            ),
+                          ),
+
+                          SizedBox(height: spacingSize),
+
+                          TextFormField(
+                            controller: _firstNameController,
+                            cursorColor: AppColors.inputText,
+                            style: TextStyle(color: AppColors.inputText),
+                            decoration: InputDecoration(
+                              hintText: "John",
+                              hintStyle: TextStyle(color: AppColors.hintText),
+                              filled: true,
+                              fillColor: AppColors.inputBackground,
+                              enabledBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.all(
+                                  Radius.circular(10),
+                                ),
+                                borderSide: BorderSide(
+                                  color: AppColors.border,
+                                  width: 1,
+                                ),
+                              ),
+                            ),
+                            validator: (value) {
+                              if (value == null || value.trim().isEmpty) {
+                                return "First name is required";
+                              }
+                              return null;
+                            },
+                          ),
+
+                          SizedBox(height: spacingSize),
+
+                          Text(
+                            "Last Name",
+                            style: TextStyle(
+                              fontSize: fontsizeTextTitle,
+                              color: subtitleColor,
+                            ),
+                          ),
+
+                          TextFormField(
+                            controller: _lastNameController,
+                            cursorColor: AppColors.inputText,
+                            style: TextStyle(color: AppColors.inputText),
+                            decoration: InputDecoration(
+                              hintText: "Doe",
+                              hintStyle: TextStyle(color: AppColors.hintText),
+                              filled: true,
+                              fillColor: AppColors.inputBackground,
+                              enabledBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.all(
+                                  Radius.circular(10),
+                                ),
+                                borderSide: BorderSide(
+                                  color: AppColors.border,
+                                  width: 1,
+                                ),
+                              ),
+                            ),
+                            validator: (value) {
+                              if (value == null || value.trim().isEmpty) {
+                                return "Last name is required";
+                              }
+                              return null;
+                            },
+                          ),
+
+                          SizedBox(height: spacingSize),
+
+                          Text(
                             "Email Address",
                             style: TextStyle(
                               fontSize: fontsizeTextTitle,
@@ -181,7 +279,9 @@ class _SignUpPageState extends State<SignUpPage> {
                               filled: true,
                               fillColor: AppColors.inputBackground,
                               enabledBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.all(Radius.circular(10)),
+                                borderRadius: BorderRadius.all(
+                                  Radius.circular(10),
+                                ),
                                 borderSide: BorderSide(
                                   color: AppColors.border,
                                   width: 1,
@@ -217,13 +317,15 @@ class _SignUpPageState extends State<SignUpPage> {
                                   Icons.info_outline,
                                   color: subtitleColor,
                                 ),
-                                onPressed: () { 
+                                onPressed: () {
                                   showDialog(
                                     context: context,
                                     builder: (context) => AlertDialog(
                                       backgroundColor: popUpBGColor,
                                       shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.all(Radius.circular(20)),
+                                        borderRadius: BorderRadius.all(
+                                          Radius.circular(20),
+                                        ),
                                       ),
                                       titleTextStyle: TextStyle(
                                         fontSize: fontsizeTextTitle,
@@ -243,13 +345,14 @@ class _SignUpPageState extends State<SignUpPage> {
                                       ),
                                       actions: [
                                         TextButton(
-                                          onPressed: () => Navigator.pop(context),
+                                          onPressed: () =>
+                                              Navigator.pop(context),
                                           child: Text("OK"),
                                         ),
                                       ],
                                     ),
                                   );
-                                }
+                                },
                               ),
                             ],
                           ),
@@ -269,26 +372,28 @@ class _SignUpPageState extends State<SignUpPage> {
                               filled: true,
                               fillColor: AppColors.inputBackground,
                               enabledBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.all(Radius.circular(10)),
+                                borderRadius: BorderRadius.all(
+                                  Radius.circular(10),
+                                ),
                                 borderSide: BorderSide(
                                   color: AppColors.border,
                                   width: 1,
                                 ),
                               ),
                               suffixIcon: IconButton(
-                                    icon: Icon(
-                                      _obscurePassword
-                                          ? Icons.visibility
-                                          : Icons.visibility_off,
-                                      color: AppColors.inputText,
-                                    ),
-                                    onPressed: () {
-                                      setState(() {
-                                        _obscurePassword = !_obscurePassword;
-                                      });
-                                    },
-                                  ),
+                                icon: Icon(
+                                  _obscurePassword
+                                      ? Icons.visibility
+                                      : Icons.visibility_off,
+                                  color: AppColors.inputText,
                                 ),
+                                onPressed: () {
+                                  setState(() {
+                                    _obscurePassword = !_obscurePassword;
+                                  });
+                                },
+                              ),
+                            ),
                             validator: (value) {
                               if (value == null || value.isEmpty) {
                                 return "Password is required";
@@ -326,7 +431,9 @@ class _SignUpPageState extends State<SignUpPage> {
                               filled: true,
                               fillColor: AppColors.inputBackground,
                               enabledBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.all(Radius.circular(10)),
+                                borderRadius: BorderRadius.all(
+                                  Radius.circular(10),
+                                ),
                                 borderSide: BorderSide(
                                   color: AppColors.border,
                                   width: 1,
@@ -362,51 +469,57 @@ class _SignUpPageState extends State<SignUpPage> {
 
                           // SIGN UP BUTTON
                           _isLoading
-                            ? const CircularProgressIndicator()
-                            : SizedBox(
-                              child: ElevatedButton(
-                                style: ElevatedButton.styleFrom(
-                                  minimumSize: Size(buttonWidth, buttonHeight),
-                                  padding: EdgeInsets.symmetric(
-                                    horizontal: buttonPaddingHorizontal, 
-                                    vertical: buttonPaddingVertical
+                              ? const CircularProgressIndicator()
+                              : SizedBox(
+                                  child: ElevatedButton(
+                                    style: ElevatedButton.styleFrom(
+                                      minimumSize: Size(
+                                        buttonWidth,
+                                        buttonHeight,
+                                      ),
+                                      padding: EdgeInsets.symmetric(
+                                        horizontal: buttonPaddingHorizontal,
+                                        vertical: buttonPaddingVertical,
+                                      ),
+                                      backgroundColor: buttonBGColor,
+                                    ),
+                                    onPressed: createAccount,
+                                    child: Text(
+                                      'Sign Up',
+                                      style: TextStyle(
+                                        fontSize: fontsizeButton,
+                                        color: buttonTextColor,
+                                      ),
+                                    ),
                                   ),
-                                  backgroundColor: buttonBGColor,
                                 ),
-                                onPressed: createAccount,
-                                child: Text(
-                                 'Sign Up',
-                                  style: TextStyle(
-                                    fontSize: fontsizeButton,
-                                    color: buttonTextColor,
-                                  ),
-                                ),
-                              ),
-                            ),
 
                           SizedBox(height: spacingSize),
 
                           // GOOGLE SIGN-IN BUTTON
                           _isLoading
-                          ? const CircularProgressIndicator()
-                          : ElevatedButton(
-                            style: ElevatedButton.styleFrom(
-                              minimumSize: Size(buttonWidth, buttonHeight),
-                              padding: EdgeInsets.symmetric(
-                                horizontal: buttonPaddingHorizontal, 
-                                vertical: buttonPaddingVertical
-                              ),
-                              backgroundColor:buttonBGColor,
-                            ),
-                              onPressed: signInWithGoogle,
-                              child: Text(
-                                'Continue with Google',
-                                style: TextStyle(
-                                  fontSize: fontsizeButton,
-                                  color: buttonTextColor,
+                              ? const CircularProgressIndicator()
+                              : ElevatedButton(
+                                  style: ElevatedButton.styleFrom(
+                                    minimumSize: Size(
+                                      buttonWidth,
+                                      buttonHeight,
+                                    ),
+                                    padding: EdgeInsets.symmetric(
+                                      horizontal: buttonPaddingHorizontal,
+                                      vertical: buttonPaddingVertical,
+                                    ),
+                                    backgroundColor: buttonBGColor,
+                                  ),
+                                  onPressed: signInWithGoogle,
+                                  child: Text(
+                                    'Continue with Google',
+                                    style: TextStyle(
+                                      fontSize: fontsizeButton,
+                                      color: buttonTextColor,
+                                    ),
+                                  ),
                                 ),
-                              ),
-                            ),
 
                           SizedBox(height: spacingSize),
 
@@ -414,9 +527,9 @@ class _SignUpPageState extends State<SignUpPage> {
                           ElevatedButton(
                             style: ElevatedButton.styleFrom(
                               minimumSize: Size(buttonWidth, buttonHeight),
-                              padding:EdgeInsets.symmetric(
-                                horizontal: buttonPaddingHorizontal, 
-                                vertical: buttonPaddingVertical
+                              padding: EdgeInsets.symmetric(
+                                horizontal: buttonPaddingHorizontal,
+                                vertical: buttonPaddingVertical,
                               ),
                               backgroundColor: buttonBGColor,
                             ),
@@ -428,7 +541,7 @@ class _SignUpPageState extends State<SignUpPage> {
                               style: TextStyle(
                                 fontSize: fontsizeButton,
                                 color: buttonTextColor,
-                                ),
+                              ),
                             ),
                           ),
                         ],
@@ -438,7 +551,7 @@ class _SignUpPageState extends State<SignUpPage> {
                 },
               ),
             ),
-          ), 
+          ),
         ),
       ),
     );
