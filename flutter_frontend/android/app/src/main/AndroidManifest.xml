@@ -24,13 +24,23 @@
               android:name="io.flutter.embedding.android.NormalTheme"
               android:resource="@style/NormalTheme"
               />
+            <!-- Main Launcher -->
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
-                <action android:name="FLUTTER_NOTIFICATION_CLICK" />
                 <category android:name="android.intent.category.LAUNCHER"/>
+            </intent-filter>
+
+    <!-- Flutter Local Notifications click -->
+            <intent-filter>
+             <action android:name="FLUTTER_NOTIFICATION_CLICK"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+            </intent-filter>
+
+    <!-- Optional deep link -->
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW"/>
                 <category android:name="android.intent.category.DEFAULT"/>
                 <category android:name="android.intent.category.BROWSABLE"/>
-                <category android:name="android.intent.category.DEFAULT" />
                 <data android:scheme="memorra" android:host="invite"/>
             </intent-filter>
         </activity>
