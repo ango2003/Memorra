@@ -1,11 +1,16 @@
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import '../models/user_model.dart';
 
 class GoogleService {
-  final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
+  GoogleService.privateConstructor();
+  static final GoogleService instance = GoogleService.privateConstructor();
 
-  Future<User?> signInWithGoogle() async {
+  final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+
+  Future<AppUser?> signInWithGoogle() async {
     try {
       final provider = GoogleAuthProvider();
 
@@ -13,17 +18,19 @@ class GoogleService {
 
       if (kIsWeb) {
         // Web
-        userCredential =
-            await _firebaseAuth.signInWithPopup(provider);
+        userCredential = await _firebaseAuth.signInWithPopup(provider);
       } else {
         // Android & iOS
-        userCredential =
-            await _firebaseAuth.signInWithProvider(provider);
+        userCredential = await _firebaseAuth.signInWithProvider(provider);
       }
 
-      await _saveUserToFirestore(userCredential.user!);
-      return userCredential.user;
+      final user = userCredential.user;
+      if (user == null) {
+        return null;
+      }
 
+      await _saveUserToFirestore(user);
+      return AppUser.fromFirebaseUser(user);
     } on FirebaseAuthException {
       rethrow;
     }
@@ -34,17 +41,13 @@ class GoogleService {
   }
 
   Future<void> _saveUserToFirestore(User user) async {
-    final userDoc =
-        FirebaseFirestore.instance.collection('users').doc(user.uid);
+    final userDoc = _firestore.collection('users').doc(user.uid);
 
-    await userDoc.set(
-      {
-        'name': user.displayName ?? '',
-        'email': user.email ?? '',
-        'lastLogin': FieldValue.serverTimestamp(),
-        'loginMethod': 'google',
-      },
-      SetOptions(merge: true),
-    );
+    await userDoc.set({
+      'name': user.displayName ?? '',
+      'email': user.email ?? '',
+      'lastLogin': FieldValue.serverTimestamp(),
+      'loginMethod': 'google',
+    }, SetOptions(merge: true));
   }
 }

@@ -39,20 +39,21 @@ class ScanQrPageState extends State<ScanQrPage> {
             
             HapticFeedback.mediumImpact();
 
-            final uri = Uri.parse(value);
+            final localContext = context;
+            final uri = Uri.parse(barcode.rawValue!);
             final success = await DeepLinkService.instance.handleIncomingLink(uri);
 
+            if (!mounted || !localContext.mounted) return;
+
             if (success) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text('Connected Successfully'))
+              ScaffoldMessenger.of(localContext).showSnackBar(
+                const SnackBar(content: Text('Connected Successfully'))
               );
-              if (mounted) {
-                Navigator.pushReplacementNamed(context, '/connectionspage');
-              }
+              Navigator.pushReplacementNamed(localContext, '/connectionspage');
             } else {
               isProcessing = false;
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text('Invalid or expired invite'))
+              ScaffoldMessenger.of(localContext).showSnackBar(
+                const SnackBar(content: Text('Invalid or expired invite'))
               );
             }
           }
