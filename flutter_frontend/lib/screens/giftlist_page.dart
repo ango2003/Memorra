@@ -33,7 +33,7 @@ class _ListPageState extends State<ListPage> {
             StatefulBuilder(
               builder: (context, setState) {
                 return DropdownButtonFormField<String>(
-                  value: selectedCategory,
+                  initialValue: selectedCategory,
                   hint: Text("Select Category"),
                   items: categories.map((category) {
                     return DropdownMenuItem<String>(
