@@ -4,14 +4,13 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-pickImage(ImageSource source) async{
-  final ImagePicker _imagePicker = ImagePicker();
-  XFile? _file = await _imagePicker.pickImage(source: ImageSource.gallery);
-  if(_file != null){
-    return await _file.readAsBytes();
+Future<Uint8List> pickImage(ImageSource source) async{
+  final ImagePicker imagePicker = ImagePicker();
+  XFile? file = await imagePicker.pickImage(source: ImageSource.gallery);
+  if(file != null){
+    return await file.readAsBytes();
   }
-
-  print("No image selected");
+  throw Exception('No image selected');
 }
 
 final FirebaseStorage storage = FirebaseStorage.instance;
