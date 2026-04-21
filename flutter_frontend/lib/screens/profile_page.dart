@@ -3,7 +3,11 @@ import 'package:flutter_frontend/services/auth_service.dart';
 import 'package:flutter_frontend/screens/start_page.dart';
 import 'package:flutter_frontend/widgets/nav_bar.dart';
 import 'package:image_picker/image_picker.dart';
+<<<<<<< HEAD
 import 'package:flutter_frontend/utils/pickAvatarutil.dart';
+=======
+import 'package:flutter_frontend/utils/pick_avatar.dart';
+>>>>>>> origin/main
 import '../widgets/background.dart';
 import '../themes/app_colors.dart';
 import 'dart:typed_data';

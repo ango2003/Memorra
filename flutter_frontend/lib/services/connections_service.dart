@@ -55,7 +55,14 @@ class ConnectionsService {
         final inviteDoc = await transaction.get(inviteRef);
         if (!inviteDoc.exists) throw Exception('Invite not found');
 
-        final invite = ConnectionInvite.fromFirestore(inviteDoc.data()!, inviteDoc.id);
+        final invite = ConnectionInvite(
+          token: inviteDoc['token'],
+          inviterId: inviteDoc['inviterId'],
+          redeemBy: inviteDoc['redeemBy'],
+          isUsed: inviteDoc['isUsed'],
+          createdAt: (inviteDoc['createdAt'] as Timestamp).toDate(),
+          expiresAt: (inviteDoc['expiresAt'] as Timestamp).toDate(),
+        );
 
         if (invite.isUsed ||
             invite.expiresAt.isBefore(DateTime.now()) ||
@@ -95,7 +102,6 @@ class ConnectionsService {
     return true;
   }
 
-  /// -------------------- CONNECTION REQUESTS --------------------
   Future<bool> sendConnectionRequest(String receiverId) async {
     final senderId = userId;
     if (senderId == receiverId) return false;
@@ -120,7 +126,7 @@ class ConnectionsService {
     if (reverseSnapshot.docs.isNotEmpty) return false;
 
     final request = ConnectionRequest(
-      requestId: '', // Firestore generates the ID
+      requestId: '',
       senderId: senderId,
       receiverId: receiverId,
       status: RequestStatus.pending,

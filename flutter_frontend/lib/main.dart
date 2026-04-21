@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:app_links/app_links.dart';
+import 'package:flutter_frontend/screens/scan_qr_page.dart';
 import 'firebase_options.dart';
 import 'screens/start_page.dart';
 import 'screens/login_page.dart';
@@ -90,6 +91,7 @@ class _MyAppState extends State<MyApp> {
         '/connectionpage': (context) => ConnectionsPage(),
         '/requestpage': (context) => const ConnectionsRequestPage(),
         '/invitepage': (context) => const ConnectionsInvitePage(),
+        '/scanpage': (context) => const ScanQrPage(),
         '/wip': (context) => const FillerPage(userId: ' '),
       },
 
