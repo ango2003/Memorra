@@ -82,7 +82,7 @@ class _MyAppState extends State<MyApp> {
           final userId = args is String ? args : currentUser?.uid ?? '';
           return HomePage(userId: userId);
         },
-        '/profilepage': (context) => const ProfilePage(),
+        '/profilepage': (context) => const ProfilePage(userId: ' '),
         '/loginpage': (context) => const LogInPage(),
         '/signuppage': (context) => const SignUpPage(),
         '/listcollection': (context) => ListCollectionPage(),
@@ -109,7 +109,7 @@ class _MyAppState extends State<MyApp> {
                 case '/listcollection':
                   return ListCollectionPage();
                 case '/profilepage':
-                  return const ProfilePage();
+                  return const ProfilePage(userId: ' ');
                 case '/wip':
                   final userId = settings.arguments as String;
                   return FillerPage(userId: userId);
