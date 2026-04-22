@@ -146,12 +146,6 @@ class ReminderCollectionPage extends StatelessWidget {
     final double addBoxCurve = 50;
 
     Color titleColor = isDark ? AppColors.titleDark : AppColors.titleLight;
-    Color addButtonBackgroundColor = isDark ? AppColors.buttonBackgroundDark : AppColors.buttonBackgroundLight.withValues(alpha: 0.75);
-    Color addButtonTextColor = isDark ? AppColors.buttonTextDark : AppColors.buttonTextLight;    
-    Color reminderTextColor = isDark ? AppColors.titleDark : AppColors.titleLight;
-    Color subtitleColor = isDark ? AppColors.subtitleDark : AppColors.subtitleLight;
-    Color reminderBoxColor = isDark ? AppColors.listBGDark.withValues(alpha: 0.4) : AppColors.listBGLight.withValues(alpha: 0.4);
-    Color deletereminderIcon = isDark ? AppColors.deleteListDark : AppColors.deleteListLight;
 
     return AppBackground(
       child: Scaffold(
