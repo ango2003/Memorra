@@ -24,35 +24,45 @@ class ScanQrPageState extends State<ScanQrPage> {
               onDetect: (capture) async {
             if (isProcessing) return;
             isProcessing = true;
-
-            if (capture.barcodes.isEmpty) {
-              isProcessing = false;
-              return;
-            }
-            final barcode = capture.barcodes.first;
-            
-            final value = barcode.rawValue;
-            if (value == null) {
-              isProcessing = false;
-              return;
-            }
-            
-            HapticFeedback.mediumImpact();
-
-            final uri = Uri.parse(value);
-            final success = await DeepLinkService.instance.handleIncomingLink(uri);
-
-            if (success) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text('Connected Successfully'))
-              );
-              if (mounted) {
-                Navigator.pushReplacementNamed(context, '/connectionspage');
+            try {
+              if (capture.barcodes.isEmpty) {
+                isProcessing = false;
+                return;
               }
-            } else {
+              final barcode = capture.barcodes.first;
+
+              final value = barcode.rawValue;
+              if (value == null) {
+                isProcessing = false;
+                return;
+              }
+
+              HapticFeedback.mediumImpact();
+
+              final localContext = context;
+              final uri = Uri.parse(barcode.rawValue!);
+              final success = await DeepLinkService.instance.handleIncomingLink(uri);
+
+              if (!mounted || !localContext.mounted) {
+                isProcessing = false;
+                return;
+              }
+
+              if (success) {
+                ScaffoldMessenger.of(localContext).showSnackBar(
+                  const SnackBar(content: Text('Connected Successfully'))
+                );
+                Navigator.pushReplacementNamed(localContext, '/connectionspage');
+              } else {
+                isProcessing = false;
+                ScaffoldMessenger.of(localContext).showSnackBar(
+                  const SnackBar(content: Text('Invalid or expired invite'))
+                );
+              }
+            } catch (e) {
               isProcessing = false;
               ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text('Invalid or expired invite'))
+                SnackBar(content: Text('Error processing QR code: $e'))
               );
             }
           }

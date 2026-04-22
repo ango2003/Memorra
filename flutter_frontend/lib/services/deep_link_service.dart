@@ -1,15 +1,22 @@
-import '../services/invite_service.dart';
+import '../services/connections_service.dart';
 
 class DeepLinkService {
-  DeepLinkService.privateConstructor();
-  static final DeepLinkService instance = DeepLinkService.privateConstructor();
+  DeepLinkService._privateConstructor();
+  static final DeepLinkService instance = DeepLinkService._privateConstructor();
 
-  Future<bool> handleIncomingLink(Uri url) async {
-    final token = InviteService.instance.extractToken(url);
-    if (token == null) {
-      return Future.value(false);
+  Future<bool> handleIncomingLink(Uri uri) async {
+    try {
+      if (uri.scheme != 'memorra' || uri.host != 'invite') return false;
+
+      final token = uri.queryParameters['token'];
+      if (token == null) return false;
+
+      // Redeem the invite via your existing ConnectionsService
+      final success = await ConnectionsService.instance.redeemInvite(token);
+      return success;
+    } catch (e) {
+      print('Failed to handle deep link: $e');
+      return false;
     }
-    print("Deep link received: $url with token: $token");
-    return await InviteService.instance.redeemInvite(token);
   }
 }

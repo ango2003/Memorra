@@ -3,11 +3,15 @@ class Gift {
   final String name;
   final String category;
 
-  Gift({
-    required this.id,
-    required this.name,
-    required this.category,
-  });
+  Gift({required this.id, required this.name, required this.category});
+
+  factory Gift.fromJson(Map<String, dynamic> json) {
+    return Gift(
+      id: json['id'] ?? '',
+      name: json['name'] ?? '',
+      category: json['category'] ?? '',
+    );
+  }
 
   /// Convert Firestore → Gift object
   factory Gift.fromFirestore(Map<String, dynamic> data, String id) {
@@ -18,11 +22,12 @@ class Gift {
     );
   }
 
+  Map<String, dynamic> toJson() {
+    return {'id': id, 'name': name, 'category': category};
+  }
+
   /// Convert Gift → Firestore map
   Map<String, dynamic> toFirestore() {
-    return {
-      'name': name,
-      'category': category,
-    };
+    return {'name': name, 'category': category};
   }
 }
