@@ -210,12 +210,8 @@ class ReminderCollectionPage extends StatelessWidget {
               /// Reminder List
               Padding(
                 padding: EdgeInsets.symmetric(horizontal: hPadding),
-                child: StreamBuilder<QuerySnapshot>(
-                  stream: FirebaseFirestore.instance
-                      .collection('accounts')
-                      .doc(userID)
-                      .collection('reminder_lists')
-                      .snapshots(),
+                child: StreamBuilder<List<ReminderList>>(
+                  stream: ReminderService.instance.getReminderLists(),
                   builder: (context, snapshot) {
                     if (!snapshot.hasData) {
                       return const Center(child: CircularProgressIndicator());
