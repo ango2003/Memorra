@@ -39,7 +39,7 @@ class HomePage extends StatelessWidget {
               Padding(
                 padding: EdgeInsets.symmetric(horizontal: hPadding, vertical: wPadding),
                 child: Text(
-                  "How Can We Help $userId?",
+                  "How Can We Help?",
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     fontSize: titleFontSize,

@@ -149,18 +149,45 @@ class ReminderCollectionPage extends StatelessWidget {
 
     final sizeboxSize = base * 0.05;
     final titleFontSize = base * 0.08;
-    final hPadding = width * 0.01;
-    final wPadding = height * 0.01;
+    final wPadding = width * 0.001;
+    final hPadding = height * 0.005;
+
+    final reminderFontSize = base * 0.04;
+    final addIconSize = base * 0.06;
+    final reminderLetterSpacing = 1.2;
+    final subtitleFontSize = base * 0.02;
+    final addFontSize = base * 0.035;
+    final double reminderCornerRadius = 40;
+    final double addBoxCurve = 50;
 
     Color titleColor = isDark ? AppColors.titleDark : AppColors.titleLight;
+    Color addButtonBackgroundColor = isDark ? AppColors.buttonBackgroundDark : AppColors.buttonBackgroundLight.withValues(alpha: 0.75);
+    Color addButtonTextColor = isDark ? AppColors.buttonTextDark : AppColors.buttonTextLight;    
+    Color reminderTextColor = isDark ? AppColors.titleDark : AppColors.titleLight;
+    Color subtitleColor = isDark ? AppColors.subtitleDark : AppColors.subtitleLight;
+    Color reminderBoxColor = isDark ? AppColors.listBGDark.withValues(alpha: 0.4) : AppColors.listBGLight.withValues(alpha: 0.4);
+    Color deletereminderIcon = isDark ? AppColors.deleteListDark : AppColors.deleteListLight;
 
     return AppBackground(
       child: Scaffold(
         backgroundColor: Colors.transparent,
         extendBody: true,
-        floatingActionButton: FloatingActionButton(
+        floatingActionButton: FloatingActionButton.extended(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(addBoxCurve),
+            ),
+            backgroundColor: addButtonBackgroundColor,
+            foregroundColor: addButtonTextColor,
           onPressed: () => createNewReminder(context),
-          child: Icon(Icons.add),
+          icon: Icon(Icons.add, size: addIconSize),
+          label: Text(
+            "Add New\nReminder",
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              fontSize: addFontSize,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
         ),
         body: SingleChildScrollView(
           child: Column(
@@ -194,7 +221,7 @@ class ReminderCollectionPage extends StatelessWidget {
 
               /// Reminder List
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20),
+                padding: EdgeInsets.symmetric(horizontal: hPadding),
                 child: StreamBuilder<QuerySnapshot>(
                   stream: FirebaseFirestore.instance
                       .collection('accounts')
@@ -216,7 +243,7 @@ class ReminderCollectionPage extends StatelessWidget {
                             "No reminders yet",
                             style: TextStyle(
                               fontSize: base * 0.06,
-                              color: titleColor.withOpacity(0.7),
+                              color: titleColor.withValues(alpha: 0.7),
                             ),
                           ),
                         ),
@@ -232,18 +259,35 @@ class ReminderCollectionPage extends StatelessWidget {
                             ? (data['reminder_date'] as Timestamp).toDate()
                             : null;
 
-                        return Card(
-                          elevation: 3,
+                        return Container(
                           margin: EdgeInsets.only(bottom: sizeboxSize),
+                          decoration: BoxDecoration(
+                            color: reminderBoxColor,
+                            borderRadius: BorderRadius.circular(reminderCornerRadius),
+                          ),
                           child: ListTile(
-                            title: Text(data['reminder_name']),
+                            title: Text(
+                              data['reminder_name'],
+                              style: TextStyle(
+                                color: reminderTextColor,
+                                fontSize: reminderFontSize,
+                                fontWeight: FontWeight.w400,
+                                letterSpacing: reminderLetterSpacing,
+                              ),
+                            ),
                             subtitle: Text(
-                              date != null
-                                  ? date.toLocal().toString()
-                                  : "No date set",
+                              date != null ? date.toLocal().toString() : "No date set",
+                              style: TextStyle(
+                                color: subtitleColor,
+                                fontSize: subtitleFontSize,
+                              ),
                             ),
                             trailing: IconButton(
-                              icon: Icon(Icons.delete),
+                              icon: Icon(
+                                Icons.delete,
+                                color: deletereminderIcon,
+                                size: reminderFontSize * 1.2,
+                              ),
                               onPressed: () => deleteReminder(context, reminderID),
                             ),
                           ),
