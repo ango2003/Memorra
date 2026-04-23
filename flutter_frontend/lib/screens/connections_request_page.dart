@@ -111,12 +111,13 @@ class ConnectionsRequestPageState extends State<ConnectionsRequestPage> {
                                 IconButton(
                                   icon: const Icon(Icons.check),
                                   onPressed: () async {
+                                    final localContext = context;
                                     try {
                                       await ConnectionsService.instance
                                           .acceptConnectionRequest(request.requestId);
                                     } catch (e) {
-                                      if (!mounted) return;
-                                      ScaffoldMessenger.of(context).showSnackBar(
+                                      if (!localContext.mounted) return;
+                                      ScaffoldMessenger.of(localContext).showSnackBar(
                                         SnackBar(content: Text('Error: $e')),
                                       );
                                     }
@@ -125,12 +126,13 @@ class ConnectionsRequestPageState extends State<ConnectionsRequestPage> {
                                 IconButton(
                                   icon: const Icon(Icons.close),
                                   onPressed: () async {
+                                    final localContext = context;
                                     try {
                                       await ConnectionsService.instance
                                           .declineConnectionRequest(request.requestId);
                                     } catch (e) {
-                                      if (!mounted) return;
-                                      ScaffoldMessenger.of(context).showSnackBar(
+                                      if (!localContext.mounted) return;
+                                      ScaffoldMessenger.of(localContext).showSnackBar(
                                         SnackBar(content: Text('Error: $e')),
                                       );
                                     }
