@@ -2,7 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 
 class ConnectionInvite {
   final String inviterId;
-  final String redeemBy;
+  final String? redeemBy;
   final String token;
   final bool isUsed;
   final DateTime createdAt;

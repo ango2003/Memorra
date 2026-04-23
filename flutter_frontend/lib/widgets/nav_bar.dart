@@ -108,7 +108,7 @@ class NavBar extends StatelessWidget {
                   target = ReminderCollectionPage();
                 }
                 else if (index == 2) {
-                  target = ProfilePage();
+                  target = ProfilePage(userId: ' ');
                 }
                 else if (index == 3) {
                   target = ConnectionsPage();

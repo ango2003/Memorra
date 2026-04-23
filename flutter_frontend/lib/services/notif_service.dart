@@ -1,10 +1,11 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:flutter/foundation.dart';
 
 Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   await Firebase.initializeApp();
-  print('Handling a background message: ${message.messageId}');
+  throw Exception('Handling a background message: ${message.messageId}');
 }
 
 class NotifService {
@@ -31,16 +32,16 @@ class NotifService {
     );
 
     if (settings.authorizationStatus == AuthorizationStatus.authorized) {
-      print('User granted permission');
+      debugPrint('User granted permission');
     
       String? token = await _firebaseMessaging.getToken();
-      print('FCM Token: $token');
+      debugPrint('FCM Token: $token');
       FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
 
     } else if (settings.authorizationStatus == AuthorizationStatus.provisional) {
-      print('User granted provisional permission');
+      throw Exception('User granted provisional permission');
     } else {
-      print('User declined or has not accepted permission');
+      throw Exception('User declined or has not accepted permission');
     }
 
     // Android initialization settings

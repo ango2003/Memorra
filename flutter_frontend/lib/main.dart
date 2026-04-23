@@ -43,13 +43,14 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
+  final GlobalKey<NavigatorState> _navigatorKey = GlobalKey<NavigatorState>();
+  bool _handleInitialLink = false;
+
   @override
   void initState() {
     super.initState();
     _initDeepLinkListener();
   }
-
-  bool _handleInitialLink = false;
 
   Future<void> _initDeepLinkListener() async {
     try {
@@ -58,47 +59,52 @@ class _MyAppState extends State<MyApp> {
 
       if (!_handleInitialLink && initialUrl != null) {
         _handleInitialLink = true;
-        DeepLinkService.instance.handleIncomingLink(initialUrl);
+        final success = await DeepLinkService.instance.handleIncomingLink(initialUrl);
+        if (success) {
+          _navigatorKey.currentState?.pushNamed('/connectionpage');
+        }
       }
 
-      appLinks.uriLinkStream.listen((Uri url) {
-        DeepLinkService.instance.handleIncomingLink(url);
+      appLinks.uriLinkStream.listen((Uri url) async {
+        final success = await DeepLinkService.instance.handleIncomingLink(url);
+        if (!mounted) return;
+        if (success) {
+          _navigatorKey.currentState?.pushNamed('/connectionpage');
+        } else {
+          final context = _navigatorKey.currentContext;
+          if (context != null && context.mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text('Invalid or expired invite link')),
+            );
+          }
+        }
       });
     } catch (e) {
-      print('Error occurred while initializing deep link: $e');
+      throw Exception('Error occurred while initializing deep link: $e');
     }
   }
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      navigatorKey: _navigatorKey,
       title: 'Memorra',
       debugShowCheckedModeBanner: false,
       routes: {
         '/startpage': (context) => const StartPage(),
-        '/homepage': (context) {
-          final args = ModalRoute.of(context)?.settings.arguments;
-          final currentUser = FirebaseAuth.instance.currentUser;
-          final userId = args is String ? args : currentUser?.uid ?? '';
-          return HomePage(userId: userId);
-        },
-        '/profilepage': (context) => const ProfilePage(),
         '/loginpage': (context) => const LogInPage(),
         '/signuppage': (context) => const SignUpPage(),
-        '/listcollection': (context) => ListCollectionPage(),
-        '/listpage': (context) => ListPage(listID: ' '),
         '/remindercollection': (context) => ReminderCollectionPage(),
         '/connectionpage': (context) => ConnectionsPage(),
         '/requestpage': (context) => const ConnectionsRequestPage(),
         '/invitepage': (context) => const ConnectionsInvitePage(),
         '/scanpage': (context) => const ScanQrPage(),
-        '/wip': (context) => const FillerPage(userId: ' '),
       },
 
         onGenerateRoute: (settings) {
           return PageRouteBuilder(
             settings: settings,
-            pageBuilder: (_, _, _) {
+            pageBuilder: (context, _, _) {
               switch (settings.name) {
                 case '/homepage':
                   final userId = settings.arguments as String;
@@ -109,7 +115,7 @@ class _MyAppState extends State<MyApp> {
                 case '/listcollection':
                   return ListCollectionPage();
                 case '/profilepage':
-                  return const ProfilePage();
+                  return const ProfilePage(userId: ' ');
                 case '/wip':
                   final userId = settings.arguments as String;
                   return FillerPage(userId: userId);
