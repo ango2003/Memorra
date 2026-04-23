@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_frontend/widgets/today_reminders.dart';
 import '../widgets/home_tile.dart';
 import '../widgets/nav_bar.dart';
 import '../widgets/background.dart';
@@ -62,12 +63,23 @@ class HomePage extends StatelessWidget {
                     Row(
                       children: [
                         Expanded(
-                          child: HomeTile(
-                            title: "Today's Reminders",
-                            onTap: () {
-                              Navigator.pushNamed(context, '/wip');
-                            },
-                            inMiddle: false,
+                          child: Column(
+                            children: [
+                              HomeTile(
+                                title: "Today's Reminders",
+                                onTap: () {
+                                  Navigator.pushNamed(context, '/wip');
+                                },
+                                inMiddle: false,
+                              ),
+
+                              const SizedBox(height: 10),
+
+                              const SizedBox(
+                                height: 200,
+                                child: TodayReminders(),
+                              ),
+                            ],
                           ),
                         ),
                       ],
