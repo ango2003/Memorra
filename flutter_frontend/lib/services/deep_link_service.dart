@@ -15,8 +15,7 @@ class DeepLinkService {
       final success = await ConnectionsService.instance.redeemInvite(token);
       return success;
     } catch (e) {
-      print('Failed to handle deep link: $e');
-      return false;
+      throw Exception('Failed to handle deep link: $e');
     }
   }
 }

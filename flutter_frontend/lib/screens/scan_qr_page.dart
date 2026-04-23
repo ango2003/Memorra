@@ -23,10 +23,10 @@ class ScanQrPageState extends State<ScanQrPage> {
             MobileScanner(
               onDetect: (capture) async {
             if (isProcessing) return;
-            isProcessing = true;
+            setState(() { isProcessing = true; });
             try {
               if (capture.barcodes.isEmpty) {
-                isProcessing = false;
+                setState(() { isProcessing = false; });
                 return;
               }
               final barcode = capture.barcodes.first;
@@ -49,18 +49,19 @@ class ScanQrPageState extends State<ScanQrPage> {
               }
 
               if (success) {
+                setState(() { isProcessing = false; });
                 ScaffoldMessenger.of(localContext).showSnackBar(
                   const SnackBar(content: Text('Connected Successfully'))
                 );
-                Navigator.pushReplacementNamed(localContext, '/connectionspage');
+                Navigator.pushReplacementNamed(localContext, '/connectionpage');
               } else {
-                isProcessing = false;
+                setState(() { isProcessing = false; });
                 ScaffoldMessenger.of(localContext).showSnackBar(
                   const SnackBar(content: Text('Invalid or expired invite'))
                 );
               }
             } catch (e) {
-              isProcessing = false;
+              setState(() { isProcessing = false; });
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(content: Text('Error processing QR code: $e'))
               );

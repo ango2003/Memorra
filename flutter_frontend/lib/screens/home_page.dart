@@ -1,12 +1,44 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_frontend/services/auth_service.dart';
+import 'package:flutter_frontend/models/user_model.dart';
 import '../widgets/home_tile.dart';
 import '../widgets/nav_bar.dart';
 import '../widgets/background.dart';
 import '../themes/app_colors.dart';
 
-class HomePage extends StatelessWidget {
+class HomePage extends StatefulWidget {
   final String userId;
   const HomePage({super.key, required this.userId});
+
+  @override
+  State<HomePage> createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> {
+  AppUser? user;
+  bool isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadUser();
+  }
+
+  Future<void> _loadUser() async {
+    try {
+      final fetchedUser = await authService.value.fetchUser(widget.userId);
+      if (mounted) {
+        setState(() {
+          user = fetchedUser;
+          isLoading = false;
+        });
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() => isLoading = false);
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -26,6 +58,15 @@ class HomePage extends StatelessWidget {
 
     Color titleColor = isDark ? AppColors.titleDark : AppColors.titleLight;
 
+    if (isLoading) {
+      return AppBackground(
+        child: Scaffold(
+          backgroundColor: Colors.transparent,
+          body: const Center(child: CircularProgressIndicator()),
+        ),
+      );
+    }
+
     return AppBackground(
       child: Scaffold(
         backgroundColor: Colors.transparent,
@@ -39,7 +80,7 @@ class HomePage extends StatelessWidget {
               Padding(
                 padding: EdgeInsets.symmetric(horizontal: hPadding, vertical: wPadding),
                 child: Text(
-                  "How Can We Help?",
+                  "How Can We Help ${user?.name ?? 'User'}?",
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     fontSize: titleFontSize,
