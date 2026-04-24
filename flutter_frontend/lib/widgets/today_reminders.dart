@@ -1,4 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter_frontend/services/auth_service.dart';
 import 'package:flutter/material.dart';
 
 class TodayReminders extends StatelessWidget {
@@ -10,12 +12,14 @@ class TodayReminders extends StatelessWidget {
     final startOfDay = DateTime(now.year, now.month, now.day);
     final endOfDay = startOfDay.add(const Duration(days: 1));
 
+    final userId = FirebaseAuth.instance.currentUser!.uid;
+
     Timestamp.fromDate(startOfDay);
     Timestamp.fromDate(endOfDay);
 
     final stream = FirebaseFirestore.instance
-        .collection('accouns')
-        .doc('user_id')
+        .collection('accounts')
+        .doc(userId)
         .collection('reminder_lists')
         .where('reminder_date', isGreaterThanOrEqualTo: Timestamp.fromDate(startOfDay),)
         .where('reminder_date', isLessThan: Timestamp.fromDate(endOfDay),)
@@ -46,7 +50,7 @@ class TodayReminders extends StatelessWidget {
               margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
               child: ListTile(
                 leading: const Icon(Icons.alarm),
-                title: Text(data['title'] ?? ''),
+                title: Text(data['reminder_name'] ?? ''),
                 trailing: Text(TimeOfDay.fromDateTime(time).format(context)),
               )
             );

@@ -32,7 +32,7 @@ class ConnectionsService {
         final invite = ConnectionInvite(
           token: token,
           inviterId: userId,
-          redeemBy: '', // null until someone redeems
+          redeemBy: null,
           isUsed: false,
           createdAt: DateTime.now(),
           expiresAt: DateTime.now().add(time),
@@ -95,8 +95,7 @@ class ConnectionsService {
         });
       });
     } catch (e) {
-      print('Error redeeming invite: $e');
-      return false;
+      throw Exception ('Error redeeming invite: $e');
     }
 
     return true;
@@ -172,8 +171,7 @@ class ConnectionsService {
         transaction.update(requestRef, {'status': RequestStatus.accepted.name});
       });
     } catch (e) {
-      print('Error accepting request: $e');
-      return false;
+      throw Exception('Error accepting request: $e');
     }
 
     return true;
@@ -239,23 +237,23 @@ class ConnectionsService {
             snapshot.docs.map((doc) => Connection.fromFirestore(doc.data(), doc.id)).toList());
   }
 
-  Future<List<ConnectionRequest>> getSentConnectionRequests(String userId) {
+  Stream<List<ConnectionRequest>> getSentConnectionRequests(String userId) {
     return firestore
         .collection('connection_requests')
         .where('senderId', isEqualTo: userId)
         .orderBy('createdAt', descending: true)
-        .get()
-        .then((snapshot) =>
+        .snapshots()
+        .map((snapshot) =>
             snapshot.docs.map((doc) => ConnectionRequest.fromFirestore(doc.data(), doc.id)).toList());
   }
 
-  Future<List<ConnectionRequest>> getReceivedConnectionRequests(String userId) {
+  Stream<List<ConnectionRequest>> getReceivedConnectionRequests(String userId) {
     return firestore
         .collection('connection_requests')
         .where('receiverId', isEqualTo: userId)
         .orderBy('createdAt', descending: true)
-        .get()
-        .then((snapshot) =>
+        .snapshots()
+        .map((snapshot) =>
             snapshot.docs.map((doc) => ConnectionRequest.fromFirestore(doc.data(), doc.id)).toList());
   }
 }

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_frontend/services/auth_service.dart';
 import 'package:flutter_frontend/screens/start_page.dart';
 import 'package:flutter_frontend/widgets/nav_bar.dart';
+import 'package:flutter_frontend/models/user_model.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:flutter_frontend/utils/pick_avatar.dart';
 import '../widgets/background.dart';
@@ -9,21 +10,44 @@ import '../themes/app_colors.dart';
 import 'dart:typed_data';
 
 class ProfilePage extends StatefulWidget {
-  const ProfilePage({super.key});
+  final String userId;
+  const ProfilePage({super.key, required this.userId});
 
   @override
   State<ProfilePage> createState() => _ProfilePageState();
 }
 
 class _ProfilePageState extends State<ProfilePage> {
-  bool _isLoading = false;
+  AppUser? user;
+  bool isLoading = true;
   Uint8List? _image;
 
+  @override
+  void initState() {
+    super.initState();
+    _loadUser();
+  }
+
+  Future<void> _loadUser() async {
+    try {
+      final fetchedUser = await authService.value.fetchUser(widget.userId);
+      if (mounted) {
+        setState(() {
+          user = fetchedUser;
+          isLoading = false;
+        });
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() => isLoading = false);
+      }
+    }
+  }
   
   // Sign Out Function
   Future<void> signOut() async {
     
-    setState(() => _isLoading = true);
+    setState(() => isLoading = true);
 
     try {
       await authService.value.signOut();
@@ -41,7 +65,7 @@ class _ProfilePageState extends State<ProfilePage> {
       );
     } finally {
       if (mounted) {
-        setState(() => _isLoading = false);
+        setState(() => isLoading = false);
       }
     }
   }
@@ -118,7 +142,7 @@ class _ProfilePageState extends State<ProfilePage> {
               SizedBox(height: sizeboxSize),
 
               Text(
-                "_insert_username_here_",
+                user?.name ?? 'User',
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   fontSize: usernameFontSize,
@@ -170,8 +194,8 @@ class _ProfilePageState extends State<ProfilePage> {
                       ),
                       backgroundColor: buttonBGColor,
                     ),
-                    onPressed: _isLoading ? null : () { signOut(); },
-                    child: _isLoading
+                    onPressed: isLoading ? null : () { signOut(); },
+                    child: isLoading
                       ? CircularProgressIndicator()
                       : Text(
                         "Sign Out",
