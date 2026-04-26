@@ -6,8 +6,10 @@ import '../services/notif_service.dart';
 import '../services/reminder_service.dart';
 import '../models/reminder_list_model.dart';
 
+
 class ReminderCollectionPage extends StatelessWidget {
   const ReminderCollectionPage({super.key});
+
 
   Future<DateTime?> pickDate(BuildContext context) async {
     final date = await showDatePicker(
@@ -17,17 +19,22 @@ class ReminderCollectionPage extends StatelessWidget {
       lastDate: DateTime(DateTime.now().year + 5),
     );
 
+
     if (!context.mounted || date == null) return null;
+
 
     final time = await showTimePicker(
       context: context,
       initialTime: TimeOfDay.now(),
     );
 
+
     if (!context.mounted || time == null) return null;
+
 
     return DateTime(date.year, date.month, date.day, time.hour, time.minute);
   }
+
 
   int createUniqueID() {
     return DateTime.now().millisecondsSinceEpoch ~/ 1000;
@@ -37,6 +44,7 @@ class ReminderCollectionPage extends StatelessWidget {
     final controller = TextEditingController();
     final timeController = TextEditingController();
     DateTime? selectedReminderDate;
+
 
     showDialog(
       context: context,
@@ -77,18 +85,23 @@ class ReminderCollectionPage extends StatelessWidget {
               final reminderListName = controller.text.trim();
               final notifID = createUniqueID();
 
+
               if (reminderListName.isNotEmpty && selectedReminderDate != null) {
                 await ReminderService.instance.addReminderList(
                   name: reminderListName,
                   reminderDate: selectedReminderDate!,
                   notifId: notifID,
                 );
+               
+                //Add event stuff
+
 
                 await NotifService.instance.scheduleWithTimer(
                   notifID,
                   reminderListName,
                   selectedReminderDate!,
                 );
+
 
                 if (context.mounted) Navigator.pop(context);
               }
@@ -99,6 +112,7 @@ class ReminderCollectionPage extends StatelessWidget {
       ),
     );
   }
+
 
   void deleteReminder(BuildContext context, String reminderListID) {
     showDialog(
@@ -123,6 +137,7 @@ class ReminderCollectionPage extends StatelessWidget {
     );
   }
 
+
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
@@ -130,14 +145,18 @@ class ReminderCollectionPage extends StatelessWidget {
     final width = size.width;
     final height = size.height;
 
+
     final base = width < height ? width : height;
+
 
     final sizeboxSize = base * 0.05;
     final titleFontSize = base * 0.08;
     final hPadding = width * 0.01;
     final wPadding = height * 0.01;
 
+
     Color titleColor = isDark ? AppColors.titleDark : AppColors.titleLight;
+
 
     return AppBackground(
       child: Scaffold(
@@ -152,6 +171,7 @@ class ReminderCollectionPage extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               SizedBox(height: sizeboxSize),
+
 
               /// Title
               Padding(
@@ -170,6 +190,7 @@ class ReminderCollectionPage extends StatelessWidget {
                 ),
               ),
 
+
               /// Divider
               Divider(
                 color: isDark ? Colors.white : Colors.black54,
@@ -178,7 +199,9 @@ class ReminderCollectionPage extends StatelessWidget {
                 endIndent: 20,
               ),
 
+
               SizedBox(height: sizeboxSize),
+
 
               /// Reminder List
               Padding(
@@ -190,7 +213,9 @@ class ReminderCollectionPage extends StatelessWidget {
                       return const Center(child: CircularProgressIndicator());
                     }
 
+
                     final reminderLists = snapshot.data!;
+
 
                     if (reminderLists.isEmpty) {
                       return Center(
@@ -206,6 +231,7 @@ class ReminderCollectionPage extends StatelessWidget {
                         ),
                       );
                     }
+
 
                     return Column(
                       children: reminderLists.map((list) {
@@ -232,8 +258,12 @@ class ReminderCollectionPage extends StatelessWidget {
           ),
         ),
 
+
         bottomNavigationBar: const NavBar(currentIndex: 1),
       ),
     );
   }
 }
+
+
+
