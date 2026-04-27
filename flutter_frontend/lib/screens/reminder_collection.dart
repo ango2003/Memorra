@@ -92,9 +92,6 @@ class ReminderCollectionPage extends StatelessWidget {
                   reminderDate: selectedReminderDate!,
                   notifId: notifID,
                 );
-               
-                //Add event stuff
-
 
                 await NotifService.instance.scheduleWithTimer(
                   notifID,
