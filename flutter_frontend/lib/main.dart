@@ -117,8 +117,9 @@ class _MyAppState extends State<MyApp> {
                 case '/profilepage':
                   return const ProfilePage(userId: ' ');
                 case '/wip':
-                  final userId = settings.arguments as String;
-                  return FillerPage(userId: userId);
+                  return FillerPage(userId: ' ');
+                case '/reminderpage':
+                  return ReminderCollectionPage();
                 default:
                   return const StartPage();
               }

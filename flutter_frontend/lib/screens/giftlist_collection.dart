@@ -223,7 +223,7 @@ class _ListCollectionPageState extends State<ListCollectionPage>
     final double topExpandedRadius = listCornerRadius;
     final double bottomExpandedRadius = listCornerRadius;
 
-    final favoriteLabels = ["Favorite 1", "Favorite 2", "Favorite 3", "Favorite 4", "Favorite 5"];
+    final favoriteLabels = ["Favorite Food","Favorite Drink","Favorite Technology","Favorite Resteraunt","Other",];
 
     Color addButtonTextColor = isDark ? AppColors.buttonTextDark : AppColors.buttonTextLight;
     Color addButtonBackgroundColor = isDark ? AppColors.buttonBackgroundDark : AppColors.buttonBackgroundLight.withValues(alpha: 0.75);

@@ -320,14 +320,21 @@ class ReminderCollectionPage extends StatelessWidget {
     final width = size.width;
     final height = size.height;
 
-
     final base = width < height ? width : height;
-
 
     final sizeboxSize = base * 0.01;
     final titleFontSize = base * 0.08;
-    final hPadding = width * 0.01;
-    final wPadding = height * 0.01;
+    final wPadding = width * 0.001;
+    final hPadding = height * 0.01;
+
+    final reminderFontSize = base * 0.04;
+    final addIconSize = base * 0.06;
+    final reminderLetterSpacing = 1.2;
+    final subtitleFontSize = base * 0.02;
+    final addFontSize = base * 0.035;
+    final double reminderCornerRadius = 25;
+    final double newReminderButtonHeight = base * 0.14;
+    final double addBoxCurve = newReminderButtonHeight * 0.4;
 
     Color titleColor = isDark ? AppColors.titleDark : AppColors.titleLight;
     Color addButtonBackgroundColor = isDark ? AppColors.buttonBackgroundDark : AppColors.buttonBackgroundLight.withValues(alpha: 0.75);
@@ -367,7 +374,6 @@ class ReminderCollectionPage extends StatelessWidget {
             children: [
               SizedBox(height: sizeboxSize),
 
-
               /// Title
               Padding(
                 padding: EdgeInsets.symmetric(
@@ -385,7 +391,6 @@ class ReminderCollectionPage extends StatelessWidget {
                 ),
               ),
 
-
               /// Divider
               Divider(
                 color: isDark ? Colors.white : Colors.black54,
@@ -393,7 +398,6 @@ class ReminderCollectionPage extends StatelessWidget {
                 indent: 20,
                 endIndent: 20,
               ),
-
 
               SizedBox(height: sizeboxSize * 5),
 
@@ -407,9 +411,7 @@ class ReminderCollectionPage extends StatelessWidget {
                       return const Center(child: CircularProgressIndicator());
                     }
 
-
                     final reminderLists = snapshot.data!;
-
 
                     if (reminderLists.isEmpty) {
                       return Center(
@@ -425,7 +427,6 @@ class ReminderCollectionPage extends StatelessWidget {
                         ),
                       );
                     }
-
 
                     return Column(
                       children: reminderLists.map((list) {
@@ -470,7 +471,6 @@ class ReminderCollectionPage extends StatelessWidget {
             ],
           ),
         ),
-
 
         bottomNavigationBar: const NavBar(currentIndex: 1),
       ),
