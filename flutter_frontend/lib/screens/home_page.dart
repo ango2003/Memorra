@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_frontend/services/auth_service.dart';
 import 'package:flutter_frontend/models/user_model.dart';
+import '../widgets/today_reminders.dart';
 import '../widgets/home_tile.dart';
 import '../widgets/nav_bar.dart';
 import '../widgets/background.dart';
@@ -103,12 +104,23 @@ class _HomePageState extends State<HomePage> {
                     Row(
                       children: [
                         Expanded(
-                          child: HomeTile(
-                            title: "Today's Reminders",
-                            onTap: () {
-                              Navigator.pushNamed(context, '/wip');
-                            },
-                            inMiddle: false,
+                          child: Column(
+                            children: [
+                              HomeTile(
+                                title: "Today's Reminders",
+                                onTap: () {
+                                  Navigator.pushNamed(context, '/wip');
+                                },
+                                inMiddle: false,
+                              ),
+
+                              const SizedBox(height: 10),
+
+                              const SizedBox(
+                                height: 200,
+                                child: TodayReminders(),
+                              ),
+                            ],
                           ),
                         ),
                       ],
