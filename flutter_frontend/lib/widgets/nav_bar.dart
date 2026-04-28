@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import '../screens/home_page.dart';
 import '../screens/profile_page.dart';
 import '../screens/connections_page.dart';
-import '../screens/reminder_collection.dart';
+import '../screens/calendar_page.dart';
 import '../screens/filler_page.dart';
 import '../themes/app_colors.dart';
 import 'dart:ui';
@@ -105,7 +105,7 @@ class NavBar extends StatelessWidget {
                   target = HomePage(userId: ' ',);
                 }
                 else if (index == 1) {
-                  target = ReminderCollectionPage();
+                  target = CalendarPage();
                 }
                 else if (index == 2) {
                   target = ProfilePage(userId: ' ');
@@ -147,7 +147,7 @@ class NavBar extends StatelessWidget {
                 buildItem(
                   icon: Icons.people_outlined,
                   activeIcon: Icons.people,
-                  label: "Friends",
+                  label: "Connections",
                   index: 3,
                 ),
                 buildItem(
