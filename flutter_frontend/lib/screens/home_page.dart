@@ -106,18 +106,33 @@ class _HomePageState extends State<HomePage> {
                         Expanded(
                           child: Column(
                             children: [
+<<<<<<< HEAD
                               HomeTile(
                                 title: "Today's Reminders",
                                 onTap: () {
                                   Navigator.pushNamed(context, '/wip');
                                 },
                                 inMiddle: false,
+=======
+                              Text(
+                                "Today's Reminders:",
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                  fontSize: titleFontSize * 0.6,
+                                  fontWeight: FontWeight.bold,
+                                  color: titleColor,
+                                ),
+>>>>>>> origin/main
                               ),
 
                               const SizedBox(height: 10),
 
                               const SizedBox(
+<<<<<<< HEAD
                                 height: 200,
+=======
+                                height: 300,
+>>>>>>> origin/main
                                 child: TodayReminders(),
                               ),
                             ],
@@ -135,6 +150,7 @@ class _HomePageState extends State<HomePage> {
                               Navigator.pushNamed(context, '/wip');
                             },
                             inMiddle: true,
+                            alignment: CrossAxisAlignment.center,
                           ),
                         ),
                         SizedBox(width: horizontalSpacing),
@@ -145,6 +161,7 @@ class _HomePageState extends State<HomePage> {
                               Navigator.pushNamed(context, '/wip');
                             },
                             inMiddle: true,
+                            alignment: CrossAxisAlignment.center,
                           ),
                         ),
                       ],
@@ -159,6 +176,7 @@ class _HomePageState extends State<HomePage> {
                               Navigator.pushNamed(context, '/remindercollection');
                             },
                             inMiddle: false,
+                            alignment: CrossAxisAlignment.center,
                           ),
                         ),
                       ],
