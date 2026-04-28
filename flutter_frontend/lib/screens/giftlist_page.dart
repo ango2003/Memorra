@@ -64,13 +64,46 @@ class _ListPageState extends State<ListPage> {
               final giftCategory = selectedCategory ?? 'Other';
               if (giftName.isNotEmpty) {
                 final userID = FirebaseAuth.instance.currentUser!.uid;
-                await FirebaseFirestore.instance
+                final giftPath = FirebaseFirestore.instance
                     .collection('accounts')
                     .doc(userID)
                     .collection('gift_lists')
                     .doc(listID)
-                    .collection('gifts')
-                    .add({'name': giftName, 'category': giftCategory});
+                    .collection('gifts');
+
+                final itemCheck = await giftPath
+                .where('name', isEqualTo: giftName)
+                .where('category', isEqualTo: giftCategory)
+                .get();
+
+                if (itemCheck.docs.isNotEmpty) {
+                final confirm = await showDialog<bool>(
+                      context: context,
+                      builder: (context) => AlertDialog(
+                        title: Text("Duplicate Gift"),
+                        content: Text("Add anyway?"),
+                        actions: [
+                          TextButton(
+                            onPressed: () => Navigator.pop(context, false),
+                            child: Text("No"),
+                          ),
+                          TextButton(
+                            onPressed: () => Navigator.pop(context, true),
+                            child: Text("Yes"),
+                          ),
+                        ],
+                      ),
+                    ) ??
+                    false;
+
+                if (!confirm) return;
+              }
+
+                await giftPath.add({
+                  'name': giftName,
+                  'category': giftCategory,
+                });
+
                 if (context.mounted) Navigator.pop(context);
               }
             },
@@ -79,52 +112,6 @@ class _ListPageState extends State<ListPage> {
         ],
       ),
     );
-
-    // showDialog(
-    //   context: context,
-    //   builder: (context) => AlertDialog(
-    //     title: Text("Add New Gift"),
-    //     content: Column(
-    //       mainAxisSize: MainAxisSize.min,
-    //       children: [
-    //         TextField(
-    //           controller: nameController,
-    //           decoration: InputDecoration(hintText: "Gift Name"),
-    //         ),
-    //         SizedBox(height: 16),
-    //         TextField(
-    //           controller: categoryController,
-    //           decoration: InputDecoration(hintText: "Gift Category"),
-    //         ),
-    //       ],
-    //     ),
-    //     actions: [
-    //       TextButton(
-    //         onPressed: () {
-    //           Navigator.pop(context);
-    //         },
-    //         child: Text("Cancel"),
-    //       ),
-    //       ElevatedButton(
-    //         onPressed: () async {
-    //           final giftName = nameController.text.trim();
-    //           if (giftName.isNotEmpty) {
-    //             final userID = FirebaseAuth.instance.currentUser!.uid;
-    //             await FirebaseFirestore.instance
-    //                 .collection('accounts')
-    //                 .doc(userID)
-    //                 .collection('gift_lists')
-    //                 .doc(listID)
-    //                 .collection('gifts')
-    //                 .add({'name': giftName, 'category': selectedCategory});
-    //             if (context.mounted) Navigator.pop(context);
-    //           }
-    //         },
-    //         child: Text("Add"),
-    //       ),
-    //     ],
-    //   ),
-    // );
   }
 
   void deleteGift(BuildContext context, String listID, String giftID) {
