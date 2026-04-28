@@ -17,6 +17,7 @@ import 'screens/filler_page.dart';
 import 'screens/connections_page.dart';
 import 'screens/connections_request_page.dart';
 import 'screens/connections_invite_page.dart';
+import 'screens/calendar_page.dart';
 import 'services/notif_service.dart';
 import 'services/deep_link_service.dart';
 
@@ -99,6 +100,7 @@ class _MyAppState extends State<MyApp> {
         '/requestpage': (context) => const ConnectionsRequestPage(),
         '/invitepage': (context) => const ConnectionsInvitePage(),
         '/scanpage': (context) => const ScanQrPage(),
+        '/calendarpage': (context) => const CalendarPage(),
       },
 
         onGenerateRoute: (settings) {
@@ -116,6 +118,8 @@ class _MyAppState extends State<MyApp> {
                   return ListCollectionPage();
                 case '/profilepage':
                   return const ProfilePage(userId: ' ');
+                case '/calendarpage':
+                  return const CalendarPage();
                 case '/wip':
                   final userId = settings.arguments as String;
                   return FillerPage(userId: userId);
