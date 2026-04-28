@@ -5,12 +5,16 @@ class HomeTile extends StatelessWidget {
   final String title;
   final VoidCallback onTap;
   final bool inMiddle;
+  final CrossAxisAlignment alignment;
+  final Widget? child;
 
   const HomeTile({
     super.key,
     required this.title,
     required this.onTap,
     required this.inMiddle,
+    required this.alignment,
+    this.child,
   });
 
   @override
@@ -21,6 +25,7 @@ class HomeTile extends StatelessWidget {
 
     final base = width < height ? width : height;
     
+    final sizeBoxSize = base * 0.05;
     final double tileHeight = height * 0.22;
     final double fontSize = base * 0.05;
     final FontWeight fontWeight = FontWeight.w600;
@@ -28,7 +33,9 @@ class HomeTile extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        height: inMiddle ? tileHeight / 1.5 : tileHeight,
+        constraints: BoxConstraints(
+          minHeight: inMiddle ? tileHeight / 1.5 : tileHeight,
+        ),
         decoration: BoxDecoration(
           color: AppColors.homeTile,
           borderRadius: BorderRadius.circular(20),
@@ -41,13 +48,27 @@ class HomeTile extends StatelessWidget {
           ],
         ),
         alignment: Alignment.center,
-        child: Text(
-          title,
-          textAlign: TextAlign.center,
-          style: TextStyle(
-            fontSize: fontSize,
-            fontWeight: fontWeight,
-          ),
+        child: Column(
+          crossAxisAlignment: alignment,
+          children: [
+            Text(
+              title,
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize: fontSize,
+                fontWeight: fontWeight,
+              ),
+            ),
+
+            if (child != null) ...[
+              SizedBox(height: sizeBoxSize * 0.05),
+              Expanded(
+                child: SizedBox.expand(
+                  child: child!
+                ),
+              ),
+            ],
+          ],
         ),
       ),
     );
