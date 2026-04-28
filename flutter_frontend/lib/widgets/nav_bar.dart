@@ -3,8 +3,8 @@ import '../screens/home_page.dart';
 import '../screens/profile_page.dart';
 import '../screens/connections_page.dart';
 import '../screens/calendar_page.dart';
-import '../screens/filler_page.dart';
 import '../themes/app_colors.dart';
+import '../screens/reminder_collection.dart';
 import 'dart:ui';
 
 class NavBar extends StatelessWidget {
@@ -108,13 +108,13 @@ class NavBar extends StatelessWidget {
                   target = CalendarPage();
                 }
                 else if (index == 2) {
-                  target = ProfilePage(userId: ' ');
+                  target = ReminderCollectionPage();
                 }
                 else if (index == 3) {
                   target = ConnectionsPage();
                 }
                 else if (index == 4) {
-                  target = FillerPage(userId: ' ',);
+                  target = ProfilePage(userId: ' ');
                 }
                 else {
                   return;
@@ -139,9 +139,9 @@ class NavBar extends StatelessWidget {
                   index: 1,
                 ),
                 buildItem(
-                  icon: Icons.person_outlined,
-                  activeIcon: Icons.person,
-                  label: "Profile",
+                  icon: Icons.notification_add_outlined,
+                  activeIcon: Icons.notification_add,
+                  label: "Reminders",
                   index: 2,
                 ),
                 buildItem(
@@ -151,9 +151,9 @@ class NavBar extends StatelessWidget {
                   index: 3,
                 ),
                 buildItem(
-                  icon: Icons.settings_outlined,
-                  activeIcon: Icons.settings,
-                  label: "Settings",
+                  icon: Icons.person_outlined,
+                  activeIcon: Icons.person,
+                  label: "Profile",
                   index: 4,
                 ),
               ],

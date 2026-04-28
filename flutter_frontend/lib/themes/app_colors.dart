@@ -35,4 +35,6 @@ class AppColors {
   static const Color inputBackground = Color(0xFFC6DCFF);
   static const Color border = Color(0xFF3A3A3A);
   static const Color homeTile = Colors.blueGrey;
+  static const Color todaysDate = Colors.lightGreen;
+  static const Color selectedDate = Colors.green;
 }

@@ -36,23 +36,29 @@ class _CalendarPageState extends State<CalendarPage> {
     final sizeboxSize = base * 0.05;
     final titleFontSize = base * 0.08;
     final fontSize = base * 0.08;
+    final calendarFontSize = base * 0.05;
     final horizontalSpacing = width * 0.02;
     final hPadding = width * 0.01;
     final wPadding = height * 0.01;
+    final dividerThickness = height * 0.005;
+    final dividerIndent = width * 0.075;
+    final double dividerCurve = 45;
+    final double calendarRadius = 50;
+    final double calendarPadding = 8;
 
     Color titleColor = isDark ? AppColors.titleDark : AppColors.titleLight;
+    Color calendarBackgroundColor = Colors.grey.withValues(alpha: 0.2);
+    Color todayColorHighlight = AppColors.buttonBackgroundDark.withValues(alpha: 0.5);
+    Color selectedColorHighlight = AppColors.popUpBGDark;
 
     return AppBackground(
       child: Scaffold(
         backgroundColor: Colors.transparent,
         extendBody: true,
-        appBar: AppBar(
-          backgroundColor: Colors.transparent,
-          elevation: 0,
-          title: const Text(""),
-        ),
         body: Column(
           children: [
+            SizedBox(height: sizeboxSize),
+
             Text(
               'Calendar',
               textAlign: TextAlign.center,
@@ -62,7 +68,16 @@ class _CalendarPageState extends State<CalendarPage> {
                 color: titleColor,
               ),
             ),
-            Divider(),
+            Divider(
+              color: titleColor,
+              thickness: dividerThickness,
+              indent: dividerIndent,
+              endIndent: dividerIndent,
+              radius: BorderRadius.circular(dividerCurve),
+            ),
+
+            SizedBox(height: sizeboxSize * 2),
+
             Expanded(
               child: StreamBuilder<List<ReminderList>>(
                 stream: _reminderStream,
@@ -82,21 +97,90 @@ class _CalendarPageState extends State<CalendarPage> {
 
                   return Column(
                     children: [
-                      TableCalendar(
-                        focusedDay: _currentDay,
-                        firstDay: DateTime.utc(2026, 1, 1),
-                        lastDay: DateTime.utc(2100, 12, 31),
+                      Container(
+                        decoration: BoxDecoration(
+                          color: calendarBackgroundColor,
+                          borderRadius: BorderRadius.circular(calendarRadius),
+                        ),
+                        margin: EdgeInsets.symmetric(horizontal: hPadding, vertical: wPadding,),
+                        padding: EdgeInsets.only(top: wPadding, bottom: wPadding * 2),
+                      
+                        child: TableCalendar(
+                          focusedDay: _currentDay,
+                          firstDay: DateTime.utc(2026, 1, 1),
+                          lastDay: DateTime.utc(2100, 12, 31),
 
-                        selectedDayPredicate: (day) {
-                          return isSameDay(_selectedDay, day);
-                        },
+                          selectedDayPredicate: (day) {
+                            return isSameDay(_selectedDay, day);
+                          },
 
-                        onDaySelected: (selectedDay, focusedDay) {
-                          setState(() {
-                            _selectedDay = selectedDay;
-                            _currentDay = focusedDay;
-                          });
-                        },
+                          onDaySelected: (selectedDay, focusedDay) {
+                            setState(() {
+                              _selectedDay = selectedDay;
+                              _currentDay = focusedDay;
+                            });
+                          },
+                          headerStyle: HeaderStyle(
+                            titleCentered: true,
+                            formatButtonVisible: false,
+
+                            titleTextStyle: TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
+                              color: titleColor,
+                            ),
+
+                            leftChevronIcon: Icon(
+                              Icons.chevron_left,
+                              color: titleColor,
+                            ),
+                            rightChevronIcon: Icon(
+                              Icons.chevron_right,
+                              color: titleColor,
+                            ),
+                          ),
+
+                          daysOfWeekStyle: DaysOfWeekStyle(
+                            weekdayStyle: TextStyle(
+                              color: titleColor,
+                              fontWeight: FontWeight.w600,
+                            ),
+                            weekendStyle: TextStyle(
+                              color: titleColor,
+                              fontWeight: FontWeight.w600
+                            ),
+                          ),
+
+                          calendarStyle: CalendarStyle(
+                            todayDecoration: BoxDecoration(
+                              color: todayColorHighlight,
+                              shape: BoxShape.circle,
+                            ),
+                            todayTextStyle: TextStyle(
+                              color: Colors.white,
+                            ),
+                            selectedDecoration: BoxDecoration(
+                              color: selectedColorHighlight,
+                              shape: BoxShape.circle,
+                            ),
+                            selectedTextStyle: TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                            ),
+                            defaultTextStyle: TextStyle(
+                              color: Colors.white,
+                            ),
+                            weekendTextStyle: TextStyle(
+                              color: Colors.white,
+                            ),
+                            outsideTextStyle: TextStyle(
+                              color: Colors.grey,
+                            ),
+                            disabledTextStyle: TextStyle(
+                              color: Colors.white,
+                            ),
+                          ),
+                        ),
                       ),
 
                       SizedBox(height: sizeboxSize),
@@ -107,9 +191,10 @@ class _CalendarPageState extends State<CalendarPage> {
                             child: Text(
                               _selectedDay == null
                                 ? 'Tap a date to view reminders'
-                                : 'No reminders for ${_selectedDay!.day}/${_selectedDay!.month}/${_selectedDay!.year}',
+                                : 'No reminders for \n${_selectedDay!.day}/${_selectedDay!.month}/${_selectedDay!.year}',
+                              textAlign: TextAlign.center,
                               style: TextStyle(
-                                fontSize: fontSize,
+                                fontSize: calendarFontSize,
                                 color: titleColor,
                               ),
                             )
