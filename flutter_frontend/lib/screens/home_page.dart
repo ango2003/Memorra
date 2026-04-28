@@ -132,9 +132,9 @@ class _HomePageState extends State<HomePage> {
                       children: [
                         Expanded(
                           child: HomeTile(
-                            title: "Suggested Reminders",
+                            title: "Go to Reminders",
                             onTap: () {
-                              Navigator.pushNamed(context, '/wip');
+                              Navigator.pushNamed(context, '/reminderpage');
                             },
                             inMiddle: true,
                             alignment: CrossAxisAlignment.center,

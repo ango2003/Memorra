@@ -211,7 +211,7 @@ class _ProfilePageState extends State<ProfilePage> {
           ),
         ),
         bottomNavigationBar: NavBar(
-          currentIndex: 2,
+          currentIndex: 4,
         ),
       ),
     );
