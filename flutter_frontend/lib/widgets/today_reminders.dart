@@ -28,7 +28,7 @@ class TodayReminders extends StatelessWidget {
     final double fontSize = base * 0.02;
     final FontWeight fontWeight = FontWeight.w600;
 
-    Color reminderColor = isDark ? AppColors.subtitleDark : AppColors.subtitleLight;
+    Color reminderColor = isDark ? AppColors.subtitleDark : AppColors.subtitleDark;
 
     final stream = FirebaseFirestore.instance
         .collection('accounts')
