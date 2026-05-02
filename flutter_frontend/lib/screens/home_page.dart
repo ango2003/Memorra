@@ -81,7 +81,7 @@ class _HomePageState extends State<HomePage> {
               Padding(
                 padding: EdgeInsets.symmetric(horizontal: hPadding, vertical: wPadding),
                 child: Text(
-                  "How Can We Help ${user?.name ?? 'User'}?",
+                  "How Can We Help ${user?.name ?? 'Today'}?",
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     fontSize: titleFontSize,
@@ -132,9 +132,9 @@ class _HomePageState extends State<HomePage> {
                       children: [
                         Expanded(
                           child: HomeTile(
-                            title: "Suggested Reminders",
+                            title: "Go to Reminders",
                             onTap: () {
-                              Navigator.pushNamed(context, '/wip');
+                              Navigator.pushNamed(context, '/reminderpage');
                             },
                             inMiddle: true,
                             alignment: CrossAxisAlignment.center,

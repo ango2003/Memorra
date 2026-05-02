@@ -150,7 +150,6 @@ class ReminderCollectionPage extends StatelessWidget {
                   selectedReminderDate!,
                 );
 
-
                 if (context.mounted) Navigator.pop(context);
               }
             },
@@ -408,8 +407,7 @@ class ReminderCollectionPage extends StatelessWidget {
           ),
         ),
 
-
-        bottomNavigationBar: const NavBar(currentIndex: 1),
+        bottomNavigationBar: const NavBar(currentIndex: 2),
       ),
     );
   }
