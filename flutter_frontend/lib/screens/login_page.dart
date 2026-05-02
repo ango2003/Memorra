@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_frontend/services/auth_service.dart';
 import 'package:flutter_frontend/services/google_service.dart';
+import 'package:flutter_frontend/services/validation_service.dart';
 import '../widgets/background.dart';
 import '../themes/app_colors.dart';
 
@@ -79,63 +80,94 @@ class _LogInPageState extends State<LogInPage> {
   }
 
   void _showForgotPasswordDialog() {
-    final TextEditingController emailController = TextEditingController();
+  final TextEditingController emailController = TextEditingController();
+  bool isLoading = false;
 
-    showDialog(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          title: const Text('Reset Password'),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              const Text('Enter your email to receive a reset link.'),
-              const SizedBox(height: 10),
-              TextField(
-                controller: emailController,
-                decoration: const InputDecoration(
-                  labelText: 'Email',
-                  border: OutlineInputBorder(),
+  showDialog(
+    context: context,
+    builder: (context) {
+      return StatefulBuilder(
+        builder: (context, setDialogState) {
+          return AlertDialog(
+            title: const Text('Reset Password'),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Text('Enter your email to receive a reset link.'),
+                const SizedBox(height: 10),
+                TextField(
+                  controller: emailController,
+                  enabled: !isLoading,
+                  decoration: const InputDecoration(
+                    labelText: 'Email',
+                    border: OutlineInputBorder(),
+                  ),
                 ),
+                if (isLoading) ...[
+                  const SizedBox(height: 16),
+                  const CircularProgressIndicator(),
+                ]
+              ],
+            ),
+            actions: [
+              TextButton(
+                onPressed: isLoading ? null : () => Navigator.pop(context),
+                child: const Text('Cancel'),
+              ),
+              ElevatedButton(
+                onPressed: isLoading ? null : () async {
+                  final email = emailController.text.trim();
+
+                  final emailError = ValidationService.validateEmailDomain(email);
+                  if (emailError != null) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text(emailError),
+                        backgroundColor: Colors.orange,
+                      ),
+                    );
+                    return;
+                  }
+
+                  setDialogState(() => isLoading = true);
+
+                  try {
+                    await FirebaseAuth.instance.sendPasswordResetEmail(
+                      email: email,
+                    );
+
+                    if (!context.mounted) return;
+
+                    Navigator.pop(context);
+
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('Password reset email sent! Check your inbox.'),
+                        backgroundColor: Colors.green,
+                        duration: Duration(seconds: 3),
+                      ),
+                    );
+                  } catch (e) {
+                    if (!context.mounted) return;
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text('Error: $e'),
+                        backgroundColor: Colors.red,
+                        duration: const Duration(seconds: 3),
+                      ),
+                    );
+                    setDialogState(() => isLoading = false);
+                  }
+                },
+                child: const Text('Send'),
               ),
             ],
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(context),
-              child: const Text('Cancel'),
-            ),
-            ElevatedButton(
-              onPressed: () async {
-                final email = emailController.text.trim();
-
-                if (email.isEmpty) return;
-
-                try {
-                  await FirebaseAuth.instance.sendPasswordResetEmail(
-                    email: email,
-                  );
-
-                  if (!context.mounted) return;
-
-                  Navigator.pop(context);
-
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Password reset email sent!')),
-                  );
-                } catch (e) {
-                  ScaffoldMessenger.of(
-                    context,
-                  ).showSnackBar(SnackBar(content: Text(e.toString())));
-                }
-              },
-              child: const Text('Send'),
-            ),
-          ],
-        );
-      },
-    );
-  }
+          );
+        },
+      );
+    },
+  );
+}
 
   void _goBack() {
     Navigator.pushNamed(context, '/startpage');
@@ -233,15 +265,7 @@ class _LogInPageState extends State<LogInPage> {
                                 ),
                               ),
                             ),
-                            validator: (value) {
-                              if (value == null || value.isEmpty) {
-                                return "Email is required";
-                              }
-                              if (!value.contains('@')) {
-                                return "Enter a valid email";
-                              }
-                              return null;
-                            },
+                            validator: ValidationService.validateEmailDomain,
                           ),
 
                           SizedBox(height: spacingSize),

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_frontend/services/auth_service.dart';
 import 'package:flutter_frontend/services/google_service.dart';
+import 'package:flutter_frontend/services/validation_service.dart';
 import '../widgets/background.dart';
 import '../themes/app_colors.dart';
 
@@ -24,18 +25,6 @@ class _SignUpPageState extends State<SignUpPage> {
   bool _obscurePassword = true;
   bool _obscureConfirmPassword = true;
 
-  // Password validation: uppercase, number, special character
-  bool isValidPassword(String password) {
-    final uppercase = RegExp(r'[A-Z]');
-    final number = RegExp(r'\d');
-    final special = RegExp(r'[!@#$%^&*(),.?":{}|<>]');
-
-    return password.length >= 8 &&
-        uppercase.hasMatch(password) &&
-        number.hasMatch(password) &&
-        special.hasMatch(password);
-  }
-
   // Signup function
   Future<void> createAccount() async {
     if (!_formKey.currentState!.validate()) return;
@@ -44,18 +33,6 @@ class _SignUpPageState extends State<SignUpPage> {
     final lastName = _lastNameController.text.trim();
     final email = _emailController.text.trim();
     final password = _passwordController.text.trim();
-
-    // Pre-check password
-    if (!isValidPassword(password)) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text(
-            'Password must be at least 8 characters and include an uppercase letter, a number, and a special character.',
-          ),
-        ),
-      );
-      return;
-    }
 
     setState(() => _isLoading = true);
 
@@ -210,12 +187,7 @@ class _SignUpPageState extends State<SignUpPage> {
                                 ),
                               ),
                             ),
-                            validator: (value) {
-                              if (value == null || value.trim().isEmpty) {
-                                return "First name is required";
-                              }
-                              return null;
-                            },
+                            validator: (value) => ValidationService.validateName(value, "First name"),
                           ),
 
                           SizedBox(height: spacingSize),
@@ -247,12 +219,7 @@ class _SignUpPageState extends State<SignUpPage> {
                                 ),
                               ),
                             ),
-                            validator: (value) {
-                              if (value == null || value.trim().isEmpty) {
-                                return "Last name is required";
-                              }
-                              return null;
-                            },
+                            validator: (value) => ValidationService.validateName(value, "Last name"),
                           ),
 
                           SizedBox(height: spacingSize),
@@ -288,15 +255,7 @@ class _SignUpPageState extends State<SignUpPage> {
                                 ),
                               ),
                             ),
-                            validator: (value) {
-                              if (value == null || value.isEmpty) {
-                                return "Email is required";
-                              }
-                              if (!value.contains('@')) {
-                                return "Enter a valid email";
-                              }
-                              return null;
-                            },
+                            validator: ValidationService.validateEmailDomain,
                           ),
 
                           SizedBox(height: spacingSize),
@@ -394,15 +353,7 @@ class _SignUpPageState extends State<SignUpPage> {
                                 },
                               ),
                             ),
-                            validator: (value) {
-                              if (value == null || value.isEmpty) {
-                                return "Password is required";
-                              }
-                              if (!isValidPassword(value)) {
-                                return "Min 8 chars, 1 uppercase, 1 number, 1 special char";
-                              }
-                              return null;
-                            },
+                            validator: ValidationService.validatePassword,
                           ),
 
                           SizedBox(height: spacingSize),
@@ -454,15 +405,10 @@ class _SignUpPageState extends State<SignUpPage> {
                                 },
                               ),
                             ),
-                            validator: (value) {
-                              if (value == null || value.isEmpty) {
-                                return "Please confirm password";
-                              }
-                              if (value != _passwordController.text) {
-                                return "Passwords do not match";
-                              }
-                              return null;
-                            },
+                            validator: (value) => ValidationService.validateConfirmPassword(
+                              value,
+                              _passwordController.text,
+                            ),
                           ),
 
                           SizedBox(height: spacingSize),
