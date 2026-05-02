@@ -106,14 +106,6 @@ class _HomePageState extends State<HomePage> {
                         Expanded(
                           child: Column(
                             children: [
-<<<<<<< HEAD
-                              HomeTile(
-                                title: "Today's Reminders",
-                                onTap: () {
-                                  Navigator.pushNamed(context, '/wip');
-                                },
-                                inMiddle: false,
-=======
                               Text(
                                 "Today's Reminders:",
                                 textAlign: TextAlign.center,
@@ -122,17 +114,12 @@ class _HomePageState extends State<HomePage> {
                                   fontWeight: FontWeight.bold,
                                   color: titleColor,
                                 ),
->>>>>>> origin/main
                               ),
 
                               const SizedBox(height: 10),
 
                               const SizedBox(
-<<<<<<< HEAD
-                                height: 200,
-=======
                                 height: 300,
->>>>>>> origin/main
                                 child: TodayReminders(),
                               ),
                             ],

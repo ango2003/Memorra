@@ -40,83 +40,6 @@ class ReminderCollectionPage extends StatelessWidget {
     return DateTime.now().millisecondsSinceEpoch ~/ 1000;
   }
 
-/*
-  void createNewReminder(BuildContext context) {
-    final controller = TextEditingController();
-    final timeController = TextEditingController();
-    DateTime? selectedReminderDate;
-
-
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text("Create New Reminder"),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            TextField(
-              controller: controller,
-              decoration: const InputDecoration(hintText: "Reminder Name"),
-            ),
-            const SizedBox(height: 16),
-            TextField(
-              controller: timeController,
-              readOnly: true,
-              decoration: const InputDecoration(
-                hintText: "Select Reminder Date & Time",
-                suffixIcon: Icon(Icons.calendar_today),
-              ),
-              onTap: () async {
-                final selectedDateTime = await pickDate(context);
-                if (selectedDateTime != null) {
-                  selectedReminderDate = selectedDateTime;
-                  timeController.text = selectedDateTime.toString();
-                }
-              },
-            ),
-          ],
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text("Cancel"),
-          ),
-          ElevatedButton(
-            onPressed: () async {
-              final reminderListName = controller.text.trim();
-              final notifID = createUniqueID();
-
-
-<<<<<<< HEAD
-=======
-              if (reminderListName.isNotEmpty && selectedReminderDate != null) {
-                await ReminderService.instance.addReminderList(
-                  name: reminderListName,
-                  reminderDate: selectedReminderDate!,
-                  notifId: notifID,
-                );
-               
-                //Add event stuff
-
-
-                await NotifService.instance.scheduleWithTimer(
-                  notifID,
-                  reminderListName,
-                  selectedReminderDate!,
-                );
-
-
-                if (context.mounted) Navigator.pop(context);
-              }
-            },
-            child: const Text("Create"),
-          ),
-        ],
-      ),
-    );
-  }
-*/
-
   void createNewReminder(BuildContext context) {
     final controller = TextEditingController();
     final timeController = TextEditingController();
@@ -214,7 +137,6 @@ class ReminderCollectionPage extends StatelessWidget {
               final reminderListName = controller.text.trim();
               final notifID = createUniqueID();
 
->>>>>>> origin/main
               if (reminderListName.isNotEmpty && selectedReminderDate != null) {
                 await ReminderService.instance.addReminderList(
                   name: reminderListName,
@@ -328,12 +250,7 @@ class ReminderCollectionPage extends StatelessWidget {
 
     final base = width < height ? width : height;
 
-<<<<<<< HEAD
-
-    final sizeboxSize = base * 0.05;
-=======
     final sizeboxSize = base * 0.01;
->>>>>>> origin/main
     final titleFontSize = base * 0.08;
     final wPadding = width * 0.001;
     final hPadding = height * 0.01;
@@ -414,12 +331,7 @@ class ReminderCollectionPage extends StatelessWidget {
                 endIndent: 20,
               ),
 
-<<<<<<< HEAD
-
-              SizedBox(height: sizeboxSize),
-=======
               SizedBox(height: sizeboxSize * 5),
->>>>>>> origin/main
 
 
               /// Reminder List
@@ -501,11 +413,4 @@ class ReminderCollectionPage extends StatelessWidget {
       ),
     );
   }
-<<<<<<< HEAD
 }
-
-
-
-=======
-}
->>>>>>> origin/main

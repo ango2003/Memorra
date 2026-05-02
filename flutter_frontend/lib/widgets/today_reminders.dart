@@ -1,12 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-<<<<<<< HEAD
-import 'package:flutter/material.dart';
-=======
-import 'package:flutter_frontend/services/auth_service.dart';
 import 'package:flutter/material.dart';
 import '../themes/app_colors.dart';
->>>>>>> origin/main
 
 class TodayReminders extends StatelessWidget {
   const TodayReminders({super.key});
@@ -22,8 +17,6 @@ class TodayReminders extends StatelessWidget {
     Timestamp.fromDate(startOfDay);
     Timestamp.fromDate(endOfDay);
 
-<<<<<<< HEAD
-=======
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final size = MediaQuery.of(context).size;
     final width = size.width;
@@ -34,9 +27,8 @@ class TodayReminders extends StatelessWidget {
     final double fontSize = base * 0.02;
     final FontWeight fontWeight = FontWeight.w600;
 
-    Color reminderColor = isDark ? AppColors.subtitleDark : AppColors.subtitleLight;
+    Color reminderColor = isDark ? AppColors.subtitleDark : AppColors.subtitleDark;
 
->>>>>>> origin/main
     final stream = FirebaseFirestore.instance
         .collection('accounts')
         .doc(userId)
@@ -54,9 +46,6 @@ class TodayReminders extends StatelessWidget {
         }
 
         if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-<<<<<<< HEAD
-          return const Center(child: Text('No reminders for today'));
-=======
           return Center(
             child: Text(
               'You currently have no reminders set to go off today.\nCheck the reminders page to see all of your schedules reminders.',
@@ -68,7 +57,6 @@ class TodayReminders extends StatelessWidget {
               )
             )
           );
->>>>>>> origin/main
         }
 
         final docs = snapshot.data!.docs;
@@ -81,13 +69,6 @@ class TodayReminders extends StatelessWidget {
             final time = (data['reminder_date'] as Timestamp).toDate();
 
             return Card(
-<<<<<<< HEAD
-              margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-              child: ListTile(
-                leading: const Icon(Icons.alarm),
-                title: Text(data['reminder_name'] ?? ''),
-                trailing: Text(TimeOfDay.fromDateTime(time).format(context)),
-=======
               color: Colors.transparent,
               elevation: 4,
               margin: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
@@ -112,7 +93,6 @@ class TodayReminders extends StatelessWidget {
                     fontWeight: fontWeight,
                   ),
                 ),
->>>>>>> origin/main
               )
             );
           }
