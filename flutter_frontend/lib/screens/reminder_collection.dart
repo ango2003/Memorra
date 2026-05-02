@@ -241,6 +241,7 @@ class ReminderCollectionPage extends StatelessWidget {
     );
   }
 
+
   void deleteReminder(BuildContext context, String reminderListID) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final size = MediaQuery.of(context).size;
@@ -320,6 +321,7 @@ class ReminderCollectionPage extends StatelessWidget {
     final width = size.width;
     final height = size.height;
 
+
     final base = width < height ? width : height;
 
     final sizeboxSize = base * 0.01;
@@ -336,6 +338,7 @@ class ReminderCollectionPage extends StatelessWidget {
     final double newReminderButtonHeight = base * 0.14;
     final double addBoxCurve = newReminderButtonHeight * 0.4;
 
+
     Color titleColor = isDark ? AppColors.titleDark : AppColors.titleLight;
     Color addButtonBackgroundColor = isDark ? AppColors.buttonBackgroundDark : AppColors.buttonBackgroundLight.withValues(alpha: 0.75);
     Color addButtonTextColor = isDark ? AppColors.buttonTextDark : AppColors.buttonTextLight;    
@@ -343,6 +346,7 @@ class ReminderCollectionPage extends StatelessWidget {
     Color subtitleColor = isDark ? AppColors.subtitleDark : AppColors.subtitleLight;
     Color reminderBoxColor = isDark ? AppColors.listBGDark.withValues(alpha: 0.4) : AppColors.listBGLight.withValues(alpha: 0.4);
     Color deletereminderIcon = isDark ? AppColors.deleteListDark : AppColors.deleteListLight;
+
 
     return AppBackground(
       child: Scaffold(
@@ -374,6 +378,7 @@ class ReminderCollectionPage extends StatelessWidget {
             children: [
               SizedBox(height: sizeboxSize),
 
+
               /// Title
               Padding(
                 padding: EdgeInsets.symmetric(
@@ -391,6 +396,7 @@ class ReminderCollectionPage extends StatelessWidget {
                 ),
               ),
 
+
               /// Divider
               Divider(
                 color: isDark ? Colors.white : Colors.black54,
@@ -400,6 +406,7 @@ class ReminderCollectionPage extends StatelessWidget {
               ),
 
               SizedBox(height: sizeboxSize * 5),
+
 
               /// Reminder List
               Padding(
@@ -411,7 +418,9 @@ class ReminderCollectionPage extends StatelessWidget {
                       return const Center(child: CircularProgressIndicator());
                     }
 
+
                     final reminderLists = snapshot.data!;
+
 
                     if (reminderLists.isEmpty) {
                       return Center(
@@ -427,6 +436,7 @@ class ReminderCollectionPage extends StatelessWidget {
                         ),
                       );
                     }
+
 
                     return Column(
                       children: reminderLists.map((list) {
