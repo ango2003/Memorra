@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_frontend/services/validation_service.dart';
 import '../widgets/nav_bar.dart';
 import '../widgets/background.dart';
 import '../themes/app_colors.dart';
@@ -6,10 +7,15 @@ import '../services/notif_service.dart';
 import '../services/reminder_service.dart';
 import '../models/reminder_list_model.dart';
 
-
-class ReminderCollectionPage extends StatelessWidget {
+class ReminderCollectionPage extends StatefulWidget {
   const ReminderCollectionPage({super.key});
 
+  @override
+  State<ReminderCollectionPage> createState() => _ReminderCollectionPageState();
+}
+
+class _ReminderCollectionPageState extends State<ReminderCollectionPage> {
+  bool _isDialogOpen = false;
 
   Future<DateTime?> pickDate(BuildContext context) async {
     final date = await showDatePicker(
@@ -19,225 +25,313 @@ class ReminderCollectionPage extends StatelessWidget {
       lastDate: DateTime(DateTime.now().year + 5),
     );
 
-
     if (!context.mounted || date == null) return null;
-
 
     final time = await showTimePicker(
       context: context,
       initialTime: TimeOfDay.now(),
     );
 
-
     if (!context.mounted || time == null) return null;
 
-
-    return DateTime(date.year, date.month, date.day, time.hour, time.minute);
+    return DateTime(
+        date.year, date.month, date.day, time.hour, time.minute);
   }
-
 
   int createUniqueID() {
     return DateTime.now().millisecondsSinceEpoch ~/ 1000;
   }
 
   void createNewReminder(BuildContext context) {
+    if (_isDialogOpen) return; // guard: ignore extra taps
+    _isDialogOpen = true;
+
     final controller = TextEditingController();
     final timeController = TextEditingController();
     DateTime? selectedReminderDate;
+    bool isLoading = false;
 
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final size = MediaQuery.of(context).size;
     final width = size.width;
 
-    final double boxCurve = 20;
+    const double boxCurve = 20;
     final titleFontSize = width * 0.05;
     final inputFontSize = width * 0.03;
     final buttonFontSize = width * 0.02;
 
-    Color bgColor = isDark ? AppColors.popUpBGDark.withValues(alpha: 0.6) : AppColors.popUpBGLight;
-    Color buttonBGColor = isDark ? AppColors.buttonBackgroundDark : AppColors.buttonBackgroundLight;
+    Color bgColor = isDark
+        ? AppColors.popUpBGDark.withValues(alpha: 0.6)
+        : AppColors.popUpBGLight;
+    Color buttonBGColor = isDark
+        ? AppColors.buttonBackgroundDark
+        : AppColors.buttonBackgroundLight;
     Color titleColor = isDark ? AppColors.titleDark : AppColors.titleLight;
-    Color inputHintColor = isDark ? AppColors.hintTextDark : AppColors.hintTextLight;
-    Color inputColor = isDark ? AppColors.subtitleDark : AppColors.subtitleLight;
+    Color inputHintColor =
+        isDark ? AppColors.hintTextDark : AppColors.hintTextLight;
+    Color inputColor =
+        isDark ? AppColors.subtitleDark : AppColors.subtitleLight;
 
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(boxCurve),
-        ),
-        backgroundColor: bgColor,
-        title: Text(
-          "Create New\nReminder",
-          textAlign: TextAlign.center,
-          style: TextStyle(
-            fontSize: titleFontSize,
-            color: titleColor,
+      builder: (context) => StatefulBuilder(
+        builder: (context, setDialogState) => AlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(boxCurve),
           ),
-        ),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            TextField(
-              controller: controller,
-              style: TextStyle(
-                color: inputColor,
-                fontSize: inputFontSize,
+          backgroundColor: bgColor,
+          title: Text(
+            "Create New\nReminder",
+            textAlign: TextAlign.center,
+            style: TextStyle(fontSize: titleFontSize, color: titleColor),
+          ),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TextField(
+                controller: controller,
+                enabled: !isLoading,
+                style: TextStyle(color: inputColor, fontSize: inputFontSize),
+                decoration: InputDecoration(
+                  hintText: "Reminder Name",
+                  hintStyle: TextStyle(
+                      color: inputHintColor, fontSize: inputFontSize),
+                  enabledBorder: UnderlineInputBorder(
+                    borderSide: BorderSide(color: inputHintColor),
+                  ),
+                  focusedBorder: UnderlineInputBorder(
+                    borderSide: BorderSide(color: inputColor),
+                  ),
+                ),
               ),
-              decoration: InputDecoration(
-                hintText: "Reminder Name",
-                hintStyle: TextStyle(
-                  color: inputHintColor,
-                  fontSize: inputFontSize,
+              const SizedBox(height: 16),
+              TextField(
+                controller: timeController,
+                readOnly: true,
+                enabled: !isLoading,
+                decoration: const InputDecoration(
+                  hintText: "Select Reminder Date & Time",
+                  suffixIcon: Icon(Icons.calendar_today),
                 ),
-                enabledBorder: UnderlineInputBorder(
-                  borderSide: BorderSide(color: inputHintColor),
-                ),
-                focusedBorder: UnderlineInputBorder(
-                  borderSide: BorderSide(color: inputColor),
-                ),
+                onTap: isLoading
+                    ? null
+                    : () async {
+                        final selectedDateTime = await pickDate(context);
+                        if (selectedDateTime != null) {
+                          setDialogState(() {
+                            selectedReminderDate = selectedDateTime;
+                            timeController.text =
+                                selectedDateTime.toString();
+                          });
+                        }
+                      },
+              ),
+              if (isLoading) ...[
+                const SizedBox(height: 16),
+                const CircularProgressIndicator(),
+              ],
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: isLoading ? null : () => Navigator.pop(context),
+              child: Text(
+                "Cancel",
+                style:
+                    TextStyle(color: titleColor, fontSize: buttonFontSize),
               ),
             ),
+            ElevatedButton(
+              style:
+                  ElevatedButton.styleFrom(backgroundColor: buttonBGColor),
+              onPressed: isLoading
+                  ? null
+                  : () async {
+                      final reminderListName = controller.text.trim();
 
-            const SizedBox(height: 16),
-            
-            TextField(
-              controller: timeController,
-              readOnly: true,
-              decoration: const InputDecoration(
-                hintText: "Select Reminder Date & Time",
-                suffixIcon: Icon(Icons.calendar_today),
+                      final nameError = ValidationService.validateTextField(
+                        reminderListName,
+                        "Reminder name",
+                        minLength: 1,
+                        maxLength: 100,
+                      );
+                      if (nameError != null) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text(nameError),
+                            backgroundColor: Colors.orange,
+                          ),
+                        );
+                        return;
+                      }
+                      if (selectedReminderDate == null) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text("Please select a date and time"),
+                            backgroundColor: Colors.orange,
+                          ),
+                        );
+                        return;
+                      }
+
+                      setDialogState(() => isLoading = true);
+
+                      try {
+                        final notifID = createUniqueID();
+
+                        await ReminderService.instance.addReminderList(
+                          name: reminderListName,
+                          reminderDate: selectedReminderDate!,
+                          notifId: notifID,
+                        );
+
+                        await NotifService.instance.scheduleWithTimer(
+                          notifID,
+                          reminderListName,
+                          selectedReminderDate!,
+                        );
+
+                        if (!context.mounted) return;
+
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text("Reminder created successfully!"),
+                            backgroundColor: Colors.green,
+                            duration: Duration(seconds: 2),
+                          ),
+                        );
+
+                        Navigator.pop(context);
+                      } catch (e) {
+                        if (!context.mounted) return;
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text("Error creating reminder: $e"),
+                            backgroundColor: Colors.red,
+                            duration: const Duration(seconds: 3),
+                          ),
+                        );
+                        setDialogState(() => isLoading = false);
+                      }
+                    },
+              child: Text(
+                "Create",
+                style:
+                    TextStyle(color: titleColor, fontSize: buttonFontSize),
               ),
-              onTap: () async {
-                final selectedDateTime = await pickDate(context);
-                if (selectedDateTime != null) {
-                  selectedReminderDate = selectedDateTime;
-                  timeController.text = selectedDateTime.toString();
-                }
-              },
             ),
           ],
         ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: Text(
-              "Cancel",
-              style: TextStyle(
-                color: titleColor,
-                fontSize: buttonFontSize,
-              ),
-            ),
-          ),
-          ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              backgroundColor: buttonBGColor,
-            ),
-            onPressed: () async {
-              final reminderListName = controller.text.trim();
-              final notifID = createUniqueID();
-
-              if (reminderListName.isNotEmpty && selectedReminderDate != null) {
-                await ReminderService.instance.addReminderList(
-                  name: reminderListName,
-                  reminderDate: selectedReminderDate!,
-                  notifId: notifID,
-                );
-
-                await NotifService.instance.scheduleWithTimer(
-                  notifID,
-                  reminderListName,
-                  selectedReminderDate!,
-                );
-
-                if (context.mounted) Navigator.pop(context);
-              }
-            },
-            child: Text(
-              "Create",
-              style: TextStyle(
-                color: titleColor,
-                fontSize: buttonFontSize,
-              ),
-            ),
-          ),
-        ],
       ),
-    );
+    ).whenComplete(() => _isDialogOpen = false);
   }
 
 
   void deleteReminder(BuildContext context, String reminderListID) {
+    if (_isDialogOpen) return; // guard: ignore extra taps
+    _isDialogOpen = true;
+
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final size = MediaQuery.of(context).size;
     final width = size.width;
 
-    final double boxCurve = 20;
+    const double boxCurve = 20;
     final titleFontSize = width * 0.05;
     final subtitleFontSize = width * 0.03;
     final buttonFontSize = width * 0.025;
 
-    Color bgColor = isDark ? AppColors.popUpBGDark.withValues(alpha: 0.6) : AppColors.popUpBGLight;
-    Color buttonBGColor = isDark ? AppColors.buttonBackgroundDark : AppColors.buttonBackgroundLight;
+    Color bgColor = isDark
+        ? AppColors.popUpBGDark.withValues(alpha: 0.6)
+        : AppColors.popUpBGLight;
+    Color buttonBGColor = isDark
+        ? AppColors.buttonBackgroundDark
+        : AppColors.buttonBackgroundLight;
     Color titleColor = isDark ? AppColors.titleDark : AppColors.titleLight;
-    Color subtitleColor = isDark ? AppColors.subtitleDark : AppColors.subtitleLight;
+    Color subtitleColor =
+        isDark ? AppColors.subtitleDark : AppColors.subtitleLight;
+
+    bool isLoading = false;
 
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(boxCurve),
-        ),
-        backgroundColor: bgColor,
-        title: Text(
-          "Delete Reminder",
-          textAlign: TextAlign.center,
-          style: TextStyle(
-            fontSize: titleFontSize,
-            color: titleColor,
+      builder: (context) => StatefulBuilder(
+        builder: (context, setDialogState) => AlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(boxCurve),
           ),
-        ),
-        content: Text(
-          "Are you sure you want to delete this reminder?"
-          "\n(You cannot undo once deleted)",
-          textAlign: TextAlign.center,
-          style: TextStyle(
-            color: subtitleColor,
-            fontSize: subtitleFontSize,
+          backgroundColor: bgColor,
+          title: Text(
+            "Delete Reminder",
+            textAlign: TextAlign.center,
+            style: TextStyle(fontSize: titleFontSize, color: titleColor),
           ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: Text(
-              "Cancel",
-              style: TextStyle(
-                color: titleColor,
-                fontSize: buttonFontSize,
+          content: isLoading
+              ? const SizedBox(
+                  height: 50,
+                  child: Center(child: CircularProgressIndicator()),
+                )
+              : Text(
+                  "Are you sure you want to delete this reminder?"
+                  "\n(You cannot undo once deleted)",
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                      color: subtitleColor, fontSize: subtitleFontSize),
+                ),
+          actions: [
+            TextButton(
+              onPressed: isLoading ? null : () => Navigator.pop(context),
+              child: Text(
+                "Cancel",
+                style:
+                    TextStyle(color: titleColor, fontSize: buttonFontSize),
               ),
             ),
-          ),
-          ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              backgroundColor: buttonBGColor,
-            ),
-            onPressed: () async {
-              await ReminderService.instance.deleteReminderList(reminderListID);
-              if (context.mounted) Navigator.pop(context);
-            },
-            child: Text(
-              "Delete",
-              style: TextStyle(
-                color: titleColor,
-                fontSize: buttonFontSize,
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
+            ElevatedButton(
+              style:
+                  ElevatedButton.styleFrom(backgroundColor: buttonBGColor),
+              onPressed: isLoading
+                  ? null
+                  : () async {
+                      setDialogState(() => isLoading = true);
 
+                      try {
+                        await ReminderService.instance
+                            .deleteReminderList(reminderListID);
+
+                        if (!context.mounted) return;
+
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text("Reminder deleted successfully!"),
+                            backgroundColor: Colors.green,
+                            duration: Duration(seconds: 2),
+                          ),
+                        );
+
+                        Navigator.pop(context);
+                      } catch (e) {
+                        if (!context.mounted) return;
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text("Error deleting reminder: $e"),
+                            backgroundColor: Colors.red,
+                            duration: const Duration(seconds: 3),
+                          ),
+                        );
+                        setDialogState(() => isLoading = false);
+                      }
+                    },
+              child: Text(
+                "Delete",
+                style:
+                    TextStyle(color: titleColor, fontSize: buttonFontSize),
+              ),
+            ),
+          ],
+        ),
+      ),
+    ).whenComplete(() => _isDialogOpen = false); // always release the guard
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -256,21 +350,29 @@ class ReminderCollectionPage extends StatelessWidget {
 
     final reminderFontSize = base * 0.04;
     final addIconSize = base * 0.06;
-    final reminderLetterSpacing = 1.2;
+    const double reminderLetterSpacing = 1.2;
     final subtitleFontSize = base * 0.02;
     final addFontSize = base * 0.035;
-    final double reminderCornerRadius = 25;
+    const double reminderCornerRadius = 25;
     final double newReminderButtonHeight = base * 0.14;
     final double addBoxCurve = newReminderButtonHeight * 0.4;
 
 
     Color titleColor = isDark ? AppColors.titleDark : AppColors.titleLight;
-    Color addButtonBackgroundColor = isDark ? AppColors.buttonBackgroundDark : AppColors.buttonBackgroundLight.withValues(alpha: 0.75);
-    Color addButtonTextColor = isDark ? AppColors.buttonTextDark : AppColors.buttonTextLight;    
-    Color reminderTextColor = isDark ? AppColors.titleDark : AppColors.titleLight;
-    Color subtitleColor = isDark ? AppColors.subtitleDark : AppColors.subtitleLight;
-    Color reminderBoxColor = isDark ? AppColors.listBGDark.withValues(alpha: 0.4) : AppColors.listBGLight.withValues(alpha: 0.4);
-    Color deletereminderIcon = isDark ? AppColors.deleteListDark : AppColors.deleteListLight;
+    Color addButtonBackgroundColor = isDark
+        ? AppColors.buttonBackgroundDark
+        : AppColors.buttonBackgroundLight.withValues(alpha: 0.75);
+    Color addButtonTextColor =
+        isDark ? AppColors.buttonTextDark : AppColors.buttonTextLight;
+    Color reminderTextColor =
+        isDark ? AppColors.titleDark : AppColors.titleLight;
+    Color subtitleColor =
+        isDark ? AppColors.subtitleDark : AppColors.subtitleLight;
+    Color reminderBoxColor = isDark
+        ? AppColors.listBGDark.withValues(alpha: 0.4)
+        : AppColors.listBGLight.withValues(alpha: 0.4);
+    Color deleteReminderIcon =
+        isDark ? AppColors.deleteListDark : AppColors.deleteListLight;
 
 
     return AppBackground(
@@ -302,14 +404,9 @@ class ReminderCollectionPage extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               SizedBox(height: sizeboxSize),
-
-
-              /// Title
               Padding(
                 padding: EdgeInsets.symmetric(
-                  horizontal: hPadding,
-                  vertical: wPadding,
-                ),
+                    horizontal: hPadding, vertical: wPadding),
                 child: Text(
                   "Your Reminders",
                   textAlign: TextAlign.center,
@@ -320,27 +417,21 @@ class ReminderCollectionPage extends StatelessWidget {
                   ),
                 ),
               ),
-
-
-              /// Divider
               Divider(
                 color: isDark ? Colors.white : Colors.black54,
                 thickness: 5,
                 indent: 20,
                 endIndent: 20,
               ),
-
               SizedBox(height: sizeboxSize * 5),
-
-
-              /// Reminder List
               Padding(
                 padding: EdgeInsets.symmetric(horizontal: hPadding),
                 child: StreamBuilder<List<ReminderList>>(
                   stream: ReminderService.instance.getReminderLists(),
                   builder: (context, snapshot) {
                     if (!snapshot.hasData) {
-                      return const Center(child: CircularProgressIndicator());
+                      return const Center(
+                          child: CircularProgressIndicator());
                     }
 
 
@@ -350,7 +441,7 @@ class ReminderCollectionPage extends StatelessWidget {
                     if (reminderLists.isEmpty) {
                       return Center(
                         child: Padding(
-                          padding: EdgeInsets.only(top: 40),
+                          padding: const EdgeInsets.only(top: 40),
                           child: Text(
                             "No reminders yet",
                             style: TextStyle(
@@ -369,7 +460,8 @@ class ReminderCollectionPage extends StatelessWidget {
                           margin: EdgeInsets.only(bottom: sizeboxSize),
                           decoration: BoxDecoration(
                             color: reminderBoxColor,
-                            borderRadius: BorderRadius.circular(reminderCornerRadius),
+                            borderRadius: BorderRadius.circular(
+                                reminderCornerRadius),
                           ),
                           child: ListTile(
                             title: Text(
@@ -391,10 +483,11 @@ class ReminderCollectionPage extends StatelessWidget {
                             trailing: IconButton(
                               icon: Icon(
                                 Icons.delete,
-                                color: deletereminderIcon,
+                                color: deleteReminderIcon,
                                 size: reminderFontSize * 1.2,
                               ),
-                              onPressed: () => deleteReminder(context, list.id),
+                              onPressed: () =>
+                                  deleteReminder(context, list.id),
                             ),
                           ),
                         );
@@ -406,7 +499,6 @@ class ReminderCollectionPage extends StatelessWidget {
             ],
           ),
         ),
-
         bottomNavigationBar: const NavBar(currentIndex: 2),
       ),
     );

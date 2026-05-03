@@ -77,10 +77,48 @@ class _ProfilePageState extends State<ProfilePage> {
     });
   }
 
-  void saveProfile() async{
-      // Implement save profile functionality here
+  void saveProfile() async {
+      if(_image == null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Please select an image')),
+        );
+        return;
+      }
+      
+      setState(() => isLoading = true);
 
-      String resp = await StoreData().saveData(file: _image!);
+      try {
+        String resp = await StoreData().saveData(file: _image!);
+        if (!mounted) return;
+        if (resp == "success") {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Profile updated successfully'),
+            backgroundColor: Colors.green,
+            duration: Duration(seconds: 2),
+            ),
+          );
+          await _loadUser();
+          setState(() => _image = null);
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Failed to update profile: $resp')),
+          );
+        }
+      } catch (e) {
+        if (!mounted) return;
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('An error occurred: $e'),
+          backgroundColor: Colors.red,
+          duration: Duration(seconds: 3),
+          ),
+        );
+      } finally {
+        if (mounted) {
+          setState(() => isLoading = false);
+        }
+      }
   }
 
   @override
@@ -120,26 +158,67 @@ class _ProfilePageState extends State<ProfilePage> {
             children: [
               SizedBox(height: sizeboxSize * 3),
 
-              Container(
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  border: Border.all(
-                    color: profileBorderColor,
-                    width: profileBorderSize,
-                  ),
+              if (_image != null)
+                Column(
+                  children: [
+                    // Show preview of selected image
+                    Container(
+                      width: 150,
+                      height: 150,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        image: DecorationImage(
+                          image: MemoryImage(_image!),
+                          fit: BoxFit.cover,
+                        ),
+                      ),
+                    ),
+                    SizedBox(height: sizeboxSize),
+                    
+                    // Save button with loading indicator
+                    Align(
+                      alignment: Alignment.center,
+                      child: SizedBox(
+                        width: buttonWidth,
+                        height: buttonHeight,
+                        child: ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.green,
+                          ),
+                          onPressed: isLoading ? null : saveProfile,
+                          child: isLoading
+                            ? const CircularProgressIndicator()
+                            : const Text("Save Profile Picture"),
+                        ),
+                      ),
+                    ),
+                    SizedBox(height: sizeboxSize),
+                  ],
                 ),
-                child: CircleAvatar(
-                  radius: profileRadius,
-                  backgroundColor: profileBG,
-                  child: Icon(
-                    Icons.person,
-                    size: defaultProfileSize,
-                    color: defaultProfileColor,
+
+              // Select image button
+              Align(
+                alignment: Alignment.center,
+                child: SizedBox(
+                  width: buttonWidth,
+                  height: buttonHeight,
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: buttonBGColor,
+                    ),
+                    onPressed: isLoading ? null : selectImage,
+                    child: Text(
+                      "Change Profile Picture",
+                      style: TextStyle(
+                        color: buttonTextColor,
+                        fontSize: buttonFontSize,
+                      ),
+                    ),
                   ),
                 ),
               ),
 
-              SizedBox(height: sizeboxSize),
+              SizedBox(height: sizeboxSize * 3),
 
               Text(
                 user?.name ?? 'User',
