@@ -14,12 +14,73 @@ class ConnectionsRequestPage extends StatefulWidget {
 
 class ConnectionsRequestPageState extends State<ConnectionsRequestPage> {
   late final Stream<List<ConnectionRequest>> _requestsStream;
+  String? _processingRequestId;
 
   @override
   void initState() {
     super.initState();
     _requestsStream = ConnectionsService.instance
         .getReceivedConnectionRequests(ConnectionsService.instance.userId);
+  }
+
+  Future<void> _acceptRequest(ConnectionRequest request) async {
+    setState(() => _processingRequestId = request.requestId);
+
+    try {
+      await ConnectionsService.instance
+          .acceptConnectionRequest(request.requestId);
+
+      if (!mounted) return;
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Connection request accepted!'),
+          backgroundColor: Colors.green,
+          duration: Duration(seconds: 2),
+        ),
+      );
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Error accepting request: $e'),
+          backgroundColor: Colors.red,
+          duration: const Duration(seconds: 3),
+        ),
+      );
+    } finally {
+      if (mounted) setState(() => _processingRequestId = null);
+    }
+  }
+
+  Future<void> _declineRequest(ConnectionRequest request) async {
+    setState(() => _processingRequestId = request.requestId);
+
+    try {
+      await ConnectionsService.instance
+          .declineConnectionRequest(request.requestId);
+
+      if (!mounted) return;
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Connection request declined!'),
+          backgroundColor: Colors.green,
+          duration: Duration(seconds: 2),
+        ),
+      );
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Error declining request: $e'),
+          backgroundColor: Colors.red,
+          duration: const Duration(seconds: 3),
+        ),
+      );
+    } finally {
+      if (mounted) setState(() => _processingRequestId = null);
+    }
   }
 
   @override
@@ -82,74 +143,67 @@ class ConnectionsRequestPageState extends State<ConnectionsRequestPage> {
 
                 Expanded(
                   child: requests.isEmpty
-                    ? const Center(child: Text("No requests"))
-                    : ListView.builder(
-                      itemCount: requests.length,
-                      itemBuilder: (context, index) {
-                        final request = requests[index];
-                        return Card(
-                          color: isDark
-                            ? Colors.white12
-                            : Colors.white.withValues(alpha: 0.7),
-                          margin: const EdgeInsets.symmetric(
-                            horizontal: 20, vertical: 10),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(16),
-                          ),
-                          child: ListTile(
-                            title: Text(
-                              request.senderId,
-                              style: TextStyle(
-                                color: titleColor,
-                                fontWeight: FontWeight.bold,
+                      ? const Center(child: Text("No requests"))
+                      : ListView.builder(
+                          itemCount: requests.length,
+                          itemBuilder: (context, index) {
+                            final request = requests[index];
+                            final isProcessing =
+                                _processingRequestId == request.requestId;
+
+                            return Card(
+                              color: isDark
+                                  ? Colors.white12
+                                  : Colors.white.withValues(alpha: 0.7),
+                              margin: const EdgeInsets.symmetric(
+                                  horizontal: 20, vertical: 10),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(16),
                               ),
-                            ),
-                            subtitle: const Text("Connection request"),
-                            trailing: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                IconButton(
-                                  icon: const Icon(Icons.check),
-                                  onPressed: () async {
-                                    final localContext = context;
-                                    try {
-                                      await ConnectionsService.instance
-                                          .acceptConnectionRequest(request.requestId);
-                                    } catch (e) {
-                                      if (!localContext.mounted) return;
-                                      ScaffoldMessenger.of(localContext).showSnackBar(
-                                        SnackBar(content: Text('Error: $e')),
-                                      );
-                                    }
-                                  },
+                              child: ListTile(
+                                title: Text(
+                                  request.senderId,
+                                  style: TextStyle(
+                                    color: titleColor,
+                                    fontWeight: FontWeight.bold,
+                                  ),
                                 ),
-                                IconButton(
-                                  icon: const Icon(Icons.close),
-                                  onPressed: () async {
-                                    final localContext = context;
-                                    try {
-                                      await ConnectionsService.instance
-                                          .declineConnectionRequest(request.requestId);
-                                    } catch (e) {
-                                      if (!localContext.mounted) return;
-                                      ScaffoldMessenger.of(localContext).showSnackBar(
-                                        SnackBar(content: Text('Error: $e')),
-                                      );
-                                    }
-                                  },
-                                ),
-                              ],
-                            ),
-                          ),
-                        );
-                      },
-                    ),
+                                subtitle: const Text("Connection request"),
+                                trailing: isProcessing
+                                    ? const SizedBox(
+                                        width: 24,
+                                        height: 24,
+                                        child: CircularProgressIndicator(
+                                          strokeWidth: 2,
+                                        ),
+                                      )
+                                    : Row(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          IconButton(
+                                            icon: const Icon(Icons.check,
+                                                color: Colors.green),
+                                            onPressed: () =>
+                                                _acceptRequest(request),
+                                          ),
+                                          IconButton(
+                                            icon: const Icon(Icons.close,
+                                                color: Colors.red),
+                                            onPressed: () =>
+                                                _declineRequest(request),
+                                          ),
+                                        ],
+                                      ),
+                              ),
+                            );
+                          },
+                        ),
                 ),
               ],
             );
           },
         ),
-        bottomNavigationBar: NavBar(currentIndex: -1),
+        bottomNavigationBar: NavBar(currentIndex: 3),
       ),
     );
   }
