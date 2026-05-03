@@ -226,6 +226,7 @@ class _ReminderCollectionPageState extends State<ReminderCollectionPage> {
     ).whenComplete(() => _isDialogOpen = false);
   }
 
+
   void deleteReminder(BuildContext context, String reminderListID) {
     if (_isDialogOpen) return; // guard: ignore extra taps
     _isDialogOpen = true;
@@ -339,6 +340,7 @@ class _ReminderCollectionPageState extends State<ReminderCollectionPage> {
     final width = size.width;
     final height = size.height;
 
+
     final base = width < height ? width : height;
 
     final sizeboxSize = base * 0.01;
@@ -355,6 +357,7 @@ class _ReminderCollectionPageState extends State<ReminderCollectionPage> {
     final double newReminderButtonHeight = base * 0.14;
     final double addBoxCurve = newReminderButtonHeight * 0.4;
 
+
     Color titleColor = isDark ? AppColors.titleDark : AppColors.titleLight;
     Color addButtonBackgroundColor = isDark
         ? AppColors.buttonBackgroundDark
@@ -370,6 +373,7 @@ class _ReminderCollectionPageState extends State<ReminderCollectionPage> {
         : AppColors.listBGLight.withValues(alpha: 0.4);
     Color deleteReminderIcon =
         isDark ? AppColors.deleteListDark : AppColors.deleteListLight;
+
 
     return AppBackground(
       child: Scaffold(
@@ -400,6 +404,9 @@ class _ReminderCollectionPageState extends State<ReminderCollectionPage> {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               SizedBox(height: sizeboxSize),
+
+
+              /// Title
               Padding(
                 padding: EdgeInsets.symmetric(
                     horizontal: hPadding, vertical: wPadding),
@@ -413,6 +420,9 @@ class _ReminderCollectionPageState extends State<ReminderCollectionPage> {
                   ),
                 ),
               ),
+
+
+              /// Divider
               Divider(
                 color: isDark ? Colors.white : Colors.black54,
                 thickness: 5,
@@ -420,6 +430,9 @@ class _ReminderCollectionPageState extends State<ReminderCollectionPage> {
                 endIndent: 20,
               ),
               SizedBox(height: sizeboxSize * 5),
+
+
+              /// Reminder List
               Padding(
                 padding: EdgeInsets.symmetric(horizontal: hPadding),
                 child: StreamBuilder<List<ReminderList>>(
@@ -430,7 +443,9 @@ class _ReminderCollectionPageState extends State<ReminderCollectionPage> {
                           child: CircularProgressIndicator());
                     }
 
+
                     final reminderLists = snapshot.data!;
+
 
                     if (reminderLists.isEmpty) {
                       return Center(
@@ -446,6 +461,7 @@ class _ReminderCollectionPageState extends State<ReminderCollectionPage> {
                         ),
                       );
                     }
+
 
                     return Column(
                       children: reminderLists.map((list) {

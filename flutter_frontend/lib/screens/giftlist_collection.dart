@@ -1,4 +1,5 @@
 import 'dart:ui';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_frontend/screens/giftlist_page.dart';
 import 'package:flutter_frontend/widgets/nav_bar.dart';
@@ -151,6 +152,64 @@ class _ListCollectionPageState extends State<ListCollectionPage>
         ),
       ),
     ).whenComplete(() => _isDialogOpen = false); // always release the guard
+  }
+
+  void editList(BuildContext context, String listID, String currentRecipient) {
+     TextEditingController controller = TextEditingController(text: currentRecipient);
+
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final size = MediaQuery.of(context).size;
+    final width = size.width;
+
+    final double boxCurve = 20;
+    final titleFontSize = width * 0.05;
+    final subtitleFontSize = width * 0.03;
+    final buttonFontSize = width * 0.025;
+
+    Color bgColor = isDark ? AppColors.popUpBGDark.withValues(alpha: 0.6) : AppColors.popUpBGLight;
+    Color buttonBGColor = isDark ? AppColors.buttonBackgroundDark : AppColors.buttonBackgroundLight;
+    Color titleColor = isDark ? AppColors.titleDark : AppColors.titleLight;
+    Color subtitleColor = isDark ? AppColors.subtitleDark : AppColors.subtitleLight;
+
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(boxCurve)
+        ),
+        backgroundColor: bgColor,
+        title: Text(
+          "Edit Friend's List",
+          textAlign: TextAlign.center,
+          style: TextStyle(
+            fontSize: titleFontSize,
+            color: titleColor,
+          ),
+        ),
+        content: TextField(
+          controller: controller,
+          decoration: const InputDecoration(
+            hintText: "Enter new list name",
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text("Cancel"),
+          ),
+          ElevatedButton(
+            onPressed: () async {
+              final newRecipient = controller.text.trim();
+              if (newRecipient.isNotEmpty) {
+                await giftService.editGiftList(listID, newRecipient);
+                if (context.mounted) Navigator.pop(context);
+              }
+            },
+            child: const Text("Save"),
+          ),
+        ]
+      )
+    );
   }
 
   void deleteList(BuildContext context, String listID) {
@@ -498,6 +557,16 @@ class _ListCollectionPageState extends State<ListCollectionPage>
                                               onPressed: () =>
                                                   deleteList(context, list.id),
                                             ),
+
+                                            IconButton(
+                                              icon: Icon(
+                                                Icons.edit,
+                                                color: listTextColor,
+                                                size: listFontSize * 1.2,
+                                              ),
+                                              onPressed: () => editList(context, list.id, list.recipient),
+                                            ),
+
                                             RotationTransition(
                                               turns: Tween(
                                                       begin: 0.0, end: 0.5)

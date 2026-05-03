@@ -45,6 +45,15 @@ class GiftService {
         .delete();
   }
 
+  Future<void> editGiftList(String listID, String newRecipient) async {
+    await firestore
+        .collection('accounts')
+        .doc(userId)
+        .collection('gift_lists')
+        .doc(listID)
+        .update({'gift_recipient': newRecipient});
+  }
+
   // Create gift for a specific list
   Stream<List<Gift>> getGifts(String listID) {
     return firestore
