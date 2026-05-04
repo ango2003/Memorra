@@ -272,7 +272,7 @@ class _ListPageState extends State<ListPage> {
     final double listBoxPadding = 5;
     final double listCornerRadius = 15;
 
-    final List<String> categories = ["Food","Drink","Technology","Resteraunts","Other",];
+    final List<String> categories = ["Food","Drink","Technology","Restaurants","Other",];
 
     Color addButtonTextColor = isDark ? AppColors.buttonTextDark : AppColors.buttonTextLight;
     Color addButtonBackgroundColor = isDark ? AppColors.buttonBackgroundDark : AppColors.buttonBackgroundLight.withValues(alpha: 0.75);
