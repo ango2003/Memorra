@@ -684,7 +684,6 @@ class _ReminderCollectionPageState extends State<ReminderCollectionPage> {
                       );
                     }
 
-
                     return Column(
                       children: reminderLists.map((list) {
                         return Container(
@@ -694,7 +693,10 @@ class _ReminderCollectionPageState extends State<ReminderCollectionPage> {
                             borderRadius: BorderRadius.circular(
                                 reminderCornerRadius),
                           ),
-                          child: ListTile(
+                          child: ExpansionTile(
+                            showTrailingIcon: false,
+                            backgroundColor: Colors.transparent,
+                            collapsedBackgroundColor: Colors.transparent,
                             title: Text(
                               list.name,
                               style: TextStyle(
@@ -735,7 +737,26 @@ class _ReminderCollectionPageState extends State<ReminderCollectionPage> {
                                   deleteReminder(context, list.id),
                             ),
                               ],
-                              )
+                              ),
+                            children: [
+                              Padding(
+                                padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                                child: Align(
+                                  alignment: Alignment.centerLeft,
+                                  child: Text(
+                                    list.description ?.isNotEmpty == true
+                                        ? list.description!
+                                        : "No description",
+                                    style: TextStyle(
+                                      color: reminderTextColor,
+                                      fontSize: reminderFontSize,
+                                      fontWeight: FontWeight.w400,
+                                      letterSpacing: reminderLetterSpacing,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ],
                           ),
                         );
                       }).toList(),

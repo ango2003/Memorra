@@ -4,6 +4,7 @@ class ValidationService {
     'gmail.com',
     'outlook.com',
     'yahoo.com',
+    'atu.edu',
   ];
 
   // Email validation with domain whitelist
