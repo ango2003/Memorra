@@ -694,7 +694,6 @@ class _ReminderCollectionPageState extends State<ReminderCollectionPage> {
                                 reminderCornerRadius),
                           ),
                           child: ExpansionTile(
-                            showTrailingIcon: false,
                             backgroundColor: Colors.transparent,
                             collapsedBackgroundColor: Colors.transparent,
                             title: Text(
