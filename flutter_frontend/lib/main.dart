@@ -102,7 +102,6 @@ class _MyAppState extends State<MyApp> {
         '/requestpage': (context) => const ConnectionsRequestPage(),
         '/invitepage': (context) => const ConnectionsInvitePage(),
         '/scanpage': (context) => const ScanQrPage(),
-        '/calendarpage': (context) => const CalendarPage(),
       },
 
         onGenerateRoute: (settings) {
@@ -128,8 +127,10 @@ class _MyAppState extends State<MyApp> {
                   return FillerPage(userId: ' ');
                 case '/reminderpage':
                   return ReminderCollectionPage();
+                case '/connectionspage':
+                  return ConnectionsPage();
                 default:
-                  return const StartPage();
+                  return HomePage(userId: ' ');
               }
             },
           transitionDuration: Duration.zero,
