@@ -48,6 +48,7 @@ class _ReminderCollectionPageState extends State<ReminderCollectionPage> {
 
     final controller = TextEditingController();
     final timeController = TextEditingController();
+    final descriptionController = TextEditingController();
     DateTime? selectedReminderDate;
     bool isLoading = false;
 
@@ -94,6 +95,22 @@ class _ReminderCollectionPageState extends State<ReminderCollectionPage> {
                 style: TextStyle(color: inputColor, fontSize: inputFontSize),
                 decoration: InputDecoration(
                   hintText: "Reminder Name",
+                  hintStyle: TextStyle(
+                      color: inputHintColor, fontSize: inputFontSize),
+                  enabledBorder: UnderlineInputBorder(
+                    borderSide: BorderSide(color: inputHintColor),
+                  ),
+                  focusedBorder: UnderlineInputBorder(
+                    borderSide: BorderSide(color: inputColor),
+                  ),
+                ),
+              ),
+              TextField(
+                controller: descriptionController,
+                enabled: !isLoading,
+                style: TextStyle(color: inputColor, fontSize: inputFontSize),
+                decoration: InputDecoration(
+                  hintText: "Description",
                   hintStyle: TextStyle(
                       color: inputHintColor, fontSize: inputFontSize),
                   enabledBorder: UnderlineInputBorder(
@@ -182,6 +199,7 @@ class _ReminderCollectionPageState extends State<ReminderCollectionPage> {
                         await ReminderService.instance.addReminderList(
                           name: reminderListName,
                           reminderDate: selectedReminderDate!,
+                          description: descriptionController.text.trim(),
                           notifId: notifID,
                         );
 
@@ -226,6 +244,210 @@ class _ReminderCollectionPageState extends State<ReminderCollectionPage> {
     ).whenComplete(() => _isDialogOpen = false);
   }
 
+  void editReminder(BuildContext context, ReminderList list) {
+    if (_isDialogOpen) return; // guard: ignore extra taps
+    _isDialogOpen = true;
+
+    final controller = TextEditingController(text: list.name);
+    final timeController = TextEditingController(text: list.reminderDate.toString());
+    final descriptionController = TextEditingController(text: list.description ?? "");
+    DateTime? selectedReminderDate = list.reminderDate;
+    bool isLoading = false;
+
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final size = MediaQuery.of(context).size;
+    final width = size.width;
+
+    const double boxCurve = 20;
+    final titleFontSize = width * 0.05;
+    final inputFontSize = width * 0.03;
+    final buttonFontSize = width * 0.02;
+
+    Color bgColor = isDark
+        ? AppColors.popUpBGDark.withValues(alpha: 0.6)
+        : AppColors.popUpBGLight;
+    Color buttonBGColor = isDark
+        ? AppColors.buttonBackgroundDark
+        : AppColors.buttonBackgroundLight;
+    Color titleColor = isDark ? AppColors.titleDark : AppColors.titleLight;
+    Color inputHintColor =
+        isDark ? AppColors.hintTextDark : AppColors.hintTextLight;
+    Color inputColor =
+        isDark ? AppColors.subtitleDark : AppColors.subtitleLight;
+
+    showDialog(
+      context: context,
+      builder: (context) => StatefulBuilder(
+        builder: (context, setDialogState) => AlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(boxCurve),
+          ),
+          backgroundColor: bgColor,
+          title: Text(
+            "Edit\nReminder",
+            textAlign: TextAlign.center,
+            style: TextStyle(fontSize: titleFontSize, color: titleColor),
+          ),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TextField(
+                controller: controller,
+                enabled: !isLoading,
+                style: TextStyle(color: inputColor, fontSize: inputFontSize),
+                decoration: InputDecoration(
+                  hintText: "Reminder Name",
+                  hintStyle: TextStyle(
+                      color: inputHintColor, fontSize: inputFontSize),
+                  enabledBorder: UnderlineInputBorder(
+                    borderSide: BorderSide(color: inputHintColor),
+                  ),
+                  focusedBorder: UnderlineInputBorder(
+                    borderSide: BorderSide(color: inputColor),
+                  ),
+                ),
+              ),
+              TextField(
+                controller: descriptionController,
+                enabled: !isLoading,
+                style: TextStyle(color: inputColor, fontSize: inputFontSize),
+                decoration: InputDecoration(
+                  hintText: "Description",
+                  hintStyle: TextStyle(
+                      color: inputHintColor, fontSize: inputFontSize),
+                  enabledBorder: UnderlineInputBorder(
+                    borderSide: BorderSide(color: inputHintColor),
+                  ),
+                  focusedBorder: UnderlineInputBorder(
+                    borderSide: BorderSide(color: inputColor),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 16),
+              TextField(
+                controller: timeController,
+                readOnly: true,
+                enabled: !isLoading,
+                decoration: const InputDecoration(
+                  hintText: "Select Reminder Date & Time",
+                  suffixIcon: Icon(Icons.calendar_today),
+                ),
+                onTap: isLoading
+                    ? null
+                    : () async {
+                        final selectedDateTime = await pickDate(context);
+                        if (selectedDateTime != null) {
+                          setDialogState(() {
+                            selectedReminderDate = selectedDateTime;
+                            timeController.text =
+                                selectedDateTime.toString();
+                          });
+                        }
+                      },
+              ),
+              if (isLoading) ...[
+                const SizedBox(height: 16),
+                const CircularProgressIndicator(),
+              ],
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: isLoading ? null : () => Navigator.pop(context),
+              child: Text(
+                "Cancel",
+                style:
+                    TextStyle(color: titleColor, fontSize: buttonFontSize),
+              ),
+            ),
+            ElevatedButton(
+              style:
+                  ElevatedButton.styleFrom(backgroundColor: buttonBGColor),
+              onPressed: isLoading
+                  ? null
+                  : () async {
+                      final reminderListName = controller.text.trim();
+
+                      final nameError = ValidationService.validateTextField(
+                        reminderListName,
+                        "Reminder name",
+                        minLength: 1,
+                        maxLength: 100,
+                      );
+                      if (nameError != null) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text(nameError),
+                            backgroundColor: Colors.orange,
+                          ),
+                        );
+                        return;
+                      }
+                      if (selectedReminderDate == null) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text("Please select a date and time"),
+                            backgroundColor: Colors.orange,
+                          ),
+                        );
+                        return;
+                      }
+
+                      setDialogState(() => isLoading = true);
+
+                      try {
+                        await NotifService.instance.cancelNotification(list.notifID);
+
+                        final notifID = createUniqueID();
+
+                        await ReminderService.instance.editReminderList(
+                          list.id,
+                          name: reminderListName,
+                          reminderDate: selectedReminderDate!,
+                          description: descriptionController.text.trim(),
+                          notifId: notifID,
+                        );
+                        
+                        await NotifService.instance.scheduleWithTimer(
+                          notifID,
+                          reminderListName,
+                          selectedReminderDate!,
+                        );
+
+                        if (!context.mounted) return;
+
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text("Reminder updated successfully!"),
+                            backgroundColor: Colors.green,
+                            duration: Duration(seconds: 2),
+                          ),
+                        );
+                        Navigator.pop(context);
+
+                      } catch (e) {
+                        if (!context.mounted) return;
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text("Error updating reminder: $e"),
+                            backgroundColor: Colors.red,
+                            duration: const Duration(seconds: 3),
+                          ),
+                        );
+                        setDialogState(() => isLoading = false);
+                      }
+                    },
+              child: Text(
+                "Edit",
+                style:
+                    TextStyle(color: titleColor, fontSize: buttonFontSize),
+              ),
+            ),
+          ],
+        ),
+      ),
+    ).whenComplete(() => _isDialogOpen = false);
+  }
 
   void deleteReminder(BuildContext context, String reminderListID) {
     if (_isDialogOpen) return; // guard: ignore extra taps
@@ -489,7 +711,21 @@ class _ReminderCollectionPageState extends State<ReminderCollectionPage> {
                                 fontSize: subtitleFontSize,
                               ),
                             ),
-                            trailing: IconButton(
+                            trailing: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                IconButton(
+                                  icon: Icon(
+                                    Icons.edit,
+                                    color: isDark
+                                        ? AppColors.editListDark
+                                        : AppColors.editListLight,
+                                    size: reminderFontSize * 1.2,
+                                  ),
+                                  onPressed: () =>
+                                      editReminder(context, list),
+                                ),
+                                IconButton(
                               icon: Icon(
                                 Icons.delete,
                                 color: deleteReminderIcon,
@@ -498,6 +734,8 @@ class _ReminderCollectionPageState extends State<ReminderCollectionPage> {
                               onPressed: () =>
                                   deleteReminder(context, list.id),
                             ),
+                              ],
+                              )
                           ),
                         );
                       }).toList(),

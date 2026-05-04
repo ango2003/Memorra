@@ -130,6 +130,121 @@ class _ListPageState extends State<ListPage> {
     ).whenComplete(() => _isDialogOpen = false); // always release the guard
   }
 
+  void editReminder(BuildContext context, String listID, Reminder reminder) {
+    if (_isDialogOpen) return; // guard: ignore extra taps
+    _isDialogOpen = true;
+
+    final nameController = TextEditingController(text: reminder.name);
+    final categoryController = TextEditingController(text: reminder.category);
+    bool isLoading = false;
+
+    showDialog(
+      context: context,
+      builder: (context) => StatefulBuilder(
+        builder: (context, setDialogState) => AlertDialog(
+          title: const Text("Edit Reminder Item"),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TextField(
+                controller: nameController,
+                enabled: !isLoading,
+                decoration:
+                    const InputDecoration(hintText: "Reminder Name"),
+              ),
+              const SizedBox(height: 16),
+              TextField(
+                controller: categoryController,
+                enabled: !isLoading,
+                decoration:
+                    const InputDecoration(hintText: "Reminder Category"),
+              ),
+              if (isLoading) ...[
+                const SizedBox(height: 16),
+                const CircularProgressIndicator(),
+              ],
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: isLoading ? null : () => Navigator.pop(context),
+              child: const Text("Cancel"),
+            ),
+            ElevatedButton(
+              onPressed: isLoading
+                  ? null
+                  : () async {
+                      final reminderName = nameController.text.trim();
+                      final reminderCategory =
+                          categoryController.text.trim();
+
+                      final nameError = ValidationService.validateTextField(
+                        reminderName,
+                        "Reminder name",
+                        minLength: 1,
+                        maxLength: 100,
+                      );
+                      if (nameError != null) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text(nameError),
+                            backgroundColor: Colors.orange,
+                          ),
+                        );
+                        return;
+                      }
+
+                      if (reminderCategory.isEmpty) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text("Please select a category"),
+                            backgroundColor: Colors.orange,
+                          ),
+                        );
+                        return;
+                      }
+
+                      setDialogState(() => isLoading = true);
+
+                      try {
+                        await ReminderService.instance.editReminder(
+                          listID,
+                          reminder.id,
+                          reminderName,
+                          reminderCategory,
+                        );
+
+                        if (!context.mounted) return;
+
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text("Reminder updated successfully!"),
+                            backgroundColor: Colors.green,
+                            duration: Duration(seconds: 2),
+                          ),
+                        );
+
+                        Navigator.pop(context);
+                      } catch (e) {
+                        if (!context.mounted) return;
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text("Error updating reminder: $e"),
+                            backgroundColor: Colors.red,
+                            duration: const Duration(seconds: 3),
+                          ),
+                        );
+                        setDialogState(() => isLoading = false);
+                      }
+                    },
+              child: const Text("Update"),
+            ),
+          ],
+        ),
+      ),
+    ).whenComplete(() => _isDialogOpen = false); // always release the guard
+  }
+
   void deleteReminder(BuildContext context, String listID, String reminderID) {
     if (_isDialogOpen) return; // guard: ignore extra taps
     _isDialogOpen = true;
@@ -222,10 +337,20 @@ class _ListPageState extends State<ListPage> {
               return ListTile(
                 title: Text(reminder.name),
                 subtitle: Text(reminder.category),
-                trailing: IconButton(
-                  icon: const Icon(Icons.delete, color: Colors.red),
-                  onPressed: () => deleteReminder(
-                      context, widget.listID, reminder.id),
+                trailing: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    IconButton(
+                      icon: const Icon(Icons.edit, color: Colors.blue),
+                      onPressed: () => editReminder(
+                          context, widget.listID, reminder),
+                    ),
+                    IconButton(
+                      icon: const Icon(Icons.delete, color: Colors.red),
+                      onPressed: () => deleteReminder(
+                          context, widget.listID, reminder.id),
+                    ),
+                  ],
                 ),
               );
             },
