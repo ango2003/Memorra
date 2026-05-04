@@ -17,6 +17,7 @@ import 'screens/filler_page.dart';
 import 'screens/connections_page.dart';
 import 'screens/connections_request_page.dart';
 import 'screens/connections_invite_page.dart';
+import 'screens/connection_profile_page.dart';
 import 'screens/calendar_page.dart';
 import 'services/notif_service.dart';
 import 'services/deep_link_service.dart';
@@ -97,6 +98,7 @@ class _MyAppState extends State<MyApp> {
         '/signuppage': (context) => const SignUpPage(),
         '/remindercollection': (context) => ReminderCollectionPage(),
         '/connectionpage': (context) => ConnectionsPage(),
+        '/connectionprofile': (context) => const ConnectionProfilePage(userId: ' '),
         '/requestpage': (context) => const ConnectionsRequestPage(),
         '/invitepage': (context) => const ConnectionsInvitePage(),
         '/scanpage': (context) => const ScanQrPage(),
@@ -118,6 +120,8 @@ class _MyAppState extends State<MyApp> {
                   return ListCollectionPage();
                 case '/profilepage':
                   return const ProfilePage(userId: ' ');
+                case '/connectionprofile':
+                  return const ConnectionProfilePage(userId: ' ');
                 case '/calendarpage':
                   return const CalendarPage();
                 case '/wip':
