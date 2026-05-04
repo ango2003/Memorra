@@ -437,6 +437,11 @@ class _ListPageState extends State<ListPage> {
     return AppBackground(
       child: Scaffold(
         backgroundColor: Colors.transparent,
+        appBar: AppBar(
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+          title: const Text(""),
+        ),
         floatingActionButton: SizedBox(
           width: addBoxWidth,
           height: addBoxHeight,
