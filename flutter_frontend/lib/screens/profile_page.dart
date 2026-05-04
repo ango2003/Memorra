@@ -158,65 +158,65 @@ class _ProfilePageState extends State<ProfilePage> {
             children: [
               SizedBox(height: sizeboxSize * 3),
 
-              if (_image != null)
-                Column(
-                  children: [
-                    // Show preview of selected image
-                    Container(
-                      width: 150,
-                      height: 150,
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        image: DecorationImage(
-                          image: MemoryImage(_image!),
-                          fit: BoxFit.cover,
-                        ),
-                      ),
-                    ),
-                    SizedBox(height: sizeboxSize),
+              // if (_image != null)
+              //   Column(
+              //     children: [
+              //       // Show preview of selected image
+              //       Container(
+              //         width: 150,
+              //         height: 150,
+              //         decoration: BoxDecoration(
+              //           shape: BoxShape.circle,
+              //           image: DecorationImage(
+              //             image: MemoryImage(_image!),
+              //             fit: BoxFit.cover,
+              //           ),
+              //         ),
+              //       ),
+              //       SizedBox(height: sizeboxSize),
                     
-                    // Save button with loading indicator
-                    Align(
-                      alignment: Alignment.center,
-                      child: SizedBox(
-                        width: buttonWidth,
-                        height: buttonHeight,
-                        child: ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.green,
-                          ),
-                          onPressed: isLoading ? null : saveProfile,
-                          child: isLoading
-                            ? const CircularProgressIndicator()
-                            : const Text("Save Profile Picture"),
-                        ),
-                      ),
-                    ),
-                    SizedBox(height: sizeboxSize),
-                  ],
-                ),
+              //       // Save button with loading indicator
+              //       Align(
+              //         alignment: Alignment.center,
+              //         child: SizedBox(
+              //           width: buttonWidth,
+              //           height: buttonHeight,
+              //           child: ElevatedButton(
+              //             style: ElevatedButton.styleFrom(
+              //               backgroundColor: Colors.green,
+              //             ),
+              //             onPressed: isLoading ? null : saveProfile,
+              //             child: isLoading
+              //               ? const CircularProgressIndicator()
+              //               : const Text("Save Profile Picture"),
+              //           ),
+              //         ),
+              //       ),
+              //       SizedBox(height: sizeboxSize),
+              //     ],
+              //   ),
 
-              // Select image button
-              Align(
-                alignment: Alignment.center,
-                child: SizedBox(
-                  width: buttonWidth,
-                  height: buttonHeight,
-                  child: ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: buttonBGColor,
-                    ),
-                    onPressed: isLoading ? null : selectImage,
-                    child: Text(
-                      "Change Profile Picture",
-                      style: TextStyle(
-                        color: buttonTextColor,
-                        fontSize: buttonFontSize,
-                      ),
-                    ),
-                  ),
-                ),
-              ),
+              // // Select image button
+              // Align(
+              //   alignment: Alignment.center,
+              //   child: SizedBox(
+              //     width: buttonWidth,
+              //     height: buttonHeight,
+              //     child: ElevatedButton(
+              //       style: ElevatedButton.styleFrom(
+              //         backgroundColor: buttonBGColor,
+              //       ),
+              //       onPressed: isLoading ? null : selectImage,
+              //       child: Text(
+              //         "Change Profile Picture",
+              //         style: TextStyle(
+              //           color: buttonTextColor,
+              //           fontSize: buttonFontSize,
+              //         ),
+              //       ),
+              //     ),
+              //   ),
+              // ),
 
               SizedBox(height: sizeboxSize * 3),
 
