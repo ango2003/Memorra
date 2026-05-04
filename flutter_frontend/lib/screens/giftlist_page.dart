@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter_frontend/services/validation_service.dart';
 import '../widgets/nav_bar.dart';
 import '../themes/app_colors.dart';
 import '../widgets/background.dart';
@@ -14,106 +15,382 @@ class ListPage extends StatefulWidget {
 }
 
 class _ListPageState extends State<ListPage> {
-  void createNewGift(BuildContext context, String listID) {
-    final nameController = TextEditingController();
-   // final categoryController = TextEditingController();
-    String? selectedCategory;
-    final categories = ['Food', 'Drink', 'Technology', 'Resteraunts', 'Other'];
+  bool _isDialogOpen = false;
 
-     showDialog(
+  void createNewGift(BuildContext context, String listID) {
+    if (_isDialogOpen) return; // Prevent multiple dialogs
+    _isDialogOpen = true;
+
+    final nameController = TextEditingController();
+    String? selectedCategory;
+    bool isLoading = false;
+    final categories = ['Food', 'Drink', 'Technology', 'Restaurants', 'Other'];
+
+    showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: Text("Add New Gift"),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            TextField(
-              controller: nameController,
-              decoration: InputDecoration(hintText: "Gift Name"),
-            ),
-            SizedBox(height: 16),
-            StatefulBuilder(
-              builder: (context, setState) {
-                return DropdownButtonFormField<String>(
-                  initialValue: selectedCategory,
-                  hint: Text("Select Category"),
-                  items: categories.map((category) {
-                    return DropdownMenuItem<String>(
-                      value: category,
-                      child: Text(category),
-                    );
-                  }).toList(),
-                  onChanged: (value) {
-                    setState(() {
-                      selectedCategory = value;
-                    });
-                  },
-                );
+      builder: (context) => StatefulBuilder(
+        builder: (context, setDialogState) => AlertDialog(
+          title: const Text("Add New Gift"),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TextField(
+                controller: nameController,
+                enabled: !isLoading,
+                decoration: const InputDecoration(hintText: "Gift Name"),
+              ),
+              const SizedBox(height: 16),
+              DropdownButtonFormField<String>(
+                initialValue: selectedCategory,
+                hint: const Text("Select Category"),
+                disabledHint: const Text("Select Category"),
+                items: categories.map((category) {
+                  return DropdownMenuItem<String>(
+                    value: category,
+                    child: Text(category),
+                  );
+                }).toList(),
+                onChanged: isLoading ? null : (value) {
+                  setDialogState(() {
+                    selectedCategory = value;
+                  });
+                },
+              ),
+              if (isLoading) ...[
+                const SizedBox(height: 16),
+                const CircularProgressIndicator(),
+              ]
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: isLoading ? null : () {
+                Navigator.pop(context);
               },
+              child: const Text("Cancel"),
+            ),
+            ElevatedButton(
+              onPressed: isLoading ? null : () async {
+                final giftName = nameController.text.trim();
+                final giftCategory = selectedCategory ?? 'Other';
+
+                final nameError = ValidationService.validateTextField(
+                  giftName,
+                  "Gift name",
+                  minLength: 1,
+                  maxLength: 100,
+                  allowNumbers: true,
+                );
+                if (nameError != null) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text(nameError),
+                      backgroundColor: Colors.orange,
+                    ),
+                  );
+                  return;
+                }
+
+                setDialogState(() => isLoading = true);
+
+                try {
+                  final userID = FirebaseAuth.instance.currentUser!.uid;
+                  final giftPath = FirebaseFirestore.instance
+                      .collection('accounts')
+                      .doc(userID)
+                      .collection('gift_lists')
+                      .doc(listID)
+                      .collection('gifts');
+
+                  final itemCheck = await giftPath
+                      .where('name', isEqualTo: giftName)
+                      .where('category', isEqualTo: giftCategory)
+                      .get();
+
+                  if (itemCheck.docs.isNotEmpty) {
+                    if (!context.mounted) return;
+                    final confirm = await showDialog<bool>(
+                          context: context,
+                          builder: (context) => AlertDialog(
+                            title: const Text("Duplicate Gift"),
+                            content: const Text("Add anyway?"),
+                            actions: [
+                              TextButton(
+                                onPressed: () => Navigator.pop(context, false),
+                                child: const Text("No"),
+                              ),
+                              TextButton(
+                                onPressed: () => Navigator.pop(context, true),
+                                child: const Text("Yes"),
+                              ),
+                            ],
+                          ),
+                        ) ??
+                        false;
+
+                    if (!confirm) {
+                      setDialogState(() => isLoading = false);
+                      return;
+                    }
+                  }
+
+                  await giftPath.add({
+                    'name': giftName,
+                    'category': giftCategory,
+                    'createdAt': FieldValue.serverTimestamp(),
+                  });
+
+                  if (!context.mounted) return;
+
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text("Gift added successfully!"),
+                      backgroundColor: Colors.green,
+                      duration: Duration(seconds: 2),
+                    ),
+                  );
+
+                  Navigator.pop(context);
+                } catch (e) {
+                  if (!context.mounted) return;
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text("Error adding gift: $e"),
+                      backgroundColor: Colors.red,
+                      duration: const Duration(seconds: 3),
+                    ),
+                  );
+                  setDialogState(() => isLoading = false);
+                }
+              },
+              child: const Text("Add"),
             ),
           ],
         ),
-        actions: [
-          TextButton(
-            onPressed: () {
-              Navigator.pop(context);
-            },
-            child: Text("Cancel"),
-          ),
-          ElevatedButton(
-            onPressed: () async {
-              final giftName = nameController.text.trim();
-              final giftCategory = selectedCategory ?? 'Other';
-              if (giftName.isNotEmpty) {
-                final userID = FirebaseAuth.instance.currentUser!.uid;
-                await FirebaseFirestore.instance
-                    .collection('accounts')
-                    .doc(userID)
-                    .collection('gift_lists')
-                    .doc(listID)
-                    .collection('gifts')
-                    .add({'name': giftName, 'category': giftCategory});
-                if (context.mounted) Navigator.pop(context);
-              }
-            },
-            child: Text("Add"),
-          ),
-        ],
       ),
-    );
+    ).whenComplete(() => _isDialogOpen = false);
   }
 
-  void deleteGift(BuildContext context, String listID, String giftID) {
+  void editGift(BuildContext context, String listID, String giftID, String currentName, String currentCategory) {
+    if (_isDialogOpen) return; // Prevent multiple dialogs
+    _isDialogOpen = true;
+
+    final nameController = TextEditingController(text: currentName);
+    String? selectedCategory = currentCategory;
+    bool isLoading = false;
+    final categories = ['Food', 'Drink', 'Technology', 'Restaurants', 'Other'];
+
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: Text("Delete Gift"),
-        content: Text("Are you sure you want to delete this gift?"),
-        actions: [
-          TextButton(
-            onPressed: () {
-              Navigator.pop(context);
-            },
-            child: Text("Cancel"),
+      builder: (context) => StatefulBuilder(
+        builder: (context, setDialogState) => AlertDialog(
+          title: const Text("Edit Gift"),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TextField(
+                controller: nameController,
+                enabled: !isLoading,
+                decoration: const InputDecoration(hintText: "Gift Name"),
+              ),
+              const SizedBox(height: 16),
+              DropdownButton<String>(
+                value: selectedCategory,
+                hint: const Text("Select Category"),
+                items: categories.map((category) {
+                  return DropdownMenuItem<String>(
+                    value: category,
+                    child: Text(category),
+                  );
+                }).toList(),
+                onChanged: isLoading ? null : (value) {
+                  setDialogState(() {
+                    selectedCategory = value;
+                  });
+                },
+              ),
+              if (isLoading) ...[
+                const SizedBox(height: 16),
+                const CircularProgressIndicator(),
+              ]
+            ],
           ),
-          ElevatedButton(
-            onPressed: () async {
-              final userID = FirebaseAuth.instance.currentUser!.uid;
-              await FirebaseFirestore.instance
-                  .collection('accounts')
-                  .doc(userID)
-                  .collection('gift_lists')
-                  .doc(listID)
-                  .collection('gifts')
-                  .doc(giftID)
-                  .delete();
-              if (context.mounted) Navigator.pop(context);
-            },
-            child: Text("Delete"),
-          ),
-        ],
+          actions: [
+            TextButton(
+              onPressed: isLoading ? null : () {
+                Navigator.pop(context);
+              },
+              child: const Text("Cancel"),
+            ),
+            ElevatedButton(
+              onPressed: isLoading ? null : () async {
+                final giftName = nameController.text.trim();
+                final giftCategory = selectedCategory ?? 'Other';
+
+                final nameError = ValidationService.validateTextField(
+                  giftName,
+                  "Gift name",
+                  minLength: 1,
+                  maxLength: 100,
+                  allowNumbers: true,
+                );
+                if (nameError != null) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text(nameError),
+                      backgroundColor: Colors.orange,
+                    ),
+                  );
+                  return;
+                }
+
+                setDialogState(() => isLoading = true);
+
+                try {
+                  final userID = FirebaseAuth.instance.currentUser!.uid;
+                  final giftPath = FirebaseFirestore.instance
+                      .collection('accounts')
+                      .doc(userID)
+                      .collection('gift_lists')
+                      .doc(listID)
+                      .collection('gifts');
+
+                  final itemCheck = await giftPath
+                      .where('name', isEqualTo: giftName)
+                      .where('category', isEqualTo: giftCategory)
+                      .get();
+
+                  if (itemCheck.docs.isNotEmpty) {
+                    if (!context.mounted) return;
+                    final confirm = await showDialog<bool>(
+                          context: context,
+                          builder: (context) => AlertDialog(
+                            title: const Text("Duplicate Gift"),
+                            content: const Text("Add anyway?"),
+                            actions: [
+                              TextButton(
+                                onPressed: () => Navigator.pop(context, false),
+                                child: const Text("No"),
+                              ),
+                              TextButton(
+                                onPressed: () => Navigator.pop(context, true),
+                                child: const Text("Yes"),
+                              ),
+                            ],
+                          ),
+                        ) ??
+                        false;
+
+                    if (!confirm) {
+                      setDialogState(() => isLoading = false);
+                      return;
+                    }
+                  }
+
+                  await giftPath.doc(giftID).update({
+                    'name': giftName,
+                    'category': giftCategory,
+                  });
+
+                  if (!context.mounted) return;
+
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text("Gift updated successfully!"),
+                      backgroundColor: Colors.green,
+                      duration: Duration(seconds: 2),
+                    ),
+                  );
+
+                  Navigator.pop(context);
+                } catch (e) {
+                  if (!context.mounted) return;
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text("Error updating gift: $e"),
+                      backgroundColor: Colors.red,
+                      duration: const Duration(seconds: 3),
+                    ),
+                  );
+                  setDialogState(() => isLoading = false);
+                }
+              },
+              child: const Text("Save"),
+            ),
+          ],
+        ),
       ),
-    );
+    ).whenComplete(() => _isDialogOpen = false);
+  }
+  
+  void deleteGift(BuildContext context, String listID, String giftID) {
+    if (_isDialogOpen) return;
+    _isDialogOpen = true;
+    
+    bool isLoading = false;
+
+    showDialog(
+      context: context,
+      builder: (context) => StatefulBuilder(
+        builder: (context, setDialogState) => AlertDialog(
+          title: const Text("Delete Gift"),
+          content: isLoading
+              ? const SizedBox(
+                  height: 50,
+                  child: Center(child: CircularProgressIndicator()),
+                )
+              : const Text("Are you sure you want to delete this gift?"),
+          actions: [
+            TextButton(
+              onPressed: isLoading ? null : () {
+                Navigator.pop(context);
+              },
+              child: const Text("Cancel"),
+            ),
+            ElevatedButton(
+              onPressed: isLoading ? null : () async {
+                setDialogState(() => isLoading = true);
+
+                try {
+                  final userID = FirebaseAuth.instance.currentUser!.uid;
+                  await FirebaseFirestore.instance
+                      .collection('accounts')
+                      .doc(userID)
+                      .collection('gift_lists')
+                      .doc(listID)
+                      .collection('gifts')
+                      .doc(giftID)
+                      .delete();
+
+                  if (!context.mounted) return;
+
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text("Gift deleted successfully!"),
+                      backgroundColor: Colors.green,
+                      duration: Duration(seconds: 2),
+                    ),
+                  );
+
+                  Navigator.pop(context);
+                } catch (e) {
+                  if (!context.mounted) return;
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text("Error deleting gift: $e"),
+                      backgroundColor: Colors.red,
+                      duration: const Duration(seconds: 3),
+                    ),
+                  );
+                  setDialogState(() => isLoading = false);
+                }
+              },
+              child: const Text("Delete"),
+            ),
+          ],
+        ),
+      ),
+    ).whenComplete(() => _isDialogOpen = false);
   }
 
   @override
@@ -147,13 +424,14 @@ class _ListPageState extends State<ListPage> {
     final double listBoxPadding = 5;
     final double listCornerRadius = 15;
 
-    final List<String> categories = ["Food","Drink","Technology","Restaurants","Other",];
+    final List<String> categories = ["Food","Drink","Technology","Resteraunts","Other",];
 
     Color addButtonTextColor = isDark ? AppColors.buttonTextDark : AppColors.buttonTextLight;
     Color addButtonBackgroundColor = isDark ? AppColors.buttonBackgroundDark : AppColors.buttonBackgroundLight.withValues(alpha: 0.75);
     Color titleColor = isDark ? AppColors.titleDark : AppColors.titleLight;
     Color subtitleColor = isDark ? AppColors.subtitleDark : AppColors.subtitleLight;
     Color listBoxColor = isDark ? AppColors.listBGDark.withValues(alpha: 0.25) : AppColors.listBGLight.withValues(alpha: 0.25);
+    Color editListIcon = isDark ? AppColors.editListDark : AppColors.editListLight;
     Color deleteListIcon = isDark ? AppColors.deleteListDark : AppColors.deleteListLight;
 
     return AppBackground(
@@ -276,19 +554,27 @@ class _ListPageState extends State<ListPage> {
                                         fontWeight: FontWeight.normal,
                                       )
                                     ),
-                                    trailing: IconButton(
-                                      icon: Icon(Icons.delete, color: deleteListIcon),
-                                      onPressed: () => deleteGift(context, widget.listID, giftID),
-                                    ),
-                                  ),
+                                    trailing: Row(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        IconButton(
+                                          icon: Icon(Icons.edit, color: editListIcon),
+                                          onPressed: () => editGift(context, widget.listID, giftID, gift['name'] ?? '', gift['category'] ?? ''),
+                                        ),
+                                        IconButton(
+                                          icon: Icon(Icons.delete, color: deleteListIcon),
+                                          onPressed: () => deleteGift(context, widget.listID, giftID),
+                                        ),
+                                      ]
+                                    )
+                                  )
                                 );
-                              }).toList(),
+                              }),
                           ],
                         );
                       }).toList(),
                     ),
                   );
-
                 },
               ),
             ),

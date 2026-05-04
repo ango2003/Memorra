@@ -3,6 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 class ReminderList {
   final String id;
   final String name;
+  final String? description;
   final DateTime reminderDate;
   final int notifID;
   final DateTime? createdAt;
@@ -10,6 +11,7 @@ class ReminderList {
   ReminderList({
     required this.id,
     required this.name,
+    this.description,
     required this.reminderDate,
     required this.notifID,
     this.createdAt,
@@ -26,6 +28,7 @@ class ReminderList {
     return ReminderList(
       id: json['id'] ?? '',
       name: json['reminder_name'] ?? json['name'] ?? '',
+      description: json['description'] ?? '',
       reminderDate: reminderDate,
       notifID: json['notif_ID'] ?? json['notifId'] ?? 0,
       createdAt: json['createdAt'] is Timestamp
@@ -47,6 +50,7 @@ class ReminderList {
     return ReminderList(
       id: id,
       name: data['reminder_name'] ?? '',
+      description: data['description'] ?? '',
       reminderDate: reminderDate,
       notifID: data['notif_ID'] ?? data['notifId'] ?? 0,
       createdAt: data['createdAt'] is Timestamp
@@ -62,6 +66,7 @@ class ReminderList {
       'id': id,
       'reminder_name': name,
       'reminder_date': reminderDate.toIso8601String(),
+      'description': description,
       'notif_ID': notifID,
       'createdAt': createdAt?.toIso8601String(),
     };
@@ -71,6 +76,7 @@ class ReminderList {
     return {
       'reminder_name': name,
       'reminder_date': Timestamp.fromDate(reminderDate),
+      'description': description,
       'notif_ID': notifID,
       'createdAt': createdAt != null
           ? Timestamp.fromDate(createdAt!)

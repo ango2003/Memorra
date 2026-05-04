@@ -41,14 +41,34 @@ class ReminderService {
   Future<void> addReminderList({
     required String name,
     required DateTime reminderDate,
+    String? description,
     required int notifId,
   }) async {
     await _reminderListsRef.add({
       'reminder_name': name,
       'reminder_date': Timestamp.fromDate(reminderDate),
+      'description': description,
       'notif_ID': notifId,
       'createdAt': FieldValue.serverTimestamp(),
     });
+  }
+
+  Future<void> editReminderList(
+    String listID, {
+    String? name,
+    DateTime? reminderDate,
+    String? description,
+    int? notifId,
+  }) async {
+    final data = <String, dynamic>{};
+    if (name != null) data['reminder_name'] = name;
+    if (reminderDate != null) data['reminder_date'] = Timestamp.fromDate(reminderDate);
+    if (description != null) data['description'] = description;
+    if (notifId != null) data['notif_ID'] = notifId;
+
+    if (data.isNotEmpty) {
+      await _reminderListsRef.doc(listID).update(data);
+    }
   }
 
   Future<void> deleteReminderList(String listID) async {
@@ -73,6 +93,18 @@ class ReminderService {
       'name': name,
       'category': category,
       'createdAt': FieldValue.serverTimestamp(),
+    });
+  }
+
+  Future<void> editReminder(
+    String listID,
+    String reminderID,
+    String name,
+    String category,
+  ) async {
+    await _remindersRef(listID).doc(reminderID).update({
+      'name': name,
+      'category': category,
     });
   }
 
