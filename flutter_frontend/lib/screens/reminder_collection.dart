@@ -404,6 +404,9 @@ class _ReminderCollectionPageState extends State<ReminderCollectionPage> {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               SizedBox(height: sizeboxSize),
+
+
+              /// Title
               Padding(
                 padding: EdgeInsets.symmetric(
                     horizontal: hPadding, vertical: wPadding),
@@ -417,6 +420,9 @@ class _ReminderCollectionPageState extends State<ReminderCollectionPage> {
                   ),
                 ),
               ),
+
+
+              /// Divider
               Divider(
                 color: isDark ? Colors.white : Colors.black54,
                 thickness: 5,
@@ -424,6 +430,9 @@ class _ReminderCollectionPageState extends State<ReminderCollectionPage> {
                 endIndent: 20,
               ),
               SizedBox(height: sizeboxSize * 5),
+
+
+              /// Reminder List
               Padding(
                 padding: EdgeInsets.symmetric(horizontal: hPadding),
                 child: StreamBuilder<List<ReminderList>>(
